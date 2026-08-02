@@ -1,0 +1,69 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 1
+                "Generate Deployment Notes with Variables"
+================================================================================
+
+BACKGROUND:
+-----------
+One of the most practical heredoc use cases in DevOps is generating deployment
+notes automatically. Instead of filling in a template manually after each
+deployment, a script captures the runtime values (version, deployer, timestamp,
+host) and writes a formatted notes file. The filename itself can include the
+date to keep a historical record of every deployment event.
+
+EXERCISE:
+---------
+Step 1: Set deployment variables:
+
+  VERSION="2.1.0"
+  DEPLOYER=$(whoami)
+  TARGET_ENV="production"
+  DEPLOY_DATE=$(date +%Y-%m-%d)
+  DEPLOY_TIME=$(date +%H:%M:%S)
+
+Step 2: Generate a deployment notes file (filename includes the date):
+
+  cat << EOF > "deployment_notes_${DEPLOY_DATE}.txt"
+  ======================================
+  DEPLOYMENT NOTES
+  ======================================
+  Version:     $VERSION
+  Environment: $TARGET_ENV
+  Deployed by: $DEPLOYER
+  Date:        $DEPLOY_DATE
+  Time:        $DEPLOY_TIME
+  Host:        $(hostname)
+  ======================================
+  Changes in this version:
+  - Fixed authentication bug
+  - Improved query performance by 30%
+  - Added dark mode to dashboard
+  - Updated dependencies
+  ======================================
+  Status: SUCCESS
+  ======================================
+  EOF
+
+Step 3: Read the generated file:
+
+  cat deployment_notes_$(date +%Y-%m-%d).txt
+
+Step 4: Count its lines:
+
+  wc -l deployment_notes_$(date +%Y-%m-%d).txt
+
+
+QUESTIONS TO ANSWER:
+--------------------
+- What filename was created? (What does the date suffix look like?)
+- How many lines does the file contain?
+- What is the value of VERSION in the file?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level3-Ex1: [your answer here]" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level3/clue2.txt
+================================================================================

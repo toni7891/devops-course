@@ -1,0 +1,37 @@
+================================================================================
+                       STEP 2 of 10
+            "Finding a Specific Process" - Searching by Name
+================================================================================
+
+* SETUP: Run first (from the lab root):  ./scripts/setup_step2.sh
+
+--------------------------------------------------------------------------------
+WHAT YOU'RE DOING
+--------------------------------------------------------------------------------
+Sometimes you need to find one specific process in a huge list. Instead of
+scrolling through hundreds of lines, you can search for it by name. Your job:
+find a specific process by filtering the output.
+
+This is your first "hunt" – narrowing down the list to find what you need.
+
+--------------------------------------------------------------------------------
+INSTRUCTIONS
+--------------------------------------------------------------------------------
+1. List all processes with: ps aux
+
+2. There are too many lines. Let's find only "bash" processes. Filter the
+   list to show only lines containing "bash":
+   ps aux | grep bash
+
+3. Look at the result. You should see your bash shell (and the grep command).
+
+4. Write in my_answers.txt:
+   "Step 2: I found [NUMBER] bash process(es) by filtering with grep."
+
+5. Notice: the second column in each line is the PID. This is what you'll
+   use to control the process.
+
+================================================================================
+CLEANUP (run when done with this step):  ./scripts/cleanup_step2.sh
+NEXT STEP:  cat clues/step3.txt
+================================================================================

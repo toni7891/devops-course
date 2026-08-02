@@ -1,0 +1,407 @@
+================================================================================
+          INSTRUCTOR SOLUTIONS — Output Redirection with > (Overwrite)
+          Lab: linux_lab_redir_output_overwrite_2
+================================================================================
+
+Estimated completion time: 60–75 minutes
+Total points: 3 (each level = 1 point; each clue within a level = 1/3 point)
+
+--------------------------------------------------------------------------------
+LEVEL 1 — EXERCISE 1: Redirect echo — Creating a Config-Like File
+--------------------------------------------------------------------------------
+
+COMMANDS TO RUN:
+  echo "server=localhost" > config.txt && cat config.txt
+  echo "port=8080" > config.txt && cat config.txt
+  echo "environment=production" > config.txt && cat config.txt
+
+EXPECTED OUTPUT (after each step, config.txt shows only the last echo):
+  server=localhost
+  ---
+  port=8080
+  ---
+  environment=production
+
+KEY ANSWERS:
+  - config.txt has exactly 1 line after all three steps.
+  - "server=localhost" and "port=8080" were permanently overwritten and lost.
+  - Real-world use case: a deployment script that regenerates a config file
+    on each run (e.g., writing a .env file or server.conf from template values).
+
+KEY LEARNING POINT:
+  > always creates a fresh file. Multiple uses of > on the same file are
+  cumulative only in the sense that the last one wins.
+
+COMMON MISTAKES:
+  - Students expect the file to grow with each echo. Reinforce: > is not append.
+  - Students may confuse > (overwrite) with >> (append).
+
+GRADING: 1/3 point for correct answer (1 line, values overwritten, valid use case)
+
+--------------------------------------------------------------------------------
+LEVEL 1 — EXERCISE 2: The Overwrite Test — See It, Confirm It, Understand It
+--------------------------------------------------------------------------------
+
+COMMANDS TO RUN:
+  echo "ORIGINAL CONTENT" > test_overwrite.txt && cat test_overwrite.txt
+  wc -l test_overwrite.txt                                    # output: 1
+  echo "REPLACEMENT CONTENT" > test_overwrite.txt && cat test_overwrite.txt
+  wc -l test_overwrite.txt                                    # output: 1
+  echo -e "line one\nline two\nline three" > test_overwrite.txt && cat test_overwrite.txt
+  echo "done" > test_overwrite.txt && cat test_overwrite.txt
+
+EXPECTED OUTPUT after step 6:
+  done
+
+KEY ANSWERS:
+  - After step 6, test_overwrite.txt has exactly 1 line.
+  - "line one", "line two", and "line three" were overwritten and lost.
+  - One-sentence explanation: > replaces the entire contents of an existing
+    file with the new output, destroying whatever was there before.
+
+KEY LEARNING POINT:
+  File size does not matter — 3 lines or 300 lines, a single echo "word" >
+  file.txt reduces the file to one line.
+
+COMMON MISTAKES:
+  - Students run echo -e without -e flag and see \n printed literally.
+    Remind them: -e enables escape sequence interpretation.
+
+GRADING: 1/3 point for correct answer (1 line, lines 1-3 gone, correct explanation)
+
+--------------------------------------------------------------------------------
+LEVEL 1 — EXERCISE 3: Redirect cat — Copying File Contents with >
+--------------------------------------------------------------------------------
+
+COMMANDS TO RUN:
+  cat ../../data/names.txt
+  cat ../../data/names.txt > names_backup.txt && cat names_backup.txt
+  wc -l ../../data/names.txt && wc -l names_backup.txt       # both: 20
+  cat ../../data/names.txt > team_members.txt
+  echo "Alice" > team_members.txt && cat team_members.txt
+  cat ../../data/names.txt && wc -l ../../data/names.txt     # still 20
+
+EXPECTED OUTPUT:
+  names_backup.txt: 20 lines (identical to data/names.txt)
+  team_members.txt after echo: 1 line — "Alice"
+  data/names.txt: unchanged, still 20 lines
+
+KEY ANSWERS:
+  - No, redirecting with cat does NOT change the original file.
+  - echo "Alice" > team_members.txt replaces the entire file with one line.
+  - team_members.txt has 1 line after the echo.
+
+KEY LEARNING POINT:
+  The source file on the right side of cat (or any command) is read-only in
+  this context. Only the file named after > is ever written to.
+
+COMMON MISTAKES:
+  - Students worry that copying the file will modify the original.
+  - Students confuse the source file (input to cat) with the destination (> target).
+
+GRADING: 1/3 point for correct answer (original unchanged, 1 line, correct explanation)
+
+--------------------------------------------------------------------------------
+LEVEL 2 — EXERCISE 1: Redirecting to a Path — Writing Files in Subdirectories
+--------------------------------------------------------------------------------
+
+COMMANDS TO RUN:
+  mkdir -p reports/daily
+  date > reports/daily/today.txt && cat reports/daily/today.txt
+  hostname > reports/daily/host.txt && cat reports/daily/host.txt
+  uptime > reports/daily/uptime.txt
+  ls -l reports/daily/
+  echo "test" > reports/weekly/test.txt     # This FAILS
+
+EXPECTED ERROR (step 6):
+  bash: reports/weekly/test.txt: No such file or directory
+
+  (Exact wording may vary slightly by shell/OS, but "No such file or directory"
+  is the key phrase.)
+
+KEY ANSWERS:
+  - No, you cannot redirect into a file inside a non-existent directory.
+  - Yes, the parent directory MUST exist first.
+  - Error message: "bash: reports/weekly/test.txt: No such file or directory"
+
+KEY LEARNING POINT:
+  > will create a missing FILE, but it will never create a missing DIRECTORY.
+  Use mkdir -p to create the directory structure before redirecting.
+
+COMMON MISTAKES:
+  - Students assume > creates missing directories as well as files.
+  - Students forget -p flag on mkdir and get an error if intermediate dirs
+    are also missing.
+
+GRADING: 1/3 point for correct answer (cannot redirect to missing dir, correct error message)
+
+--------------------------------------------------------------------------------
+LEVEL 2 — EXERCISE 2: Multiple Redirects — Only the Last One Survives
+--------------------------------------------------------------------------------
+
+COMMANDS TO RUN:
+  echo "name=Alice" > settings.txt
+  echo "role=admin" > settings.txt
+  echo "active=true" > settings.txt
+  cat settings.txt                          # only "active=true"
+
+  echo -e "name=Alice\nrole=admin\nactive=true" > settings_correct.txt
+  cat settings_correct.txt                  # all 3 lines
+
+  printf "name=Alice\nrole=admin\nactive=true\n" > settings_printf.txt
+  cat settings_printf.txt                   # all 3 lines
+
+  # Challenge solution (example):
+  echo -e "host=localhost\nport=5432\nuser=admin\npassword=secret\ndatabase=mydb" > myapp.txt
+  # OR:
+  printf "host=localhost\nport=5432\nuser=admin\npassword=secret\ndatabase=mydb\n" > myapp.txt
+
+EXPECTED OUTPUT after step 1:
+  settings.txt contains exactly:
+    active=true
+
+KEY ANSWERS:
+  - settings.txt has exactly 1 line after step 1.
+  - Two correct methods:
+      1. echo -e "line1\nline2\nline3" > file.txt
+      2. printf "line1\nline2\nline3\n" > file.txt
+    (Subshell grouping is also valid: (echo line1; echo line2; echo line3) > file.txt)
+
+KEY LEARNING POINT:
+  Every > is a complete file replacement. To write multiple lines with a single
+  >, you must produce all lines within a single command or subshell.
+
+COMMON MISTAKES:
+  - Students use echo without -e and see \n printed literally instead of newlines.
+  - Students try >> to "fix" the problem — valid, but > with subshell or echo -e
+    is the lesson here.
+
+GRADING: 1/3 point for correct answer (1 line, names both correct methods)
+
+--------------------------------------------------------------------------------
+LEVEL 2 — EXERCISE 3: Build a System Report — The Overwrite Challenge Returns
+--------------------------------------------------------------------------------
+
+COMMANDS TO RUN:
+  echo "=== SYSTEM REPORT ===" > report.txt
+  hostname > report.txt
+  date > report.txt
+  uptime > report.txt
+  cat report.txt                            # only uptime line survives
+
+  (echo "=== SYSTEM REPORT ==="; hostname; date; uptime) > report.txt
+  cat report.txt
+  wc -l report.txt                          # 4 lines
+
+EXPECTED OUTPUT after step 1:
+  report.txt contains exactly 1 line (the uptime output).
+
+EXPECTED OUTPUT after step 3:
+  === SYSTEM REPORT ===
+  <hostname output>
+  <date output>
+  <uptime output>
+  (4 lines total)
+
+KEY ANSWERS:
+  - After step 1, report.txt has 1 line.
+  - The subshell ( ) groups all commands so their combined stdout is treated
+    as one stream, redirected once with a single >, so no line is lost.
+  - After step 3, report.txt has 4 lines.
+
+KEY LEARNING POINT:
+  Subshell grouping ( cmd1; cmd2; cmd3 ) > file.txt is the canonical way to
+  redirect multiple commands into one file using > (not >>).
+
+COMMON MISTAKES:
+  - Students write { cmd1; cmd2; } > file.txt (brace grouping also works but
+    requires a semicolon before the closing brace and a space after {).
+  - Students count output lines incorrectly if uptime or date wrap.
+
+GRADING: 1/3 point for correct answer (1 line after step1, subshell explanation, 4 lines after step3)
+
+--------------------------------------------------------------------------------
+LEVEL 3 — EXERCISE 1: Fix the Overwrite Bug — Given Broken Script
+--------------------------------------------------------------------------------
+
+BROKEN SCRIPT (data/broken_log_script.sh) — bug is that all 5 lines use >:
+  echo "EVENT 1: ..." > system_events.txt
+  echo "EVENT 2: ..." > system_events.txt   # BUG: should be >>
+  echo "EVENT 3: ..." > system_events.txt   # BUG: should be >>
+  echo "EVENT 4: ..." > system_events.txt   # BUG: should be >>
+  echo "EVENT 5: ..." > system_events.txt   # BUG: should be >>
+
+FIXED SCRIPT (fixed_log_script.sh):
+  #!/bin/bash
+  echo "EVENT 1: Script started at $(date)" > system_events.txt
+  echo "EVENT 2: User is $(whoami)" >> system_events.txt
+  echo "EVENT 3: Running on host $(hostname)" >> system_events.txt
+  echo "EVENT 4: Current directory is $(pwd)" >> system_events.txt
+  echo "EVENT 5: Script finished at $(date)" >> system_events.txt
+  echo ""
+  echo "Done! Check system_events.txt"
+
+EXPECTED OUTPUT after running fixed script:
+  system_events.txt: 5 lines, one per event.
+
+KEY ANSWERS:
+  - Bug: every echo used > instead of >>, so each event overwrote the previous.
+  - The first line correctly uses > because it needs to start a fresh file
+    (or overwrite any old system_events.txt from a previous run). If it used >>
+    it would keep accumulating old runs.
+  - Final line count of system_events.txt: 5 lines.
+
+KEY LEARNING POINT:
+  In logging scripts, the standard pattern is: first write uses > (reset),
+  all subsequent writes use >> (accumulate). This gives you a clean file each
+  run while preserving all events within a single run.
+
+COMMON MISTAKES:
+  - Students change ALL lines to >> — this causes system_events.txt to grow
+    on every run (old events are never cleared).
+  - Students change the first line to >> as well — same problem.
+  - Students forget to make the fixed script executable (not required here since
+    we call bash explicitly, but good habit to mention).
+
+GRADING: 1/3 point for correct answer (bug identified, first line > reason, 5 lines)
+
+--------------------------------------------------------------------------------
+LEVEL 3 — EXERCISE 2: Filter Logs with grep and Save with >
+--------------------------------------------------------------------------------
+
+COMMANDS TO RUN:
+  cat ../../data/app.log
+  grep "ERROR" ../../data/app.log > errors_only.txt && cat errors_only.txt
+  grep "WARN" ../../data/app.log > warnings_only.txt && cat warnings_only.txt
+  grep "INFO" ../../data/app.log > info_only.txt && wc -l info_only.txt
+  echo "ERROR: $(wc -l < errors_only.txt), WARN: $(wc -l < warnings_only.txt), INFO: $(wc -l < info_only.txt)" > log_summary.txt && cat log_summary.txt
+  grep "08:2" ../../data/app.log > late_events.txt && cat late_events.txt
+
+CORRECT COUNTS (verified from data/app.log):
+  ERROR: 6 lines  (lines 6, 10, 13, 17, 24, 25)
+  WARN:  6 lines  (lines 4, 7, 11, 14, 19, 23)
+  INFO:  18 lines (all remaining lines)
+  TOTAL: 30 lines
+
+  NOTE: The original specification estimated ERROR=7, WARN=6, INFO=17.
+  The actual file contains ERROR=6, WARN=6, INFO=18. Use these correct values.
+
+EXPECTED log_summary.txt content:
+  ERROR: 6, WARN: 6, INFO: 18
+
+EXPECTED late_events.txt content (lines matching "08:2"):
+  2024-03-01 08:20:00 INFO  Scheduled maintenance window starting
+  2024-03-01 08:21:30 WARN  Service degraded: response time 2300ms (threshold: 1000ms)
+  2024-03-01 08:22:00 ERROR Database connection pool exhausted: 50/50 connections in use
+  2024-03-01 08:22:01 ERROR Unable to process new requests: no available connections
+  2024-03-01 08:23:00 INFO  Emergency connection pool expansion: 75 connections
+  2024-03-01 08:24:15 INFO  Service recovered: response time 180ms
+  2024-03-01 08:25:00 INFO  Maintenance window ended
+  2024-03-01 08:26:30 INFO  User 'bob' logged out
+  2024-03-01 08:27:00 INFO  Daily statistics generated
+  (9 lines)
+
+KEY ANSWERS:
+  - ERROR lines: 6
+  - WARN lines: 6
+  - INFO lines: 18
+  - log_summary.txt contains: "ERROR: 6, WARN: 6, INFO: 18"
+
+KEY LEARNING POINT:
+  grep output can be redirected just like any other command. Each grep creates
+  an independent file — using > on errors_only.txt has no effect on
+  warnings_only.txt or info_only.txt.
+
+COMMON MISTAKES:
+  - Students forget to use < in wc -l < file.txt and get the filename appended
+    to the output (cosmetic issue but changes the log_summary.txt content).
+  - Students expect grep to fail on an empty match — it just produces an empty file.
+
+GRADING: 1/3 point for correct answer (6 ERRORs, 6 WARNs, 18 INFOs, correct summary)
+
+--------------------------------------------------------------------------------
+LEVEL 3 — EXERCISE 3: Final Challenge — Complete System Snapshot
+--------------------------------------------------------------------------------
+
+COMMANDS TO RUN:
+  (
+    echo "=== SYSTEM SNAPSHOT ===";
+    echo "Date: $(date)";
+    echo "Host: $(hostname)";
+    echo "User: $(whoami)";
+    echo "Uptime: $(uptime)";
+    echo "Memory:"; free -h;
+    echo "Disk:"; df -h /
+  ) > system_snapshot.txt
+  cat system_snapshot.txt
+  wc -l system_snapshot.txt
+
+EXPECTED LINE COUNT:
+  Approximately 12–16 lines, depending on the system.
+  Breakdown:
+    - 1 line: === SYSTEM SNAPSHOT ===
+    - 1 line: Date
+    - 1 line: Host
+    - 1 line: User
+    - 1 line: Uptime
+    - 1 line: "Memory:" label
+    - 3–4 lines: free -h output (header + 2–3 data rows)
+    - 1 line: "Disk:" label
+    - 2–3 lines: df -h / output (header + 1–2 data rows)
+  Accept any answer in the range of 12–16 lines as correct.
+
+KEY ANSWERS:
+  - system_snapshot.txt has approximately 12–16 lines (accept the student's
+    actual count from their system).
+  - Overwriting is the CORRECT behavior for a snapshot because a snapshot
+    represents the current state of the system at this moment. Old snapshots
+    are outdated and irrelevant. The value is in the latest capture, not in
+    accumulating history. (Contrast with a log, where history matters.)
+
+KEY LEARNING POINT:
+  > is not always a mistake. When the use case is "replace with current state"
+  rather than "accumulate history", > is the right and intentional choice.
+
+COMMON MISTAKES:
+  - Students use >> thinking they should preserve the old snapshot — this is
+    the conceptual mistake to address: snapshots by definition replace the old.
+  - Students try to run the multi-line subshell as separate lines without
+    understanding that bash handles the continuation automatically.
+
+GRADING: 1/3 point for correct answer (reasonable line count, correct explanation
+         of why overwrite is right for snapshots)
+
+================================================================================
+GRADING RUBRIC SUMMARY
+================================================================================
+
+  Level 1 (1 point total):
+    Clue 1 — 1/3 pt: 1 line in config.txt, values overwritten, valid use case
+    Clue 2 — 1/3 pt: 1 line after step6, lines 1-3 gone, correct one-sentence rule
+    Clue 3 — 1/3 pt: original unchanged, 1 line in team_members.txt, correct explanation
+
+  Level 2 (1 point total):
+    Clue 1 — 1/3 pt: cannot redirect to missing dir, quotes error message
+    Clue 2 — 1/3 pt: 1 line in settings.txt, names two correct multi-line methods
+    Clue 3 — 1/3 pt: 1 line after step1, explains subshell, 4 lines after step3
+
+  Level 3 (1 point total):
+    Clue 1 — 1/3 pt: bug identified, first line > reason, 5 final lines
+    Clue 2 — 1/3 pt: ERROR=6, WARN=6, INFO=18, correct summary content
+    Clue 3 — 1/3 pt: reasonable snapshot line count, correct snapshot overwrite rationale
+
+  TOTAL: 3 points
+
+================================================================================
+KEY COMMANDS REFERENCE (for instructor demo)
+================================================================================
+
+  echo "text" > file.txt                        # create/overwrite with one line
+  echo -e "line1\nline2" > file.txt             # create/overwrite with multiple lines
+  printf "line1\nline2\n" > file.txt            # same, using printf
+  (cmd1; cmd2; cmd3) > file.txt                 # subshell group — one redirect
+  cat source.txt > dest.txt                     # copy file using redirection
+  grep "PATTERN" source.log > filtered.txt      # filter and save
+  command > path/to/subdir/file.txt             # redirect to path (dir must exist)
+
+================================================================================

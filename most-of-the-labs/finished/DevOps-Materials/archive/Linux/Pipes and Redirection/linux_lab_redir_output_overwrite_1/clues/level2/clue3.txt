@@ -1,0 +1,77 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 3
+            "Saving Real System Info — Building Useful Log Files"
+================================================================================
+
+BACKGROUND:
+-----------
+One of the most practical uses of > in real system administration is capturing
+system information into files for:
+  - Debugging problems later
+  - Comparing system state before/after changes
+  - Sending diagnostic info to a support team
+
+In this exercise you will build actual system snapshot files using >.
+
+EXERCISE:
+---------
+Step 1: Capture your operating system information:
+
+  cat /etc/os-release > system_info.txt
+  cat system_info.txt
+
+Step 2: Capture system uptime:
+
+  uptime > uptime.txt
+  cat uptime.txt
+
+Step 3: Capture memory information:
+
+  free -h > memory.txt
+  cat memory.txt
+
+Step 4: Capture disk usage:
+
+  df -h > disk_usage.txt
+  cat disk_usage.txt
+
+Step 5: Each of these overwrites the file every time you run it.
+        Try running the uptime command again after a minute:
+
+  uptime > uptime.txt    (the old uptime is gone, replaced with the new one)
+  cat uptime.txt
+
+CHALLENGE — System Snapshot Script:
+------------------------------------
+Now build a simple snapshot by running each command in sequence:
+
+  hostname > snapshot.txt
+  echo "--- Date ---" > snapshot.txt    (CAREFUL: this overwrites!)
+  date > snapshot.txt                   (CAREFUL: this overwrites again!)
+
+After doing the above, how many lines does snapshot.txt have?
+What happened to hostname?
+
+REFLECTION:
+-----------
+Did you notice the problem? Each > replaced the previous content.
+In a real snapshot, you'd want to COMBINE all output in one file.
+You have two options (which you'll practice in future labs):
+  1. Use >> to append each section
+  2. Run all commands in a script and redirect the entire script's output
+
+QUESTIONS TO ANSWER:
+--------------------
+- What information did cat /etc/os-release show?
+- How many lines does snapshot.txt have after the three redirections above?
+- What would you need to do differently to keep all three pieces of info?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L2C3 snapshot.txt final content: $(cat snapshot.txt)" >> ../../my_answers.txt
+
+================================================================================
+Level 2 complete! Move to Level 3:
+  cd ../level3
+  cat clue1.txt
+================================================================================

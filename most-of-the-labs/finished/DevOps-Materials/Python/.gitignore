@@ -1,0 +1,75 @@
+Python_refresher_notes
+*.cmproj
+*.tscproj
+*.mp4
+*.mkv
+*.hfp
+tempCodeRunnerFile.py
+.vscode/
+.idea/
+videos
+exports
+captions
+
+# Python compiled files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.pycache
+
+# Python distribution / packaging
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.env
+.env.*
+Pipfile.lock
+
+# Python type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pytype/
+.pyre/
+
+# Jupyter / IPython
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+profile_default/
+ipython_config.py
+
+# Testing / coverage
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Linting / formatting
+.ruff_cache/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt

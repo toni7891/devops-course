@@ -1,0 +1,95 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 1
+            "Power Up" - Admin Access for DevOps
+================================================================================
+
+*** INSTRUCTOR SETUP ***
+Before students begin this level, run the following script to introduce
+the permission bug they will need to diagnose and fix:
+
+    sudo ./set_level_permissions.sh
+
+This script creates a dummy group "it", moves dev2 into it, and removes
+dev2 from devteam.
+************************
+
+STORY:
+------
+The DevOps engineer ops1 needs to be able to run system commands.
+The team lead tells you:
+
+    "ops1 needs admin privileges - they'll be managing the server,
+     running backups, and handling deployments. Make sure they can
+     use sudo."
+
+================================================================================
+    PART 15 - Grant Admin Privileges
+================================================================================
+
+The user ops1 needs to be added to the group that allows using sudo.
+
+HINTS:
+- On Ubuntu, the group that grants sudo access is called "sudo"
+- You already know the command that adds a user to a group
+  (you used it in Level 1)
+- Remember to APPEND to existing groups, not replace them
+- You need elevated privileges to make this change
+
+COMMANDS THAT CAN HELP:
+- usermod -aG  (add a user to a group, same as Part 4)
+  Example: sudo usermod -aG <groupname> <username>
+- groups       (verify which groups a user belongs to)
+- id           (detailed user info including groups)
+
+After making the change, verify:
+- Check which groups ops1 belongs to
+- The sudo group should now appear in the list
+
+================================================================================
+    PART 16 - Test Admin Access
+================================================================================
+
+Verify that ops1 can actually use admin commands.
+
+TASK 1: Switch to the ops1 user
+
+HINTS:
+- Use the command that switches to another user
+- After switching, verify who you are
+
+COMMANDS THAT CAN HELP:
+- su - ops1    (switch to ops1 with a full login shell)
+- whoami       (verify who you are)
+
+TASK 2: Test a command that requires admin privileges
+
+HINTS:
+- There is a command that runs other commands with elevated privileges
+- Try running a system command that normally requires root access
+- For example: try to read a protected system file, or list processes
+  running as other users, or install a package
+- If ops1 is in the correct group, the command should work
+
+COMMANDS THAT CAN HELP:
+- sudo         (run a command as root)
+  Example: sudo cat /etc/shadow
+  (This file is only readable by root)
+- exit         (go back to the previous user)
+
+WHAT TO OBSERVE:
+- Does ops1 have sudo access?
+- Can ops1 run commands as root?
+- After testing, exit back to your original user
+
+WRITE YOUR ANSWER:
+------------------
+Save to my_answers.txt:
+- What group did you add ops1 to?
+- What command did you use to test sudo access?
+- Did it work?
+
+================================================================================
+
+When you're done, proceed to the challenge exercise:
+
+    cat clues/level3/clue2.txt

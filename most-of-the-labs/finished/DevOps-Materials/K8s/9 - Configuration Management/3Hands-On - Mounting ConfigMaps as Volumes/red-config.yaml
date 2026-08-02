@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: red-config
+data:
+  DEFAULT_COLOR: red
+  multiline.js: |
+    console.log("This is a multiline string in the ConfigMap.");
+    console.log("It can contain multiple lines of text.");
+    console.log("This is useful for storing scripts or configuration data.");
+  

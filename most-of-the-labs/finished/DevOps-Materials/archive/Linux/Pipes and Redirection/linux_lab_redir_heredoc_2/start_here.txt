@@ -1,0 +1,34 @@
+================================================================================
+        WELCOME TO LINUX LAB - HERE-DOCUMENT WITH << (PART 2)
+                Theme: Heredoc in Real Scenarios
+================================================================================
+
+WELCOME BACK!
+-------------
+This is Part 2 of the heredoc lab series. Part 1 covered the fundamentals.
+Here you will apply heredocs in realistic DevOps scenarios.
+
+QUICK RECAP FROM PART 1:
+-------------------------
+  cat << EOF               # heredoc to stdout
+  cat << EOF > file.txt    # heredoc to file (overwrite)
+  cat << EOF >> file.txt   # heredoc to file (append)
+  cat << 'EOF'             # quoted: suppresses variable expansion
+  cat << CUSTOM            # any word can be the delimiter
+
+WHAT IS NEW IN PART 2:
+-----------------------
+  sort << EOF              # pass heredoc to ANY command
+  <<-                      # indented heredoc (strips leading tabs)
+  Nested heredocs          # heredoc inside a heredoc (different delimiters!)
+  Debugging heredocs       # common syntax bugs and how to fix them
+
+PREREQUISITES:
+--------------
+  - You must have completed linux_lab_redir_heredoc_1
+  - You should be comfortable with: <<, << >, << >>, << 'EOF'
+
+================================================================================
+QUICK START — Begin with Level 1, Exercise 1:
+  cat clues/level1/clue1.txt
+================================================================================

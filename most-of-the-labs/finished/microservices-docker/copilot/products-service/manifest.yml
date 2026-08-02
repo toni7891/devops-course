@@ -1,0 +1,16 @@
+name: products-service
+type: Backend Service
+
+image:
+  build:
+    dockerfile: services/products-service/Dockerfile
+    context: services/products-service
+  port: 3000
+
+variables:
+  MONGO_URI: mongodb://products-db.dev.lab.local:27017/products-db
+
+cpu: 256
+memory: 512
+count: 1
+exec: true

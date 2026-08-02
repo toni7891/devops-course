@@ -1,0 +1,30 @@
+# Local dependencies — reinstalled inside the image via npm ci
+node_modules
+
+# Build output — produced inside the image, not copied from the host
+dist
+
+# Git metadata — not needed inside the image
+.git
+.gitignore
+
+# Editor / OS artefacts
+.DS_Store
+*.swp
+*.swo
+.vscode
+.idea
+
+# Logs
+*.log
+npm-debug.log*
+
+# Docker files themselves — no need to copy them into the image
+Dockerfile
+Dockerfile.dev
+.dockerignore
+
+# Documentation — not required at runtime
+*.md
+LAB.md
+README.md

@@ -1,0 +1,71 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 2
+                "Word Frequency: Combining < with Pipes (Preview)"
+================================================================================
+
+BACKGROUND:
+-----------
+You can combine `<` (input redirection) with `|` (pipes) in the same command.
+The `<` feeds the initial input to the first command; the pipe passes that
+command's output as stdin to the next command. The data flow is:
+
+  file  -->  (stdin)  -->  command1  -->  (pipe)  -->  command2  -->  screen/file
+
+This pattern — `sort | uniq -c | sort -rn` — is the classic Unix word
+frequency counter. It works by:
+  1. sort: putting identical lines adjacent to each other
+  2. uniq -c: counting consecutive identical lines and prefixing each with its count
+  3. sort -rn: sorting numerically in reverse (most frequent first)
+
+`uniq` only collapses ADJACENT duplicate lines, which is why `sort` must
+come first. This combination appears constantly in real-world log analysis
+and data processing.
+
+EXERCISE:
+---------
+Step 1: View words.txt to see the raw data:
+  cat ../../data/words.txt
+
+Step 2: Sort words.txt (groups identical words together):
+  sort < ../../data/words.txt
+
+Step 3: Count how many times each word appears (sort + uniq -c):
+  sort < ../../data/words.txt | uniq -c
+
+Step 4: Sort by frequency, most common first:
+  sort < ../../data/words.txt | uniq -c | sort -rn
+
+Step 5: Show only the top 5 most frequent words and save:
+  sort < ../../data/words.txt | uniq -c | sort -rn | head -5 > top_words.txt && cat top_words.txt
+
+Step 6: Count total words (lines in the file):
+  wc -l < ../../data/words.txt
+
+Step 7: Count unique words:
+  sort < ../../data/words.txt | uniq | wc -l
+
+Step 8: Save a frequency summary:
+  echo "=== Word Frequency Report ===" > freq_report.txt
+  echo "Total words:" >> freq_report.txt
+  wc -l < ../../data/words.txt >> freq_report.txt
+  echo "Unique words:" >> freq_report.txt
+  sort < ../../data/words.txt | uniq | wc -l >> freq_report.txt
+  echo "Top 5 most frequent:" >> freq_report.txt
+  sort < ../../data/words.txt | uniq -c | sort -rn | head -5 >> freq_report.txt
+  cat freq_report.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- Which word appears most often in words.txt, and how many times?
+- How many total words does words.txt contain?
+- How many unique words does words.txt contain?
+- Why must `sort` come BEFORE `uniq -c` in the pipeline?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L3E2: 'linux' appears most often (4 times). words.txt has 25 total words and 17 unique words. sort must come before uniq -c because uniq only collapses ADJACENT duplicate lines — without sorting first, scattered duplicates would be counted separately." >> ../../my_answers.txt
+
+================================================================================
+Move to the final exercise:
+  cat clues/level3/clue3.txt
+================================================================================

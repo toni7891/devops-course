@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Commands Guide</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #e0e0e0; background: #0d1117; }
+
+        /* Header */
+        header { background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); color: white; padding: 3rem 2rem; text-align: center; border-bottom: 3px solid #58a6ff; }
+        header h1 { font-size: 2.8rem; font-weight: 700; letter-spacing: -1px; }
+        header h1 span { color: #58a6ff; }
+        header p { margin-top: 0.8rem; font-size: 1.2rem; color: #8b949e; }
+
+        /* Nav */
+        nav { background: #161b22; padding: 1rem; text-align: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #30363d; }
+        nav a { color: #58a6ff; text-decoration: none; margin: 0 1.2rem; font-weight: 600; font-size: 0.95rem; transition: color 0.2s; }
+        nav a:hover { color: #79c0ff; text-decoration: underline; }
+
+        /* Main */
+        main { max-width: 960px; margin: 2.5rem auto; padding: 0 1.5rem; }
+
+        /* Section titles */
+        .section-title { font-size: 1.8rem; color: #f0f6fc; margin: 2.5rem 0 1.2rem; padding-bottom: 0.5rem; border-bottom: 2px solid #21262d; }
+        .section-title span { color: #58a6ff; }
+
+        /* Description */
+        .description { color: #8b949e; margin-bottom: 1.5rem; font-size: 1.05rem; }
+
+        /* Code blocks */
+        .code-block { background: #161b22; border: 1px solid #30363d; border-radius: 8px; margin-bottom: 1.5rem; overflow: hidden; }
+        .code-header { background: #21262d; padding: 0.6rem 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; }
+        .code-header .label { color: #8b949e; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .code-header .badge { background: #238636; color: white; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+        .code-header .badge.blue { background: #1f6feb; }
+        .code-header .badge.orange { background: #d29922; }
+        .code-header .badge.red { background: #da3633; }
+        .code-header .badge.purple { background: #8957e5; }
+        pre { padding: 1.2rem; overflow-x: auto; font-size: 0.92rem; }
+        pre code { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; color: #e6edf3; line-height: 1.7; }
+        .comment { color: #8b949e; }
+        .command { color: #79c0ff; }
+        .flag { color: #d2a8ff; }
+        .string { color: #a5d6ff; }
+        .output { color: #7ee787; }
+        .prompt { color: #f0883e; user-select: none; }
+        .important { color: #ff7b72; }
+
+        /* Cards grid */
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1.5rem; transition: border-color 0.2s, transform 0.2s; }
+        .card:hover { border-color: #58a6ff; transform: translateY(-2px); }
+        .card .icon { font-size: 2rem; margin-bottom: 0.8rem; }
+        .card h3 { color: #f0f6fc; margin-bottom: 0.5rem; font-size: 1.15rem; }
+        .card p { color: #8b949e; font-size: 0.95rem; }
+        .card code { background: #21262d; padding: 0.15rem 0.4rem; border-radius: 4px; font-family: 'Consolas', monospace; color: #79c0ff; font-size: 0.88rem; }
+
+        /* Workflow diagram */
+        .workflow { display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; margin: 2rem 0; padding: 1.5rem; background: #161b22; border: 1px solid #30363d; border-radius: 8px; }
+        .workflow-step { background: #21262d; border: 1px solid #30363d; padding: 0.8rem 1.2rem; border-radius: 8px; text-align: center; min-width: 120px; }
+        .workflow-step .step-name { color: #f0f6fc; font-weight: 600; font-size: 0.95rem; }
+        .workflow-step .step-cmd { color: #79c0ff; font-family: 'Consolas', monospace; font-size: 0.8rem; margin-top: 0.3rem; }
+        .arrow { color: #58a6ff; font-size: 1.5rem; font-weight: bold; }
+
+        /* Tip box */
+        .tip { background: #122d1e; border: 1px solid #238636; border-left: 4px solid #3fb950; border-radius: 8px; padding: 1rem 1.2rem; margin: 1.5rem 0; }
+        .tip-title { color: #3fb950; font-weight: 700; margin-bottom: 0.3rem; }
+        .tip p { color: #8b949e; }
+        .tip code { background: #21262d; padding: 0.1rem 0.4rem; border-radius: 3px; color: #79c0ff; font-family: 'Consolas', monospace; font-size: 0.88rem; }
+
+        .warning { background: #2d1b0e; border: 1px solid #d29922; border-left: 4px solid #d29922; border-radius: 8px; padding: 1rem 1.2rem; margin: 1.5rem 0; }
+        .warning .tip-title { color: #d29922; }
+
+        /* Footer */
+        footer { background: #161b22; border-top: 1px solid #30363d; color: #8b949e; text-align: center; padding: 2rem; margin-top: 3rem; }
+        footer a { color: #58a6ff; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><span>&gt;_</span> Git Commands Guide</h1>
+        <p>A practical reference for the most essential Git commands</p>
+    </header>
+
+    <nav>
+        <a href="#setup">Setup</a>
+        <a href="#basics">Basics</a>
+        <a href="#branching">Branching</a>
+        <a href="#remote">Remote</a>
+        <a href="#undoing">Undoing</a>
+        <a href="#workflow">Workflow</a>
+    </nav>
+
+    <main>
+
+        <!-- Quick Reference Cards -->
+        <h2 class="section-title"><span>#</span> Quick Reference</h2>
+        <div class="cards">
+            <div class="card">
+                <div class="icon">&#128194;</div>
+                <h3>git init</h3>
+                <p>Create a new Git repository in your current directory. Adds a hidden <code>.git</code> folder.</p>
+            </div>
+            <div class="card">
+                <div class="icon">&#128247;</div>
+                <h3>git commit</h3>
+                <p>Save a snapshot of staged changes with a message using <code>-m "message"</code>.</p>
+            </div>
+            <div class="card">
+                <div class="icon">&#128268;</div>
+                <h3>git branch</h3>
+                <p>Create, list, or delete branches. Work on features without affecting <code>main</code>.</p>
+            </div>
+            <div class="card">
+                <div class="icon">&#9729;&#65039;</div>
+                <h3>git push</h3>
+                <p>Upload local commits to a remote repository like <code>GitHub</code>.</p>
+            </div>
+            <div class="card">
+                <div class="icon">&#128259;</div>
+                <h3>git pull</h3>
+                <p>Fetch and merge remote changes into your local branch in one step.</p>
+            </div>
+            <div class="card">
+                <div class="icon">&#128295;</div>
+                <h3>git merge</h3>
+                <p>Combine changes from one branch into another. Usually into <code>main</code>.</p>
+            </div>
+        </div>
+
+        <!-- Setup -->
+        <h2 class="section-title" id="setup"><span>#</span> Initial Setup</h2>
+        <p class="description">Configure Git with your identity before making any commits.</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span class="label">Terminal</span>
+                <span class="badge blue">Config</span>
+            </div>
+<pre><code><span class="comment"># Set your name and email (used in every commit)</span>
+<span class="prompt">$ </span><span class="command">git config</span> <span class="flag">--global</span> user.name <span class="string">"Your Name"</span>
+<span class="prompt">$ </span><span class="command">git config</span> <span class="flag">--global</span> user.email <span class="string">"you@example.com"</span>
+
+<span class="comment"># Set default branch name to 'main'</span>
+<span class="prompt">$ </span><span class="command">git config</span> <span class="flag">--global</span> init.defaultBranch <span class="string">main</span>
+
+<span class="comment"># Verify your configuration</span>
+<span class="prompt">$ </span><span class="command">git config</span> <span class="flag">--list</span>
+<span class="output">user.name=Your Name
+user.email=you@example.com
+init.defaultbranch=main</span></code></pre>
+        </div>
+
+        <!-- Basics -->
+        <h2 class="section-title" id="basics"><span>#</span> Basic Commands</h2>
+        <p class="description">The core workflow: init, add, commit, status, log.</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span class="label">Terminal</span>
+                <span class="badge">Essential</span>
+            </div>
+<pre><code><span class="comment"># Initialize a new repository</span>
+<span class="prompt">$ </span><span class="command">git init</span>
+<span class="output">Initialized empty Git repository in /home/user/my-project/.git/</span>
+
+<span class="comment"># Check the status of your files</span>
+<span class="prompt">$ </span><span class="command">git status</span>
+<span class="output">On branch main
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+        index.html
+        style.css</span>
+
+<span class="comment"># Stage specific files for commit</span>
+<span class="prompt">$ </span><span class="command">git add</span> index.html style.css
+
+<span class="comment"># Or stage ALL changes at once</span>
+<span class="prompt">$ </span><span class="command">git add</span> <span class="flag">.</span>
+
+<span class="comment"># Commit with a descriptive message</span>
+<span class="prompt">$ </span><span class="command">git commit</span> <span class="flag">-m</span> <span class="string">"Add homepage layout and styles"</span>
+<span class="output">[main (root-commit) a1b2c3d] Add homepage layout and styles
+ 2 files changed, 85 insertions(+)</span>
+
+<span class="comment"># View commit history</span>
+<span class="prompt">$ </span><span class="command">git log</span> <span class="flag">--oneline</span>
+<span class="output">a1b2c3d Add homepage layout and styles</span></code></pre>
+        </div>
+
+        <div class="tip">
+            <div class="tip-title">Tip</div>
+            <p>Use <code>git status</code> often! It tells you which files are staged, modified, or untracked.</p>
+        </div>
+
+        <!-- Branching -->
+        <h2 class="section-title" id="branching"><span>#</span> Branching &amp; Merging</h2>
+        <p class="description">Branches let you work on features in isolation, then merge them back.</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span class="label">Terminal</span>
+                <span class="badge purple">Branches</span>
+            </div>
+<pre><code><span class="comment"># List all branches (* marks current branch)</span>
+<span class="prompt">$ </span><span class="command">git branch</span>
+<span class="output">* main</span>
+
+<span class="comment"># Create a new branch</span>
+<span class="prompt">$ </span><span class="command">git branch</span> feature-navbar
+
+<span class="comment"># Switch to the new branch</span>
+<span class="prompt">$ </span><span class="command">git checkout</span> feature-navbar
+<span class="output">Switched to branch 'feature-navbar'</span>
+
+<span class="comment"># Shortcut: create AND switch in one command</span>
+<span class="prompt">$ </span><span class="command">git checkout</span> <span class="flag">-b</span> feature-footer
+<span class="output">Switched to a new branch 'feature-footer'</span>
+
+<span class="comment"># Do your work, add and commit...</span>
+<span class="prompt">$ </span><span class="command">git add</span> <span class="flag">.</span>
+<span class="prompt">$ </span><span class="command">git commit</span> <span class="flag">-m</span> <span class="string">"Add footer component"</span>
+
+<span class="comment"># Switch back to main and merge</span>
+<span class="prompt">$ </span><span class="command">git checkout</span> main
+<span class="prompt">$ </span><span class="command">git merge</span> feature-footer
+<span class="output">Updating a1b2c3d..e4f5g6h
+Fast-forward
+ footer.html | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)</span>
+
+<span class="comment"># Delete the branch after merging</span>
+<span class="prompt">$ </span><span class="command">git branch</span> <span class="flag">-d</span> feature-footer
+<span class="output">Deleted branch feature-footer (was e4f5g6h).</span></code></pre>
+        </div>
+
+        <!-- Remote -->
+        <h2 class="section-title" id="remote"><span>#</span> Working with GitHub</h2>
+        <p class="description">Connect your local repo to GitHub and sync changes.</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span class="label">Terminal</span>
+                <span class="badge orange">Remote</span>
+            </div>
+<pre><code><span class="comment"># Connect to a remote repository</span>
+<span class="prompt">$ </span><span class="command">git remote add</span> origin <span class="string">https://github.com/username/my-project.git</span>
+
+<span class="comment"># Push your code to GitHub (first time)</span>
+<span class="prompt">$ </span><span class="command">git push</span> <span class="flag">-u</span> origin main
+<span class="output">Enumerating objects: 6, done.
+Counting objects: 100% (6/6), done.
+To https://github.com/username/my-project.git
+ * [new branch]      main -> main
+Branch 'main' set up to track remote branch 'main' from 'origin'.</span>
+
+<span class="comment"># After first push, just use:</span>
+<span class="prompt">$ </span><span class="command">git push</span>
+
+<span class="comment"># Pull latest changes from GitHub</span>
+<span class="prompt">$ </span><span class="command">git pull</span> origin main
+
+<span class="comment"># Clone an existing repository</span>
+<span class="prompt">$ </span><span class="command">git clone</span> <span class="string">https://github.com/username/my-project.git</span>
+<span class="output">Cloning into 'my-project'...
+remote: Enumerating objects: 42, done.
+remote: Total 42 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (42/42), done.</span></code></pre>
+        </div>
+
+        <div class="warning">
+            <div class="tip-title">Warning</div>
+            <p>Never push sensitive data (passwords, API keys, <code>.env</code> files) to GitHub. Add them to your <code>.gitignore</code> file first!</p>
+        </div>
+
+        <!-- Undoing -->
+        <h2 class="section-title" id="undoing"><span>#</span> Undoing Changes</h2>
+        <p class="description">Made a mistake? Git has several ways to fix it.</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span class="label">Terminal</span>
+                <span class="badge red">Undo</span>
+            </div>
+<pre><code><span class="comment"># Unstage a file (keep the changes, remove from staging)</span>
+<span class="prompt">$ </span><span class="command">git reset</span> HEAD index.html
+
+<span class="comment"># Discard changes in a file (revert to last commit)</span>
+<span class="prompt">$ </span><span class="command">git checkout</span> <span class="flag">--</span> index.html
+
+<span class="comment"># Undo the last commit but KEEP changes staged</span>
+<span class="prompt">$ </span><span class="command">git reset</span> <span class="flag">--soft</span> HEAD~1
+
+<span class="comment"># Undo the last commit and UNSTAGE changes</span>
+<span class="prompt">$ </span><span class="command">git reset</span> HEAD~1
+
+<span class="comment"># View what changed in a file</span>
+<span class="prompt">$ </span><span class="command">git diff</span> index.html
+<span class="output">- &lt;h1&gt;Old Title&lt;/h1&gt;
++ &lt;h1&gt;New Title&lt;/h1&gt;</span>
+
+<span class="comment"># See who changed each line of a file</span>
+<span class="prompt">$ </span><span class="command">git blame</span> index.html</code></pre>
+        </div>
+
+        <!-- Workflow Diagram -->
+        <h2 class="section-title" id="workflow"><span>#</span> Git Workflow</h2>
+        <p class="description">How files move through the three stages of Git.</p>
+
+        <div class="workflow">
+            <div class="workflow-step">
+                <div class="step-name">Working Directory</div>
+                <div class="step-cmd">your files</div>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="workflow-step" style="border-color: #d29922;">
+                <div class="step-name">Staging Area</div>
+                <div class="step-cmd">git add</div>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="workflow-step" style="border-color: #238636;">
+                <div class="step-name">Local Repo</div>
+                <div class="step-cmd">git commit</div>
+            </div>
+            <div class="arrow">&rarr;</div>
+            <div class="workflow-step" style="border-color: #58a6ff;">
+                <div class="step-name">Remote (GitHub)</div>
+                <div class="step-cmd">git push</div>
+            </div>
+        </div>
+
+        <!-- .gitignore -->
+        <h2 class="section-title"><span>#</span> The .gitignore File</h2>
+        <p class="description">Tell Git which files to ignore and never track.</p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span class="label">.gitignore</span>
+                <span class="badge blue">Config</span>
+            </div>
+<pre><code><span class="comment"># Dependencies</span>
+node_modules/
+
+<span class="comment"># Environment variables (secrets!)</span>
+.env
+.env.local
+
+<span class="comment"># OS files</span>
+.DS_Store
+Thumbs.db
+
+<span class="comment"># IDE settings</span>
+.vscode/
+.idea/
+
+<span class="comment"># Build output</span>
+dist/
+build/</code></pre>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>DevOps Class 2026 &mdash; Built with Git</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 6
+              "Given File + Append: Adding to data/inventory.txt"
+================================================================================
+
+BACKGROUND:
+-----------
+In the real world you often receive a data file that already has content and
+your job is to add new records to it without disturbing what is already there.
+This is exactly what >> is designed for. The provided inventory.txt contains
+20 items in CSV format. Your task is to append 3 new items, then verify the
+additions using both cat and tail. The `tail -N` command shows the last N lines
+of a file, which is ideal for confirming that newly appended records landed
+where you expected. This is a common pattern in data pipeline scripts where
+new records are continuously appended to a master data file.
+
+EXERCISE:
+---------
+Run these commands from the clues/level2/ directory.
+The data file is accessed via a relative path from here.
+
+Step 1: cat ../../data/inventory.txt
+          (view the provided inventory — 20 items, CSV format)
+
+Step 2: wc -l ../../data/inventory.txt
+          (note the current line count — should be 21: 1 header + 20 items)
+
+Step 3: echo "item_021,laptop,4,1200.00,available" >> ../../data/inventory.txt
+
+Step 4: echo "item_022,monitor,6,350.00,available" >> ../../data/inventory.txt
+
+Step 5: echo "item_023,keyboard,15,45.00,available" >> ../../data/inventory.txt
+
+Step 6: cat ../../data/inventory.txt
+          (view the complete updated file)
+
+Step 7: wc -l ../../data/inventory.txt
+          (confirm new line count — expect: 24)
+
+Step 8: tail -5 ../../data/inventory.txt
+          (view only the last 5 lines — should show items 019-023)
+
+QUESTIONS TO ANSWER:
+--------------------
+- What was the line count before you started appending (Step 2)?
+- What is the line count after all three appends (Step 7)?
+- What does `tail -5` show, and why is it useful when verifying appends?
+- What would have happened if you had used > in Step 3 instead of >>?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L2E3: 21 lines before, 24 after; tail -5 confirms last 5 lines including new items; > would destroy the file" >> ../../my_answers.txt
+
+================================================================================
+Move to Level 3:
+  cat ../../clues/level3/clue1.txt
+================================================================================

@@ -1,0 +1,399 @@
+================================================================================
+    WELCOME TO THE ACL & GROUP PERMISSIONS LAB!
+================================================================================
+
+  INSTRUCTOR NOTE: Before students start this lab, you MUST run:
+   sudo ./setup_environment.sh
+   This creates the users, groups, and initial files with correct state.
+
+================================================================================
+
+Hello, Linux Permission Explorer!
+
+You've mastered chmod and chown. Now it's time to learn Access Control Lists (ACL)!
+
+In this lab, you'll move beyond basic Unix permissions and learn how to grant
+access to specific groups without changing file ownership or making files
+world-readable. This is essential for real-world system administration where
+teams need selective access to shared resources.
+
+================================================================================
+    SCENARIO
+================================================================================
+
+You're managing a Justice League Headquarters file system. Two superheroes
+need access to classified files:
+
+  - batman    (member of: superheroes group)
+  - superman  (member of: superheroes group)
+
+The "superheroes" group needs read-write access to sensitive mission files,
+but you want to do this WITHOUT:
+  ❌ Making files world-readable (chmod 777)
+  ❌ Changing file ownership
+  ❌ Making the owner the superheroes group (what if non-group members own it?)
+
+Solution: Use ACL (Access Control Lists) to grant group-specific permissions!
+
+================================================================================
+    BEFORE YOU BEGIN
+================================================================================
+
+1. Check who you are:
+   Run: whoami
+   Run: id
+   Run: groups
+
+2. Verify the test file exists:
+   Run: ls -l /tmp/heroes.txt
+   Run: stat /tmp/heroes.txt
+
+3. Check if ACL tools are available:
+   Run: which setfacl
+   Run: which getfacl
+
+================================================================================
+    COMMANDS REFERENCE
+================================================================================
+
+ACL Commands:
+- getfacl <file>                (view ACL entries for a file)
+- setfacl -m <acl> <file>       (modify - add or replace ACL entry)
+- setfacl -m g:GROUP:rw <file>  (add read+write for a group)
+- setfacl -b <file>             (remove all ACL entries)
+
+User and Group Management:
+- id <user>                      (show user's UID and groups)
+- groups <user>                  (list all groups for a user)
+- getent group <name>            (show group members)
+
+File Inspection:
+- ls -l <file>                   (basic permissions - note the + sign for ACL)
+- stat <file>                    (detailed info including ACL)
+- getfacl <file>                 (full ACL listing)
+
+================================================================================
+    IMPORTANT REMINDERS
+================================================================================
+
+* ACL entries appear AFTER the basic 9 permissions in stat output
+* ls -l shows a '+' sign if ACL entries exist
+* getfacl is your friend - use it to verify changes
+* You NEED sudo for setfacl on files you don't own
+* ACL can grant access but NOT remove it beyond what basic permissions allow
+* Always check ACL BEFORE and AFTER making changes
+
+================================================================================
+================================================================================
+    THE 10 STEPS - MASTER ACL & GROUP PERMISSIONS!
+================================================================================
+================================================================================
+
+
+================================================================================
+    STEP 1: Understand the Current State (inspection)
+================================================================================
+
+File: /tmp/heroes.txt
+
+Run these commands to see the current state:
+   ls -l /tmp/heroes.txt
+   stat /tmp/heroes.txt
+   getfacl /tmp/heroes.txt
+
+WHAT YOU'LL SEE:
+  - Basic permissions: 640 (owner rw, group r, others ---)
+  - NO '+' sign (no ACL entries yet)
+  - No group:superheroes entry in getfacl output
+
+YOUR TASK: Write down the current permissions in my_answers.txt
+
+QUESTIONS (answer in my_answers.txt):
+  - What does 640 mean in plain English?
+  - What is the '+' sign in ls -l output? When do you see it?
+  - What is the difference between basic permissions and ACL?
+
+================================================================================
+    STEP 2: Verify Group Membership (understanding users and groups)
+================================================================================
+
+Users and Group:
+  - batman     (should be member of superheroes)
+  - superman   (should be member of superheroes)
+  - superheroes (the group itself)
+
+YOUR TASK: Run these commands to verify:
+
+   id batman
+   id superman
+   getent group superheroes
+
+WHAT TO LOOK FOR:
+  - Both batman and superman should show "gid=..." with superheroes
+  - getent should list both users as members
+
+QUESTIONS (answer in my_answers.txt):
+  - What does the "groups" output show?
+  - How can you tell if a user is a member of a group?
+  - What would happen if batman was NOT in the superheroes group?
+
+================================================================================
+    STEP 3: Test Access Before ACL (verify current restrictions)
+================================================================================
+
+Current State:
+  heroes.txt is owned by root:root with permissions 640
+  batman and superman are in the superheroes group
+  But the file's group is root (NOT superheroes)
+
+YOUR TASK: Try to append text as batman:
+
+   su - batman
+   cd /tmp
+   echo "Batman was here" >> heroes.txt
+
+EXPECTED RESULT: ❌ Permission denied
+(batman is not the owner, not in the root group, and others have no access)
+
+Now try to READ the file:
+
+   cat heroes.txt
+
+EXPECTED RESULT: ❌ Permission denied (same reason)
+
+Exit back to root:
+   exit
+
+QUESTION (answer in my_answers.txt):
+  - Why can't batman read/write the file even though he's a superuser
+    (in the superheroes group)?
+
+================================================================================
+    STEP 4: Add ACL Permission for the Group (setfacl -m)
+================================================================================
+
+File: /tmp/heroes.txt
+
+YOUR TASK: Add read-write access for the superheroes group using ACL:
+
+   sudo setfacl -m g:superheroes:rw /tmp/heroes.txt
+
+Breaking down the command:
+  - setfacl           = set file ACL
+  - -m                = modify (add or replace entry)
+  - g:superheroes:rw  = for group "superheroes", grant read+write
+  - /tmp/heroes.txt   = the file to modify
+
+VERIFY: Run these commands to see what changed:
+
+   ls -l /tmp/heroes.txt
+   getfacl /tmp/heroes.txt
+   stat /tmp/heroes.txt
+
+WHAT YOU SHOULD SEE:
+  - ls -l now shows a '+' sign at the end of permissions
+  - getfacl shows: "group:superheroes:rw-"
+  - stat shows ACL entries below the basic permissions
+
+QUESTIONS (answer in my_answers.txt):
+  - What does the '+' sign mean?
+  - Compare the getfacl output before and after - what changed?
+  - Who has read+write access now?
+
+================================================================================
+    STEP 5: Test Access as batman (verify ACL works)
+================================================================================
+
+YOUR TASK: Try to append text as batman:
+
+   su - batman
+   cd /tmp
+   echo "Batman was here" >> heroes.txt
+
+EXPECTED RESULT: ✔ SUCCESS!
+(batman is in the superheroes group, and ACL grants that group rw access)
+
+Verify by reading the file:
+
+   cat heroes.txt
+
+EXPECTED RESULT: ✔ SUCCESS! You should see the original text + "Batman was here"
+
+Exit:
+   exit
+
+QUESTION (answer in my_answers.txt):
+  - Why can batman write to the file now?
+  - Did we change the file ownership? Did we change basic permissions?
+  - What ACL entry made this possible?
+
+================================================================================
+    STEP 6: Test Access as superman (verify it works for all group members)
+================================================================================
+
+YOUR TASK: Try the same thing as superman:
+
+   su - superman
+   cd /tmp
+   echo "Superman was here" >> heroes.txt
+   cat heroes.txt
+
+EXPECTED RESULT: ✔ SUCCESS!
+(superman is also in the superheroes group, so the ACL grants him the same access)
+
+Exit:
+   exit
+
+QUESTION (answer in my_answers.txt):
+  - Does superman have the same access as batman? Why?
+  - Did you need to add a separate ACL entry for superman?
+
+================================================================================
+    STEP 7: Inspect the Full ACL Configuration (deep dive)
+================================================================================
+
+File: /tmp/heroes.txt
+
+YOUR TASK: Run getfacl and analyze each line:
+
+   getfacl /tmp/heroes.txt
+
+EXPECTED OUTPUT (similar to):
+   # file: /tmp/heroes.txt
+   # owner: root
+   # group: root
+   user::rw-
+   group::r--
+   group:superheroes:rw-
+   mask::rw-
+   other::---
+
+EXPLANATION OF EACH LINE:
+  - # file/owner/group  = metadata comments
+  - user::rw-          = owner (root) has rw access
+  - group::r--         = primary group (root) has r access
+  - group:superheroes:rw- = NAMED GROUP has rw access (this is the ACL entry!)
+  - mask::rw-          = mask (permission ceiling) allows up to rw
+  - other::---         = others have no access
+
+QUESTIONS (answer in my_answers.txt):
+  - What is the "mask" in ACL? How does it work?
+  - If you set an ACL entry to rwx but the mask is r--, who gets rwx?
+  - Can you grant access to a specific user (not a group) with ACL?
+
+================================================================================
+    STEP 8: Add an ACL Entry for a Single User (optional advanced)
+================================================================================
+
+This step shows you can also grant ACL to individual users, not just groups.
+
+YOUR TASK: Add a single-user ACL entry (this is optional/extra credit):
+
+   sudo setfacl -m u:batman:rw /tmp/heroes.txt
+
+VERIFY:
+
+   getfacl /tmp/heroes.txt
+
+WHAT YOU SHOULD SEE:
+  - Now there are TWO ACL entries: one for the group, one for batman individually
+  - batman gets rw from BOTH entries (but only one is needed)
+
+QUESTIONS (answer in my_answers.txt):
+  - When would you use user-specific ACL vs group ACL?
+  - What happens if you grant both group and user ACL to the same person?
+
+================================================================================
+    STEP 9: Remove ACL Completely (reset to basic permissions)
+================================================================================
+
+File: /tmp/heroes.txt
+
+YOUR TASK: Remove ALL ACL entries:
+
+   sudo setfacl -b /tmp/heroes.txt
+
+Breaking down the command:
+  - setfacl        = set file ACL
+  - -b             = remove ALL ACL entries (bare/blank)
+  - /tmp/heroes.txt = the file to modify
+
+VERIFY:
+
+   ls -l /tmp/heroes.txt
+   getfacl /tmp/heroes.txt
+   stat /tmp/heroes.txt
+
+WHAT YOU SHOULD SEE:
+  - ls -l no longer shows '+' sign
+  - getfacl only shows basic permissions (no group:superheroes entry)
+  - File is back to basic permissions only
+
+QUESTIONS (answer in my_answers.txt):
+  - What happened to the '+' sign?
+  - How can you tell ACL has been removed?
+  - Did basic file permissions change? (hint: they should NOT have)
+
+================================================================================
+    STEP 10: Test Access After ACL Removal (verify reset)
+================================================================================
+
+File: /tmp/heroes.txt
+
+YOUR TASK: Try to append text as batman now:
+
+   su - batman
+   cd /tmp
+   echo "Trying again" >> heroes.txt
+
+EXPECTED RESULT: ❌ Permission denied
+(ACL is gone, and batman is not the owner, not in the file's group,
+and others have no access)
+
+Exit:
+
+   exit
+
+FINAL QUESTIONS (answer in my_answers.txt):
+
+1. What is the main difference between basic permissions and ACL?
+   (Hint: think about flexibility and group-based access)
+
+2. When would you use ACL in a real-world scenario?
+   Example: multiple departments need access to a shared file owned by one person
+
+3. Can ACL grant MORE access than basic permissions allow?
+   (Hint: think about the mask)
+
+4. You want to give developers (a group) read-write access to /var/log/app.log
+   that is owned by root:root with permissions 640.
+   What single setfacl command would you use?
+
+5. What did you learn from this lab that you'll use in real-world scenarios?
+
+================================================================================
+    CONGRATULATIONS!
+================================================================================
+
+You've successfully mastered:
+  ✅ Creating users and groups
+  ✅ Managing group membership
+  ✅ Reading and interpreting ACL with getfacl
+  ✅ Adding ACL entries with setfacl -m
+  ✅ Removing ACL with setfacl -b
+  ✅ Understanding the ACL mask
+  ✅ Granting group-based access without changing file ownership
+
+Remember these key takeaways:
+  - ACL is MORE flexible than basic permissions
+  - Use groups for team-based access
+  - The '+' sign in ls -l indicates ACL entries exist
+  - getfacl is essential for inspection
+  - ACL respects the umask/mask ceiling
+  - Prefer group-based ACL over user-specific entries (easier to manage)
+
+Great job, SysAdmin!
+
+================================================================================
+    Linux Course - Day 2 | ACL & Group Permissions Lab | Version: v13.0
+================================================================================

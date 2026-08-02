@@ -1,0 +1,10 @@
+'use strict';
+
+const config = {
+  env: process.env.NODE_ENV || 'development',
+  port: parseInt(process.env.PORT || '3000', 10),
+  appName: process.env.APP_NAME || 'aws-self-hosted-runner',
+  version: require('../package.json').version,
+};
+
+module.exports = config;

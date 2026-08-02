@@ -1,0 +1,53 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 1
+                "What is a Pipe? ls | cat"
+================================================================================
+
+BACKGROUND:
+-----------
+The | (pipe) operator connects the stdout of one command to the stdin of
+the next. Before pipes existed, people had to save output to temporary files
+and then read those files with the next command. Pipes make this seamless.
+
+When you run: ls | cat
+  - ls produces a list of files and sends it to the pipe
+  - cat reads from the pipe (instead of waiting for keyboard input)
+  - cat outputs what it received to the screen
+
+The output looks the same, but the DATA FLOW is completely different.
+
+EXERCISE:
+---------
+Step 1: Run ls by itself and observe the output
+  ls
+
+Step 2: Now pipe ls into cat
+  ls | cat
+
+Step 3: Notice the output is similar! But now the flow was:
+          ls --> pipe --> cat --> screen
+        Instead of:
+          ls --> screen
+
+Step 4: Try a longer listing piped through cat
+  ls -la | cat
+
+Step 5: Now use wc -l to COUNT the number of items listed
+  ls | wc -l
+
+  wc -l counts lines. Each file/directory listed by ls is one line.
+  So this counts how many items are in the current directory.
+
+QUESTIONS TO ANSWER:
+--------------------
+- Is the output of "ls | cat" different from "ls" alone?
+- What does "ls | wc -l" count? (Think carefully about what wc -l does)
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L1C1: ls|cat output is the same; ls|wc -l counts the number of files and dirs (lines of ls output)" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level1/clue2.txt
+================================================================================

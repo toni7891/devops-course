@@ -1,0 +1,54 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 2
+                "Find and Process: ls -la | grep | wc"
+================================================================================
+
+BACKGROUND:
+-----------
+The output of "ls -la" has a specific format. The very first character of
+each line tells you the file type:
+  -  regular file
+  d  directory
+  l  symbolic link
+
+By piping "ls -la" through "grep ^-" you filter to only regular files.
+By piping through "grep ^d" you filter to only directories.
+The ^ (caret) means "start of line" in grep patterns.
+
+This technique — using ls -la with grep to categorize files — is a
+practical real-world pipeline used in shell scripts and one-liners.
+
+EXERCISE:
+---------
+Step 1: Count ONLY regular files in the current lab directory
+  ls -la | grep "^-" | wc -l
+
+Step 2: Count ONLY directories in the current lab directory
+  ls -la | grep "^d" | wc -l
+
+Step 3: Find the largest files by size (approximate — uses awk to print columns)
+  ls -la | awk '{print $5, $9}' | sort -rn | head -10
+
+  (Column 5 is the file size in bytes, column 9 is the filename)
+
+Step 4: Count files in /etc whose name contains "conf"
+  ls /etc | grep "conf" | wc -l
+
+Step 5: Count programs in /usr/bin whose name starts with the letter 'g'
+  ls /usr/bin | grep "^g" | wc -l
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many regular files (not directories) are in the lab root directory?
+- How many directories are in the lab root directory?
+- How many items in /etc contain "conf" in their name?
+- How many programs in /usr/bin start with the letter 'g'?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L3C2: regular files=<n>; dirs=<n>; /etc conf items=<n>; /usr/bin g*=<n>" >> ../../my_answers.txt
+
+================================================================================
+Move to the final exercise:
+  cat clues/level3/clue3.txt
+================================================================================

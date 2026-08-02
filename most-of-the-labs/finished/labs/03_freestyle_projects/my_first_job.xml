@@ -1,0 +1,23 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <description>Freestyle job - hello world with env vars, runs on docker-agent-alpine</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>false</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>echo hello world
+echo "the build id of this job is ${BUILD_ID}"
+echo "the build url is ${BUILD_URL}"</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+  <assignedNode>docker-agent-alpine</assignedNode>
+</project>

@@ -1,0 +1,70 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 1
+                "Pass Heredoc to a Command: sort << EOF"
+================================================================================
+
+BACKGROUND:
+-----------
+A heredoc is just a form of stdin redirection. This means you can feed a
+heredoc to ANY command that reads from stdin — not only cat. You can sort
+inline data, count lines, translate characters, filter with grep, and more.
+This is very useful when you want to process a fixed set of values without
+creating a temporary file just to feed it to a command.
+
+EXERCISE:
+---------
+Step 1: Sort a list of fruit names alphabetically using a heredoc:
+
+  sort << EOF
+  banana
+  apple
+  cherry
+  date
+  elderberry
+  EOF
+
+Step 2: Sort numbers numerically:
+
+  sort -n << EOF
+  42
+  7
+  156
+  23
+  891
+  EOF
+
+Step 3: Count the lines in a heredoc:
+
+  wc -l << EOF
+  line one
+  line two
+  line three
+  EOF
+
+Step 4: Convert text to uppercase using tr:
+
+  tr 'a-z' 'A-Z' << EOF
+  hello world
+  this gets converted to uppercase
+  EOF
+
+
+QUESTIONS TO ANSWER:
+--------------------
+- What is the alphabetically sorted output of Step 1?
+- What is the numerically sorted output of Step 2?
+- Can you pass a heredoc to grep? Try it:
+    grep "line" << EOF
+    line one
+    something else
+    line two
+    EOF
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level2-Ex1: [your answer here]" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level2/clue2.txt
+================================================================================

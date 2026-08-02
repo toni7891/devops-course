@@ -1,0 +1,81 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 1
+            "Multi-Step Snapshot Builder — Intentional Overwrites"
+================================================================================
+
+BACKGROUND:
+-----------
+Now that you understand the overwrite behavior of >, it's time to use it
+INTENTIONALLY. In system administration, you often want a "current state"
+snapshot that replaces the old one every time you run it.
+
+Example: A monitoring script that checks disk space every hour and writes
+the LATEST status to a file — always overwriting the previous check.
+
+In this exercise you will build a "latest system status" reporter.
+
+EXERCISE:
+---------
+You will create a script that captures the CURRENT system state.
+Each run should REPLACE the old state with the new one (using >).
+
+Step 1: Create your first snapshot:
+
+  date > current_status.txt
+  cat current_status.txt
+
+Step 2: Wait a few seconds, then overwrite with a newer snapshot:
+
+  date > current_status.txt
+  cat current_status.txt
+
+Observe: Only the latest timestamp is in the file.
+
+Step 3: Now build a more useful snapshot file step by step.
+        But — you can only use ONE > per step.
+        Figure out how to get ONLY the final intended content:
+
+  # Capture just the hostname (overwrite everything):
+  hostname > server_report.txt
+  cat server_report.txt
+
+  # Now overwrite with just the date:
+  date > server_report.txt
+  cat server_report.txt
+
+  # Now overwrite with uptime:
+  uptime > server_report.txt
+  cat server_report.txt
+
+Step 4: How many lines does server_report.txt have?
+
+  wc -l server_report.txt
+
+REFLECTION CHALLENGE:
+---------------------
+server_report.txt only contains the uptime — not hostname or date.
+This is the overwrite limitation.
+
+Using ONLY what you know so far (single > per command), how would you
+create a file that contains ALL THREE pieces of information?
+
+Think about it, then try your solution here:
+
+  # Your approach here:
+  echo "hostname: $(hostname)" > full_report.txt
+  echo "date: $(date)" > full_report.txt      ← Does this work?
+
+QUESTIONS TO ANSWER:
+--------------------
+- Does the last echo overwrite the previous ones?
+- What is the ONLY way with > alone to get all three in one file?
+  (Hint: think about putting all the content in one single command)
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L3C1: To include all 3 items with > I would: ..." >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue2.txt
+================================================================================

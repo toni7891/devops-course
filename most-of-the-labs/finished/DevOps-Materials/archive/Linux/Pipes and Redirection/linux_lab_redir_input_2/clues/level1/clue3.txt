@@ -1,0 +1,57 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 3
+                      "Count Words in a Document"
+================================================================================
+
+BACKGROUND:
+-----------
+The `wc` (word count) command is one of the most versatile counting tools in
+Linux. It can count lines (-l), words (-w), characters (-c), or all three at
+once. When you run `wc` without any flags, it prints all three counts in the
+order: lines, words, characters.
+
+Using `wc` with input redirection (`wc < file`) is a clean pattern because it
+keeps the focus on what you are counting rather than the file path. In scripts,
+this lets you embed counts inside arithmetic expressions using `$()`.
+
+In this exercise you will analyze a multi-paragraph document about Linux. You
+will count its content in several ways and observe the difference between
+counting lines, words, and characters. You will also use `grep -c` to count
+how many lines contain a specific common word.
+
+EXERCISE:
+---------
+Step 1: View the full document:
+  cat ../../data/document.txt
+
+Step 2: Count the total number of words:
+  wc -w < ../../data/document.txt
+
+Step 3: Count the total number of lines:
+  wc -l < ../../data/document.txt
+
+Step 4: Count the total number of characters (bytes):
+  wc -c < ../../data/document.txt
+
+Step 5: Display all three counts at once (lines, words, chars):
+  wc < ../../data/document.txt
+
+Step 6: Count how many lines contain the word "the":
+  grep -c "the" < ../../data/document.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many words are in document.txt?
+- How many lines are in document.txt?
+- How many characters are in document.txt?
+- When you run `wc` with no flags, which count appears first in the output?
+- How many lines contain the word "the"?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L1E3 - Words: <w>, Lines: <l>, Chars: <c>, Lines with 'the': <n>" >> ../../my_answers.txt
+
+================================================================================
+Move to Level 2:
+  cat ../../clues/level2/clue1.txt
+================================================================================

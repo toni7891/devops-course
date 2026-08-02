@@ -1,0 +1,45 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 1
+                "Redirect echo — Creating a Config-Like File"
+================================================================================
+
+BACKGROUND:
+-----------
+One of the most common uses of output redirection with > is creating simple
+configuration-style files directly from the command line. Instead of opening
+a text editor, you can write key=value pairs using echo and redirect the output
+straight into a file.
+
+This exercise will also make the overwrite behavior of > very clear: every time
+you use >, the entire file is replaced with the new content. There is no append
+— only replace.
+
+EXERCISE:
+---------
+Step 1: Create a config file with a server value and display it:
+  echo "server=localhost" > config.txt && cat config.txt
+
+Step 2: Overwrite the file with a port value and display it:
+  echo "port=8080" > config.txt && cat config.txt
+
+Step 3: Overwrite the file again with an environment value and display it:
+  echo "environment=production" > config.txt && cat config.txt
+
+After each step, notice what cat shows you. The file always contains exactly
+what you just wrote — nothing more.
+
+QUESTIONS TO ANSWER:
+--------------------
+- After completing all three steps, how many lines does config.txt have?
+- What happened to the "server=localhost" and "port=8080" values?
+- Think of a real use case: when would writing a config file with echo > be
+  useful (for example, in a deployment script or automation pipeline)?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level1-Ex1: config.txt has ___ line(s). Earlier values were ___. Use case: ___" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue2.txt
+================================================================================

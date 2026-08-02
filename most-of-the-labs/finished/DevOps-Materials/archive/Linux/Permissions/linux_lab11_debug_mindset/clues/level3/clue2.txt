@@ -1,0 +1,36 @@
+================================================================================
+                    LEVEL 3 - EXERCISE 2
+                    Nested Directory Permissions
+================================================================================
+
+EXERCISE:
+---------
+You can't access a file in deep/nested/path/. The problem may be the directories, not the file.
+
+INSTRUCTIONS:
+-------------
+1. From scenario6_mixed_issues (or cd ../../broken_scenarios/scenario6_mixed_issues), try:
+   cat deep/nested/path/important.txt
+   (You'll get an error – maybe "Permission denied" when entering a directory.)
+
+2. Use the 4 steps:
+   OBSERVE: What error? (e.g. can't cd into deep?)
+   INSPECT: ls -ld deep, ls -ld deep/nested, ls -ld deep/nested/path – to TRAVERSE a directory you need execute (x) on it.
+   DIAGNOSE: Which directory is missing execute permission?
+   RESOLVE: chmod 755 on the directory (or all: chmod 755 deep deep/nested deep/nested/path), then cat deep/nested/path/important.txt
+
+COMMANDS TO USE:
+----------------
+cd ../../broken_scenarios/scenario6_mixed_issues
+cat deep/nested/path/important.txt
+ls -ld deep
+ls -ld deep/nested
+ls -ld deep/nested/path
+chmod 755 deep deep/nested deep/nested/path
+cat deep/nested/path/important.txt   (verify)
+
+NEXT STEP:
+----------
+Proceed to clue3.txt (same folder: clues/level3).
+
+================================================================================

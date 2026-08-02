@@ -1,0 +1,51 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 2
+                "The Overwrite Test — See It, Confirm It, Understand It"
+================================================================================
+
+BACKGROUND:
+-----------
+The previous exercise hinted at it. Now we make the overwrite behavior of >
+impossible to miss. You will write content, check it, overwrite it with
+something different, check it again, and repeat. By the end you will have
+a clear mental model: > does not add to a file. It replaces the file entirely.
+
+The key insight: even if you write 100 lines and then use > with a single word,
+the file will contain exactly one line — that single word. The 100 lines are
+gone forever.
+
+EXERCISE:
+---------
+Step 1: Create the file with known content and display it:
+  echo "ORIGINAL CONTENT" > test_overwrite.txt && cat test_overwrite.txt
+
+Step 2: Check how many lines the file has:
+  wc -l test_overwrite.txt
+
+Step 3: Overwrite the file with different content and display it:
+  echo "REPLACEMENT CONTENT" > test_overwrite.txt && cat test_overwrite.txt
+
+Step 4: Check the line count again:
+  wc -l test_overwrite.txt
+
+Step 5: Overwrite with multiple lines using echo -e (which enables escape sequences
+        like \n for newline):
+  echo -e "line one\nline two\nline three" > test_overwrite.txt && cat test_overwrite.txt
+
+Step 6: Now overwrite everything with a single word and display it:
+  echo "done" > test_overwrite.txt && cat test_overwrite.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- After step 6, how many lines does test_overwrite.txt have?
+- What happened to "line one", "line two", and "line three" from step 5?
+- In one sentence, explain what > does to a file that already exists.
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level1-Ex2: After step6 = ___ line(s). Lines 1-3 were ___. > means: ___" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue3.txt
+================================================================================

@@ -1,0 +1,52 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 2
+                    "Case Conversion with < and >"
+================================================================================
+
+BACKGROUND:
+-----------
+The `tr` (translate) command replaces or deletes characters. One of its most
+common uses is case conversion: `tr 'A-Z' 'a-z'` replaces every uppercase
+letter with its lowercase equivalent, and `tr 'a-z' 'A-Z'` does the reverse.
+
+Unlike most text tools, `tr` does NOT accept a filename argument — it only
+reads from stdin. This makes input redirection with `<` mandatory when you
+want to process a file with `tr`. You cannot write `tr 'A-Z' 'a-z' myfile.txt`
+— it simply will not work. You must write `tr 'A-Z' 'a-z' < myfile.txt`.
+
+This exercise demonstrates that combining `<` (to read the source file) with
+`>` (to save the result) leaves the original file completely unchanged. You
+will produce two converted output files while verifying the source is intact.
+
+EXERCISE:
+---------
+Step 1: View the original mixed-case file:
+  cat ../../data/mixed_case.txt
+
+Step 2: Convert all uppercase letters to lowercase (display only):
+  tr 'A-Z' 'a-z' < ../../data/mixed_case.txt
+
+Step 3: Save the lowercase version to a file and display it:
+  tr 'A-Z' 'a-z' < ../../data/mixed_case.txt > lowercase_output.txt && cat lowercase_output.txt
+
+Step 4: Save the uppercase version to a file and display it:
+  tr 'a-z' 'A-Z' < ../../data/mixed_case.txt > uppercase_output.txt && cat uppercase_output.txt
+
+Step 5: Confirm the original file is unchanged:
+  cat ../../data/mixed_case.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many lines does mixed_case.txt have?
+- Does the original mixed_case.txt file change after running Steps 3 and 4?
+- What are the two output files you created named?
+- Why must `tr` use input redirection rather than a filename argument?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L2E2 - Lines: <count>, Original changed: yes/no, Output files: <file1>, <file2>" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue3.txt
+================================================================================

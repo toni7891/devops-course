@@ -1,0 +1,78 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 3
+                "Final Pipeline: Analyze data/access.log"
+================================================================================
+
+BACKGROUND:
+-----------
+Web servers produce access logs recording every request they receive. Each
+line contains: IP address, HTTP method, path, status code, and response size.
+Analyzing these logs with pipelines is a fundamental DevOps skill.
+
+In this final exercise you will extract multiple insights from data/access.log
+using everything you have learned about pipes, and save a summary using
+output redirection (> and >>). This combines pipes with redirection for a
+complete real-world workflow.
+
+EXERCISE:
+---------
+Step 1: View the access log to understand its format
+  cat ../../data/access.log
+
+Step 2: Count the total number of requests (lines)
+  cat ../../data/access.log | wc -l
+
+Step 3: Find all unique IP addresses that made requests
+  cat ../../data/access.log | cut -d' ' -f1 | sort | uniq
+
+Step 4: Count how many unique IPs there are
+  cat ../../data/access.log | cut -d' ' -f1 | sort | uniq | wc -l
+
+Step 5: Find the most frequent IP address
+  cat ../../data/access.log | cut -d' ' -f1 | sort | uniq -c | sort -rn | head -1
+
+Step 6: Count 404 Not Found responses
+  cat ../../data/access.log | grep " 404 " | wc -l
+
+Step 7: Count 200 OK responses
+  cat ../../data/access.log | grep " 200 " | wc -l
+
+Step 8: Save a summary report (pipe + redirection combined!)
+  echo "Total requests: $(cat ../../data/access.log | wc -l)" > access_summary.txt
+  echo "Unique IPs: $(cat ../../data/access.log | cut -d' ' -f1 | sort | uniq | wc -l)" >> access_summary.txt
+  echo "404 errors: $(cat ../../data/access.log | grep ' 404 ' | wc -l)" >> access_summary.txt
+  cat access_summary.txt
+
+================================================================================
+CONGRATULATIONS! You have completed Linux Lab - Pipes with | (Part 1)!
+================================================================================
+
+KEY TAKEAWAYS:
+--------------
+  |   connects the stdout of the left command to the stdin of the right command
+      Data flows strictly left to right through the pipeline.
+
+  Each command in a pipeline does ONE thing and does it well:
+    grep    -> filter lines (keep only lines matching a pattern)
+    sort    -> reorder lines (alphabetically or numerically)
+    uniq    -> deduplicate adjacent identical lines
+    uniq -c -> deduplicate AND count occurrences
+    wc -l   -> count lines
+    head -N -> keep only the first N lines
+    tail -N -> keep only the last N lines
+    cut     -> extract specific columns from delimited text
+    less    -> interactively scroll through long output
+
+  Pipes are COMPOSABLE. You can chain as many as you need:
+    cat file | grep X | sort | uniq -c | sort -rn | head -10
+
+  The output of the last command in the pipeline goes to the screen,
+  unless you redirect it with > or >> to save it to a file.
+
+WHAT'S NEXT:
+------------
+  Continue with Part 2 of the Pipes lab for more advanced pipelines:
+    cd ../../linux_lab_pipes_2
+    cat start_here.txt
+
+================================================================================

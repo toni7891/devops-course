@@ -1,0 +1,64 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 2
+                "Count Lines: wc -l with and without <"
+================================================================================
+
+BACKGROUND:
+-----------
+`wc` (word count) is a versatile counting tool. It can count lines (-l),
+words (-w), and characters (-c). Like many Unix commands, wc accepts either
+a filename argument OR reads from stdin.
+
+The key difference is in the output format:
+  - With a filename argument: wc prints "COUNT FILENAME"
+  - With input redirection (<): wc prints only "COUNT"
+
+This matters in scripts: if you need just a number (e.g., to store in a
+variable or compare with another number), the `< file` form gives you a
+clean result with no extra text to strip. The filename form is more
+informative for humans reading output, but harder to use programmatically.
+
+EXERCISE:
+---------
+Step 1: Count lines passing the filename as an argument:
+  wc -l ../../data/words.txt
+  (Expected output format: "25 ../../data/words.txt")
+
+Step 2: Count lines using input redirection:
+  wc -l < ../../data/words.txt
+  (Expected output format: "25")
+
+Step 3: Count words in words.txt using <:
+  wc -w < ../../data/words.txt
+
+Step 4: Count characters (bytes) in words.txt using <:
+  wc -c < ../../data/words.txt
+
+Step 5: Count all three at once (no flag = lines, words, chars):
+  wc < ../../data/words.txt
+  (Shows three numbers: lines, words, characters)
+
+Step 6: Now count lines in a different file — the sentence file:
+  wc -l < ../../data/sentence.txt
+  wc -w < ../../data/sentence.txt
+  (sentence.txt has 1 line and 10 words)
+
+Step 7: Use wc -l to count lines in the app log:
+  wc -l < ../../data/app_log.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- What is the exact output difference between Step 1 and Step 2?
+- When would you prefer the < form (output is just the number)?
+- How many words does words.txt contain (Step 3)?
+- How many words does sentence.txt contain (Step 6)?
+- In Step 5 (wc with no flags), what are the three numbers in order?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L1E2: Step 1 shows '25 ../../data/words.txt'; Step 2 shows '25'. The < form (just the number) is useful in scripts/variables. words.txt has 25 words. sentence.txt has 10 words. wc with no flags shows lines, words, characters." >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level1/clue3.txt
+================================================================================

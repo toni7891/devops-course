@@ -1,0 +1,63 @@
+# ======================
+# DevOps .gitignore Template
+# ======================
+
+# --- Secrets and Environment ---
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+credentials.json
+serviceaccount.json
+
+# --- Dependencies ---
+node_modules/
+vendor/
+.venv/
+__pycache__/
+*.pyc
+
+# --- Build Output ---
+dist/
+build/
+out/
+*.o
+*.class
+
+# --- Logs ---
+*.log
+logs/
+npm-debug.log*
+
+# --- IDE / Editor ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- OS Files ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# --- Terraform ---
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+!example.tfvars
+
+# --- Docker ---
+docker-compose.override.yml
+
+# --- Kubernetes ---
+kubeconfig
+*.kubeconfig
+
+# --- Coverage / Testing ---
+coverage/
+.nyc_output/
+htmlcov/
+.pytest_cache/

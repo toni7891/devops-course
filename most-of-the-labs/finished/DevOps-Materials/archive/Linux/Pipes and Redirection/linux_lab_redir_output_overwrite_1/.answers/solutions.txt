@@ -1,0 +1,309 @@
+================================================================================
+                    LAB SOLUTIONS - INSTRUCTOR COPY
+            linux_lab_redir_output_overwrite_1
+================================================================================
+
+Keep this file secure. Do not share with students.
+
+================================================================================
+                        LEVEL 1 SOLUTIONS
+================================================================================
+
+EXERCISE 1 — What is stdout? Your First Redirection
+----------------------------------------------------
+Commands:
+  echo "Hello, Linux!"
+  echo "Hello, Linux!" > hello.txt
+  ls -l hello.txt
+  cat hello.txt
+
+Expected output of cat hello.txt:
+  Hello, Linux!
+
+Key answers:
+  - Step 1: "Hello, Linux!" appears on the terminal screen (stdout → screen)
+  - Step 2: NO output appears on screen when > is used — it goes to the file
+  - hello.txt contains: Hello, Linux!
+  - > took the output that would appear on screen and wrote it into the file
+
+Key Learning:
+  > redirects standard output (stdout) from the screen into a file.
+  When output is redirected, it disappears from the terminal.
+  The file is created automatically if it doesn't exist.
+
+Common Mistakes:
+  - Students may expect to see output on screen even with >
+  - Students may not know to use cat to verify the file was created
+
+
+EXERCISE 2 — Redirect a Command's Output to a File
+----------------------------------------------------
+Commands:
+  ls
+  ls > listing.txt
+  ls -l listing.txt
+  cat listing.txt
+  ls -la > detailed_listing.txt
+  cat detailed_listing.txt
+
+Key answers:
+  - listing.txt appears in its own contents (ls runs BEFORE > creates the file,
+    so listing.txt already exists when ls runs)
+    Actually: the shell creates listing.txt first (opens it for writing),
+    THEN ls runs — so listing.txt IS visible to ls when it runs
+  - ls -la shows hidden files, permissions, owner, size, and timestamps
+  - Running `ls > listing.txt` a second time gives the SAME size file
+    (same content, just overwritten with identical data since nothing changed)
+
+Key Learning:
+  Any command that writes to stdout can be redirected with >.
+  The file size stays the same on repeat runs if the content doesn't change.
+
+Teaching Tip:
+  Have students run `echo "test" > test.txt` then `cat test.txt` to see
+  the fastest feedback loop for understanding redirection.
+
+
+EXERCISE 3 — Redirecting date and whoami
+-----------------------------------------
+Commands:
+  date > today.txt
+  whoami > me.txt
+  hostname > myhost.txt
+  ls -l today.txt me.txt myhost.txt
+
+Expected output examples:
+  today.txt:   Fri Mar  1 08:30:00 UTC 2024
+  me.txt:      student  (or whatever the current user is)
+  myhost.txt:  ubuntu   (or whatever the hostname is)
+
+Challenge answer — getting all three in one file with >:
+  echo "hostname: $(hostname)" > id_card.txt
+  echo "user: $(whoami)" >> id_card.txt    ← needs >> for the 2nd and 3rd
+  OR: combine them in one echo:
+  echo "host=$(hostname) user=$(whoami) date=$(date)" > id_card.txt
+
+Key Learning:
+  > creates files containing command output.
+  This is commonly used in system administration for diagnostics and logging.
+  Challenge reveals the limitation: you can only safely use > once per file.
+
+Grading: All three files created and non-empty = full credit
+
+================================================================================
+                        LEVEL 2 SOLUTIONS
+================================================================================
+
+EXERCISE 1 — The Overwrite Danger
+----------------------------------
+Commands:
+  echo "This is my important data..." > important.txt
+  echo "Oops" > important.txt
+  cat important.txt
+
+  echo "Version 1" > versions.txt
+  echo "Version 2" > versions.txt
+  echo "Version 3" > versions.txt
+  wc -l versions.txt
+
+Expected output of wc -l versions.txt:
+  1 versions.txt
+
+Key answers:
+  - versions.txt has 1 line after 3 redirections (only "Version 3")
+  - Versions 1 and 2 are permanently lost — no way to recover them
+  - Useful overwrite: updating a "current status" file that shows live data
+  - Dangerous overwrite: overwriting a config file or important log file
+
+Key Learning:
+  > is destructive. It does not ask for confirmation.
+  This behavior is intentional but requires careful usage.
+
+Common Mistakes:
+  - Students expect > to append (like writing to a file in a text editor)
+  - Students may not realize there is no undo/undelete for redirected files
+
+Teaching Tip:
+  Ask: "If > were safe (asked 'are you sure?'), what would break in scripts?"
+  Answer: Automation — interactive prompts would break unattended scripts.
+
+
+EXERCISE 2 — stdout vs stderr
+------------------------------
+Commands:
+  ls /this/does/not/exist > output.txt
+  cat output.txt
+  ls /etc > output.txt
+  cat output.txt
+  ls /etc /fakepath > mixed_output.txt
+  cat mixed_output.txt
+  ls /fakepath > output_with_errors.txt 2>&1
+  cat output_with_errors.txt
+
+Key answers:
+  - Error message appears on SCREEN (stderr is not captured by >)
+  - output.txt is empty after ls /fakepath (stderr went to screen, nothing to stdout)
+  - mixed_output.txt contains /etc listing; error for /fakepath still appears on screen
+  - 2>&1 redirects stderr (2) to wherever stdout (1) is going — so both go to the file
+
+Key Learning:
+  > only redirects stdout. Errors (stderr) still appear on the terminal.
+  2>&1 redirects stderr to stdout (captures everything in the file).
+  This is why error messages are always visible even when output is redirected.
+
+
+EXERCISE 3 — Saving Real System Info
+--------------------------------------
+Commands:
+  cat /etc/os-release > system_info.txt
+  uptime > uptime.txt
+  free -h > memory.txt
+  df -h > disk_usage.txt
+
+After snapshot.txt challenge:
+  hostname > snapshot.txt
+  echo "--- Date ---" > snapshot.txt    ← OVERWRITES hostname
+  date > snapshot.txt                   ← OVERWRITES "--- Date ---"
+
+Expected: snapshot.txt has 1 line — only the date output.
+
+Key answers:
+  - snapshot.txt has 1 line after all three redirections
+  - hostname was overwritten by echo, echo was overwritten by date
+  - To keep all three: use >> for 2nd and 3rd, or use a script
+
+Key Learning:
+  Practical applications of > include system diagnostics and status files.
+  The overwrite limitation becomes visible when building multi-section reports.
+
+================================================================================
+                        LEVEL 3 SOLUTIONS
+================================================================================
+
+EXERCISE 1 — Multi-Step Snapshot Builder
+-----------------------------------------
+Commands:
+  date > current_status.txt
+  date > current_status.txt    (wait a few seconds — timestamp changes)
+  hostname > server_report.txt
+  date > server_report.txt
+  uptime > server_report.txt
+  wc -l server_report.txt      → 1 line
+
+Challenge answer — getting all three in one file with >:
+  ONLY solution with >: put all content in ONE command:
+  echo "hostname: $(hostname) | date: $(date) | uptime: $(uptime)" > server_report.txt
+  OR use a subshell:
+  (hostname; date; uptime) > server_report.txt  ← This actually works!
+
+Key Learning:
+  A subshell ( ) groups commands and their combined stdout can be redirected.
+  But the idiomatic solution is >> for building multi-section files.
+
+
+EXERCISE 2 — Working with Provided Data Files
+-----------------------------------------------
+Commands:
+  grep "ERROR" ../../data/app.log > errors_only.txt
+  cat errors_only.txt
+  wc -l errors_only.txt           → 7 ERROR lines
+  grep "WARN" ../../data/app.log > warnings_only.txt
+  wc -l warnings_only.txt         → 6 WARN lines
+  cat ../../data/names.txt > names_backup.txt
+  sort ../../data/names.txt > names_sorted.txt
+
+Expected answers:
+  - ERROR count: 7
+  - WARN count: 6
+  - names_backup.txt is identical to names.txt (same line count)
+  - First name alphabetically: Alice
+
+Verification:
+  diff ../../data/names.txt names_backup.txt   → no output means identical
+  head -1 names_sorted.txt                     → Alice
+
+
+EXERCISE 3 — Spot the Bug
+---------------------------
+Broken loop analysis:
+  for fruit in apple banana cherry orange grape; do
+      echo "$fruit" > fruits.txt
+  done
+
+Iteration 1: fruits.txt = "apple"
+Iteration 2: fruits.txt = "banana"   (apple is gone)
+Iteration 3: fruits.txt = "cherry"   (banana is gone)
+Iteration 4: fruits.txt = "orange"   (cherry is gone)
+Iteration 5: fruits.txt = "grape"    (orange is gone)
+
+Final contents of fruits.txt: just "grape" (1 line)
+
+Fixed version:
+  > fruits_fixed.txt    (empty file creation trick)
+  for fruit in apple banana cherry orange grape; do
+      echo "$fruit" >> fruits_fixed.txt
+  done
+
+Final challenge solution:
+  echo "=== Processing Log ===" > log.txt
+  for i in 1 2 3 4 5; do
+      echo "Processing item $i" >> log.txt
+  done
+
+Key answers:
+  - >> fixes the loop overwrite bug
+  - `> filename` alone creates an empty file (or clears an existing one)
+  - Real scenario: any script that writes log entries in a loop
+
+================================================================================
+                        GRADING RUBRIC
+================================================================================
+
+Level 1 (3 points):
+  - Clue 1: hello.txt created with correct content (1 pt)
+  - Clue 2: listing.txt created, correct observation about overwrite (1 pt)
+  - Clue 3: today.txt, me.txt, myhost.txt all created (1 pt)
+
+Level 2 (3 points):
+  - Clue 1: Correct answer that versions.txt has 1 line (1 pt)
+  - Clue 2: Correct observation that errors appear on screen, not in file (1 pt)
+  - Clue 3: System files created, correct answer about snapshot.txt having 1 line (1 pt)
+
+Level 3 (3 points):
+  - Clue 1: Correct explanation of how to get all 3 items in one file (1 pt)
+  - Clue 2: Correct ERROR count (7) and WARN count (6) (1 pt)
+  - Clue 3: Bug identified, fruits_fixed.txt has 5 lines, log.txt has 6 lines (1 pt)
+
+================================================================================
+                    ESTIMATED COMPLETION TIME
+================================================================================
+
+Level 1: 15-20 minutes (foundational)
+Level 2: 20-25 minutes (requires careful observation)
+Level 3: 25-30 minutes (requires debugging mindset)
+Total:   60-75 minutes
+
+================================================================================
+                    COMMON STUDENT MISTAKES
+================================================================================
+
+1. Forgetting to use cat to verify file contents after redirection
+2. Expecting > to append (the most common misconception)
+3. Being surprised that errors appear on screen even with > redirection
+4. Using > in a loop and being confused why only 1 line appears
+5. Not understanding that the file is overwritten BEFORE the command runs
+   (so the shell clears the file even if the command fails)
+
+================================================================================
+                    TEACHING TIPS
+================================================================================
+
+1. Live demo: type `cat /dev/random > /tmp/test.txt` (Ctrl+C after 1 second),
+   then show the file was being written to in real time.
+
+2. Ask students: "What would happen if you ran `cat file.txt > file.txt`?"
+   Answer: file.txt becomes empty! The shell clears it before cat reads it.
+
+3. Have students accidentally overwrite their my_answers.txt with > instead
+   of >>. This makes the lesson about overwrite memorable!
+================================================================================

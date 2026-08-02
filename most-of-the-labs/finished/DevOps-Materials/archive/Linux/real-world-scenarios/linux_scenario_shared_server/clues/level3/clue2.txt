@@ -1,0 +1,86 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 2
+            "Bug Report!" - The Permission Mystery (Challenge)
+================================================================================
+
+STORY:
+------
+You get an urgent message from dev2:
+
+    "Hey, I can't create files in /opt/project! I tried to add a
+     new source file but I keep getting 'Permission denied'. dev1
+     seems to be able to write there just fine. Can you figure out
+     what's wrong?"
+
+================================================================================
+    THE CHALLENGE
+================================================================================
+
+Your mission: Figure out WHY dev2 cannot create files in /opt/project
+and FIX the problem.
+
+This is a debugging exercise. You need to investigate systematically.
+
+INVESTIGATION STEPS:
+
+Step 1: Check the directory permissions
+    - What are the current permissions on /opt/project?
+    - Who is the owner? What is the group?
+    - What permissions does the group have?
+
+    COMMANDS: ls -la /opt/project
+              ls -la /opt   (to see /opt/project itself)
+
+Step 2: Check dev2's group membership
+    - What groups does dev2 belong to?
+    - Is dev2 in the group that owns /opt/project?
+
+    COMMANDS: groups dev2
+              id dev2
+
+Step 3: Compare with dev1
+    - What groups does dev1 belong to?
+    - What is different between dev1 and dev2?
+
+    COMMANDS: groups dev1
+              groups dev2
+    Look carefully - is there a group that dev1 has but dev2 doesn't?
+
+Step 4: Identify the root cause
+    - Why can dev1 write but dev2 cannot?
+    - What is missing from dev2's configuration?
+
+Step 5: Fix the problem
+    - Apply the fix so dev2 has the same access as dev1
+    - You already know the command from Level 1!
+
+    COMMANDS: Think about usermod -aG (Part 4 of this lab)
+
+Step 6: Verify the fix
+    - Switch to dev2 and try to create a file in /opt/project
+
+    COMMANDS: su - dev2
+              cd /opt/project
+              touch test_file.txt
+
+    IMPORTANT: After adding a user to a group, you may need to
+    start a fresh session for the change to take effect. Use
+    "su - dev2" (with the dash) to get a new session.
+
+WHAT TO OBSERVE:
+- What was the root cause of the problem?
+- How did you verify that dev1 had access but dev2 didn't?
+- Did the fix resolve the issue?
+
+WRITE YOUR ANSWER:
+------------------
+Save to my_answers.txt:
+- What was the root cause? (one sentence)
+- What command fixed the problem?
+- How did you verify the fix worked?
+
+================================================================================
+
+When you're done, proceed to the final exercise:
+
+    cat clues/level3/clue3.txt

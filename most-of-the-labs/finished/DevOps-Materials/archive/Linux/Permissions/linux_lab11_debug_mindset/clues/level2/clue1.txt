@@ -1,0 +1,39 @@
+================================================================================
+                    LEVEL 2 - EXERCISE 1
+                    Ownership Mismatch
+================================================================================
+
+EXERCISE:
+---------
+You can't read a file even though permissions look readable. Use the 4 steps.
+
+INSTRUCTIONS:
+-------------
+1. Go to the scenario:
+   cd ../../broken_scenarios/scenario4_ownership_mess
+
+2. Try to read the file:
+   cat important.txt
+   (You'll get an error.)
+
+3. Use the 4 steps:
+   OBSERVE: What error?
+   INSPECT: ls -l important.txt (check OWNER and group), whoami, id
+   DIAGNOSE: Who owns the file? Is it you? If the file is owned by root and has no group/other permissions, you can't read it.
+   RESOLVE: Fix ownership (sudo chown $USER:$USER important.txt), then verify: cat important.txt
+
+COMMANDS TO USE:
+----------------
+cd ../../broken_scenarios/scenario4_ownership_mess
+cat important.txt
+ls -l important.txt
+whoami
+id
+sudo chown $USER:$USER important.txt
+cat important.txt     (verify)
+
+NEXT STEP:
+----------
+Proceed to clue2.txt (same folder: clues/level2).
+
+================================================================================

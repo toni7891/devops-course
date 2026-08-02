@@ -1,0 +1,73 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 2
+            "Working with Provided Data Files — Filtering and Saving"
+================================================================================
+
+BACKGROUND:
+-----------
+In real systems you often process EXISTING files and redirect the results
+to new files. For example:
+  - Filter a log file for errors and save only the errors
+  - Extract specific fields from a report and save them separately
+  - Create a backup copy of a file using redirection
+
+In this exercise you will work with the files in the data/ directory.
+
+EXERCISE:
+---------
+Navigate to the data directory to see what's available:
+
+  ls ../../data/
+
+You should see: app.log and names.txt
+
+Step 1: View the app.log file:
+
+  cat ../../data/app.log
+
+Step 2: Filter only the ERROR lines and save them:
+
+  grep "ERROR" ../../data/app.log > errors_only.txt
+  cat errors_only.txt
+
+Step 3: Count how many errors there are:
+
+  grep "ERROR" ../../data/app.log > errors_only.txt
+  wc -l errors_only.txt
+
+Step 4: Do the same for WARN lines:
+
+  grep "WARN" ../../data/app.log > warnings_only.txt
+  cat warnings_only.txt
+
+Step 5: Now work with names.txt:
+
+  cat ../../data/names.txt
+
+  # Save a backup copy using redirection:
+  cat ../../data/names.txt > names_backup.txt
+
+  # Verify the backup is identical:
+  wc -l ../../data/names.txt
+  wc -l names_backup.txt
+
+Step 6: Sort the names and save the sorted version:
+
+  sort ../../data/names.txt > names_sorted.txt
+  cat names_sorted.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many ERROR lines are in app.log?
+- How many WARN lines are in app.log?
+- Is names_backup.txt identical to the original? How can you confirm?
+- What is the first name alphabetically in names_sorted.txt?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L3C2: ERROR count=$(wc -l < errors_only.txt 2>/dev/null || echo 0), WARN count=$(wc -l < warnings_only.txt 2>/dev/null || echo 0)" >> ../../my_answers.txt
+
+================================================================================
+Move to the final exercise:
+  cat clue3.txt
+================================================================================

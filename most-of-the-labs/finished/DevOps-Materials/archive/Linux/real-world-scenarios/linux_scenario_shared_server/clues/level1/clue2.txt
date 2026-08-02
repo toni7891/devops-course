@@ -1,0 +1,89 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 2
+            "Teamwork Setup" - Groups and Team Membership
+================================================================================
+
+STORY:
+------
+The team lead follows up:
+
+    "Great, the accounts are ready! Now we need a shared group called
+     'devteam' so the developers can collaborate on files. Add dev1
+     and dev2 to it. ops1 doesn't need to be in this group for now."
+
+================================================================================
+    PART 3 - Create the Development Group
+================================================================================
+
+Create a new group called:
+
+    devteam
+
+HINTS:
+- There is a dedicated command for creating groups
+- You need elevated privileges
+- After creating the group, you can verify it exists in the file
+  where all system groups are stored (/etc/group)
+
+COMMANDS THAT CAN HELP:
+- sudo         (run a command with elevated privileges)
+- groupadd     (create a new group)
+- cat          (display the contents of a file)
+- grep         (search for a pattern inside a file)
+
+================================================================================
+    PART 4 - Add Users to the Group
+================================================================================
+
+Add the following users to the devteam group:
+
+    dev1
+    dev2
+
+HINTS:
+- There is a command that modifies user properties
+- It has a parameter that ADDS a user to a group
+- IMPORTANT: Use the parameter that APPENDS to existing groups
+  (not one that replaces all groups!)
+- Run it once for each user
+
+COMMANDS THAT CAN HELP:
+- usermod      (modify a user account)
+- The flags -a and -G are important here
+  -a = append (don't remove from other groups)
+  -G = specify which group to add to
+
+================================================================================
+    PART 5 - Verify Group Membership
+================================================================================
+
+Check that dev1 and dev2 are now members of devteam.
+
+HINTS:
+- There is a command that shows all groups a user belongs to
+- There is also a command that shows detailed user information
+  including UID, GID, and all group memberships
+- You can also check the groups file under /etc
+
+COMMANDS THAT CAN HELP:
+- groups       (show which groups a user belongs to)
+- id           (show UID, GID, and all group memberships)
+- cat /etc/group   (view all groups and their members)
+
+WHAT TO OBSERVE:
+- Is dev1 in the devteam group?
+- Is dev2 in the devteam group?
+- Is ops1 in the devteam group? (Should NOT be)
+
+WRITE YOUR ANSWER:
+------------------
+Save to my_answers.txt:
+- What command did you use to create the group?
+- What command did you use to add users to the group?
+- What is the output of checking dev1's groups?
+
+================================================================================
+
+When you're done, proceed to the next exercise:
+
+    cat clues/level1/clue3.txt

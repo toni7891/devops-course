@@ -1,0 +1,34 @@
+{
+  "name": "config-store",
+  "version": "1.0.0",
+  "description": "Repository hosting the config store application used for demonstration in multiple courses",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "dev:docker": "docker compose up --build --watch",  
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LironeFitoussi/config-store.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/LironeFitoussi/config-store/issues"
+  },
+  "homepage": "https://github.com/LironeFitoussi/config-store#readme",
+  "dependencies": {
+    "body-parser": "1.20.3",
+    "cors": "2.8.5",
+    "express": "4.21.1",
+    "pg": "8.13.1",
+    "pg-hstore": "2.3.4",
+    "sequelize": "6.37.5"
+  },
+  "devDependencies": {
+    "nodemon": "3.1.7"
+  }
+}

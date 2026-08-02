@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Security groups for ALB and EC2 instances
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC where the security groups will be created
+
+Resources:
+
+  AlbSg:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: alb-sg
+      GroupDescription: Security group for Application Load Balancer
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: alb-sg
+
+  Ec2Sg:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: ec2-sg
+      GroupDescription: Security group for EC2 instances
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          SourceSecurityGroupId: !Ref AlbSg
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: ec2-sg
+
+Outputs:
+  AlbSgId:
+    Description: ALB security group ID
+    Value: !GetAtt AlbSg.GroupId
+    Export:
+      Name: !Sub '${AWS::StackName}-AlbSgId'
+
+  Ec2SgId:
+    Description: EC2 security group ID
+    Value: !GetAtt Ec2Sg.GroupId
+    Export:
+      Name: !Sub '${AWS::StackName}-Ec2SgId'

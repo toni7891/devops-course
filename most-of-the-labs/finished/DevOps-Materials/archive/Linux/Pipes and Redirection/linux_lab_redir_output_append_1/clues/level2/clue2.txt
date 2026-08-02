@@ -1,0 +1,98 @@
+============================================================
+  LEVEL 2 — CLUE 2
+  Append to Existing File: Working with data/existing_log.txt
+============================================================
+
+BACKGROUND
+----------
+In real environments you rarely start with an empty file.
+Logs already exist, configuration files already have
+content, databases already have records.
+
+This clue teaches you to append to a file that already
+has content — without destroying what is already there.
+
+The lab includes a pre-existing log file:
+
+    ../../data/existing_log.txt
+
+It already contains 10 log entries from earlier today.
+Your job is to add new entries to it — without losing
+the original 10.
+
+------------------------------------------------------------
+YOUR TASK
+------------------------------------------------------------
+
+Step 1: First, inspect the existing file:
+
+    cat ../../data/existing_log.txt
+
+  --> You should see 10 log entries.
+
+Step 2: Count the existing entries:
+
+    wc -l ../../data/existing_log.txt
+
+  Expected: 10 ../../data/existing_log.txt
+
+Step 3: Copy the existing log to your home directory
+        so you can safely work with it:
+
+    cp ../../data/existing_log.txt ~/system.log
+
+Step 4: Verify the copy:
+
+    wc -l ~/system.log
+
+  Expected: 10 ~/system.log
+
+Step 5: Append a new log entry to the COPY:
+
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO]  New session started by $(whoami)" >> ~/system.log
+
+Step 6: Append two more entries:
+
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO]  Running system diagnostics" >> ~/system.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO]  Diagnostics complete — all systems nominal" >> ~/system.log
+
+Step 7: Count lines again to confirm the file grew:
+
+    wc -l ~/system.log
+
+  Expected: 13 ~/system.log
+
+Step 8: Show only the LAST 5 lines to see your additions:
+
+    tail -5 ~/system.log
+
+Step 9: Confirm the ORIGINAL data is still intact:
+
+    head -10 ~/system.log
+
+  --> The first 10 lines should match data/existing_log.txt exactly.
+
+------------------------------------------------------------
+VERIFY
+------------------------------------------------------------
+
+Run both:
+
+    head -10 ~/system.log   # Should match original 10 entries
+    tail -3 ~/system.log    # Should show your 3 new entries
+    wc -l ~/system.log      # Should show 13
+
+------------------------------------------------------------
+KEY INSIGHT
+------------------------------------------------------------
+
+head -N   shows the first N lines of a file
+tail -N   shows the last N lines of a file
+
+These two commands are essential companions to >> when
+working with growing log files. You append with >>,
+then inspect with tail to see the latest entries.
+
+------------------------------------------------------------
+NEXT: cat clue3.txt
+============================================================

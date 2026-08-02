@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: curl3
+  namespace: dev
+  labels:
+    app: curl3
+spec:
+  containers:
+  - name: curl
+    image: lmacademy/alpine-curl:1.0.0
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+      requests:
+        memory: "64Mi"
+        cpu: "250m"

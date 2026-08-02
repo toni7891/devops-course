@@ -1,0 +1,248 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  DataBite - CloudFront + S3 (frontend) + EC2 (backend API).
+  CloudFront serves static files from S3 and proxies /api/* to EC2.
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: databite
+
+  InstanceType:
+    Type: String
+    Default: t3.micro
+
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: SSH key pair for EC2
+
+  AmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+
+Resources:
+  # ==================== S3 Bucket (Frontend) ====================
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${EnvironmentName}-frontend-${AWS::AccountId}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-frontend
+
+  FrontendBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FrontendBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCloudFrontOAC
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub ${FrontendBucket.Arn}/*
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}
+
+  # ==================== CloudFront OAC ====================
+  CloudFrontOAC:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub ${EnvironmentName}-oac
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  # ==================== Security Group (EC2) ====================
+  ApiSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow HTTP from CloudFront and SSH
+      VpcId:
+        Fn::ImportValue: !Sub ${EnvironmentName}-vpc-id
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+          Description: HTTP (CloudFront + direct)
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+          Description: SSH
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-api-sg
+
+  # ==================== EC2 Instance (Backend Only) ====================
+  ApiInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      ImageId: !Ref AmiId
+      SubnetId:
+        Fn::ImportValue: !Sub ${EnvironmentName}-public-subnet-1
+      SecurityGroupIds:
+        - !Ref ApiSecurityGroup
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-api-server
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          set -e
+          dnf update -y
+          dnf install -y python3.11 python3.11-pip nginx
+          mkdir -p /opt/databite/backend
+          pip3.11 install fastapi uvicorn
+
+          cat > /opt/databite/backend/main.py << 'PYEOF'
+          from fastapi import FastAPI
+          from fastapi.middleware.cors import CORSMiddleware
+          app = FastAPI()
+          app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+          RESTAURANTS = [
+            {"id":1,"name":"La Piazza","cuisine":"Italian","location":"Tel Aviv","menu_items":45,"rating":4.7},
+            {"id":2,"name":"Sakura","cuisine":"Japanese","location":"Herzliya","menu_items":62,"rating":4.5},
+            {"id":3,"name":"The Burger Joint","cuisine":"American","location":"Tel Aviv","menu_items":28,"rating":4.2},
+            {"id":4,"name":"Falafel King","cuisine":"Middle Eastern","location":"Jerusalem","menu_items":18,"rating":4.8},
+            {"id":5,"name":"Pasta Mia","cuisine":"Italian","location":"Haifa","menu_items":37,"rating":4.4},
+            {"id":6,"name":"Dragon Palace","cuisine":"Chinese","location":"Tel Aviv","menu_items":55,"rating":4.3},
+          ]
+          MENU_ITEMS = [
+            {"id":1,"name":"Margherita Pizza","price":52,"category":"Main","restaurant":"La Piazza"},
+            {"id":2,"name":"Carbonara","price":58,"category":"Main","restaurant":"La Piazza"},
+            {"id":3,"name":"Tiramisu","price":38,"category":"Dessert","restaurant":"La Piazza"},
+            {"id":4,"name":"Salmon Sashimi","price":68,"category":"Starter","restaurant":"Sakura"},
+            {"id":5,"name":"Dragon Roll","price":72,"category":"Main","restaurant":"Sakura"},
+            {"id":6,"name":"Miso Soup","price":22,"category":"Starter","restaurant":"Sakura"},
+            {"id":7,"name":"Classic Burger","price":62,"category":"Main","restaurant":"The Burger Joint"},
+            {"id":8,"name":"Sweet Potato Fries","price":28,"category":"Side","restaurant":"The Burger Joint"},
+            {"id":9,"name":"Falafel Plate","price":35,"category":"Main","restaurant":"Falafel King"},
+            {"id":10,"name":"Hummus","price":25,"category":"Starter","restaurant":"Falafel King"},
+            {"id":11,"name":"Kung Pao Chicken","price":56,"category":"Main","restaurant":"Dragon Palace"},
+            {"id":12,"name":"Spring Rolls","price":32,"category":"Starter","restaurant":"Dragon Palace"},
+          ]
+          @app.get("/")
+          def root():
+              return {"status":"ok"}
+          @app.get("/api/stats")
+          def stats():
+              return {"total_restaurants":len(RESTAURANTS),"total_menu_items":len(MENU_ITEMS),"cuisines_tracked":len(set(r["cuisine"] for r in RESTAURANTS)),"cities_covered":len(set(r["location"] for r in RESTAURANTS))}
+          @app.get("/api/restaurants")
+          def restaurants():
+              return RESTAURANTS
+          @app.get("/api/menu-items")
+          def menu_items(restaurant: str = None):
+              if restaurant:
+                  return [i for i in MENU_ITEMS if i["restaurant"].lower() == restaurant.lower()]
+              return MENU_ITEMS
+          PYEOF
+
+          cat > /etc/systemd/system/databite.service << 'SVCEOF'
+          [Unit]
+          Description=DataBite API
+          After=network.target
+          [Service]
+          ExecStart=/usr/local/bin/uvicorn main:app --host 127.0.0.1 --port 8000
+          WorkingDirectory=/opt/databite/backend
+          Restart=always
+          [Install]
+          WantedBy=multi-user.target
+          SVCEOF
+          systemctl daemon-reload && systemctl enable databite && systemctl start databite
+
+          # Nginx - only reverse proxy for API
+          sed -i '/^    server {/,/^    }/d' /etc/nginx/nginx.conf
+          rm -f /etc/nginx/conf.d/default.conf
+          cat > /etc/nginx/conf.d/api.conf << 'NGEOF'
+          server { listen 80 default_server; server_name _;
+            location / { proxy_pass http://127.0.0.1:8000; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; }
+          }
+          NGEOF
+          nginx -t && systemctl enable nginx && systemctl start nginx
+
+  # ==================== CloudFront Distribution ====================
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        DefaultRootObject: index.html
+        Comment: !Sub ${EnvironmentName} - S3 frontend + EC2 API
+
+        Origins:
+          # S3 Origin (Frontend)
+          - Id: S3Frontend
+            DomainName: !GetAtt FrontendBucket.RegionalDomainName
+            OriginAccessControlId: !Ref CloudFrontOAC
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+
+          # EC2 Origin (Backend API)
+          - Id: EC2Backend
+            DomainName: !GetAtt ApiInstance.PublicDnsName
+            CustomOriginConfig:
+              HTTPPort: 80
+              OriginProtocolPolicy: http-only
+
+        DefaultCacheBehavior:
+          TargetOriginId: S3Frontend
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD]
+          CachedMethods: [GET, HEAD]
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6  # CachingOptimized
+          Compress: true
+
+        CacheBehaviors:
+          - PathPattern: /api/*
+            TargetOriginId: EC2Backend
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE]
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad  # CachingDisabled
+            OriginRequestPolicyId: 216adef6-5c7f-47e4-b989-5492eafa07d3  # AllViewer
+            Compress: true
+
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-cdn
+
+Outputs:
+  CloudFrontURL:
+    Description: CloudFront distribution URL (your app)
+    Value: !Sub https://${CloudFrontDistribution.DomainName}
+
+  CloudFrontDistributionId:
+    Description: CloudFront Distribution ID
+    Value: !Ref CloudFrontDistribution
+
+  S3BucketName:
+    Description: S3 bucket for frontend files
+    Value: !Ref FrontendBucket
+
+  EC2PublicIP:
+    Description: EC2 backend IP
+    Value: !GetAtt ApiInstance.PublicIp
+
+  UploadCommand:
+    Description: Command to upload frontend to S3
+    Value: !Sub aws s3 cp index.html s3://${FrontendBucket}/index.html --content-type text/html

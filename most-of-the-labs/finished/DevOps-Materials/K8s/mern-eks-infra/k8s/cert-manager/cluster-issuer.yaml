@@ -1,0 +1,42 @@
+# ClusterIssuer resources are cluster-scoped (no namespace)
+#
+# WORKFLOW:
+#   1. Apply staging issuer first — no rate limits, safe for testing
+#   2. Once cert issues successfully, switch ingress annotation to letsencrypt-prod
+#   3. Let's Encrypt prod rate limit: 50 certificates/week per registered domain
+
+---
+# Production issuer — real trusted certificate
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    # TODO: replace with your email (Let's Encrypt sends expiry warnings here)
+    email: lironef@iitc.co.il
+    privateKeySecretRef:
+      name: letsencrypt-prod-key
+    solvers:
+      - http01:
+          ingress:
+            class: alb
+
+---
+# Staging issuer — untrusted cert, but no rate limits (use for testing)
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    # TODO: replace with your email
+    email: lironef@iitc.co.il
+    privateKeySecretRef:
+      name: letsencrypt-staging-key
+    solvers:
+      - http01:
+          ingress:
+            class: alb

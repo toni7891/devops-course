@@ -1,0 +1,56 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 1
+                "Count Unique Values: Full Analytics Pipeline"
+================================================================================
+
+BACKGROUND:
+-----------
+Now you will combine grep, sort, uniq, and wc in a single pipeline to
+perform real log analysis. This is the kind of work that system
+administrators and DevOps engineers do every day to understand what is
+happening on their servers.
+
+"grep -o" (only matching) is a powerful flag: instead of printing the
+whole line, it prints ONLY the part that matched the pattern. This lets
+you extract specific values like log levels or IP addresses from lines.
+
+IP address pattern used here:  [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+
+
+EXERCISE:
+---------
+Step 1: Count how many lines of each log level exist
+  cat ../../data/server.log | grep -o "INFO\|WARN\|ERROR" | sort | uniq -c | sort -rn
+
+  This pipeline:
+    grep -o "INFO\|WARN\|ERROR"  -> extracts only the log level word
+    sort                          -> sorts them
+    uniq -c                       -> counts each level
+    sort -rn                      -> shows most frequent first
+
+Step 2: Find all unique IP addresses in the log
+  cat ../../data/server.log | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+" | sort | uniq
+
+Step 3: Count lines that mention "user" (any case variant)
+  cat ../../data/server.log | grep "user" | wc -l
+
+Step 4: Full level breakdown using a loop
+  for level in INFO WARN ERROR; do
+      echo "$level: $(cat ../../data/server.log | grep "$level" | wc -l)"
+  done
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many INFO lines are in server.log?
+- How many WARN lines?
+- How many ERROR lines?
+- How many unique IP addresses appear in the log?
+- How many lines contain the word "user"?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L3C1: INFO=<n> WARN=<n> ERROR=<n>; unique IPs=<n>; lines with user=<n>" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level3/clue2.txt
+================================================================================

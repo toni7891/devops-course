@@ -1,0 +1,29 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+
+jobs:
+    prepare-dependencies:
+        runs-on: ubuntu-latest
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+        
+        - name: Set caching
+          id: node-modules-cache
+          uses: actions/cache@v4
+          with:
+            path: node_modules
+            key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+            restore-keys: ${{ runner.os }}-node-
+             
+
+        - name: Install dependencies
+          if: steps.node-modules-cache.outputs.cache-hit != 'true'
+          run: npm ci

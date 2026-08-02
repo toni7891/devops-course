@@ -1,0 +1,565 @@
+================================================================================
+              INSTRUCTOR SOLUTIONS — Linux Lab: >> Part 2
+              Theme: Append in Practice — Real-World Scenarios
+================================================================================
+
+Estimated student completion time: 60-75 minutes
+Total points: 9  (Level 1: 3 pts | Level 2: 3 pts | Level 3: 3 pts)
+
+================================================================================
+LEVEL 1 — EXERCISE 1: Append Multiple Commands to One File
+================================================================================
+
+COMMANDS AND EXPECTED OUTPUT:
+------------------------------
+$ whoami >> session_info.txt && cat session_info.txt
+student                              # (or the student's actual username)
+
+$ date >> session_info.txt && cat session_info.txt
+student
+Fri Mar  1 08:05:23 UTC 2024         # (actual date/time will vary)
+
+$ pwd >> session_info.txt && cat session_info.txt
+student
+Fri Mar  1 08:05:23 UTC 2024
+/path/to/clues/level1                # (student's actual working directory)
+
+$ hostname >> session_info.txt && cat session_info.txt
+student
+Fri Mar  1 08:05:23 UTC 2024
+/path/to/clues/level1
+myhostname                           # (student's actual hostname)
+
+$ wc -l session_info.txt
+4 session_info.txt
+
+KEY ANSWERS TO QUESTIONS:
+--------------------------
+Q: How many lines does session_info.txt contain after Step 5?
+A: 4 lines — one from each of the four commands (whoami, date, pwd, hostname)
+
+Q: What would happen with > instead of >> in each step?
+A: Each command would overwrite the file. After all 4 steps, the file would
+   contain only "myhostname" (the last command's output). Lines 1-3 would
+   be permanently lost.
+
+Q: If you ran Step 1 again with >>, what would happen?
+A: A fifth line would be appended containing the username again. The file
+   would then have 5 lines.
+
+KEY LEARNING POINT:
+-------------------
+>> accumulates output from multiple commands into one file sequentially.
+Each call appends one command's output at the end, regardless of what is
+already in the file.
+
+COMMON MISTAKES:
+----------------
+- Forgetting >> and using > — each step would reset the file
+- Running commands from the wrong directory — pwd will show an unexpected path
+
+================================================================================
+LEVEL 1 — EXERCISE 2: Watching a File Grow with wc -l
+================================================================================
+
+COMMANDS AND EXPECTED OUTPUT:
+------------------------------
+$ > growth_test.txt && echo "Lines: $(wc -l < growth_test.txt)"
+Lines: 0
+
+$ echo "line one" >> growth_test.txt && echo "Lines: $(wc -l < growth_test.txt)"
+Lines: 1
+
+$ echo "line two" >> growth_test.txt && echo "Lines: $(wc -l < growth_test.txt)"
+Lines: 2
+
+$ echo "line three" >> growth_test.txt && echo "Lines: $(wc -l < growth_test.txt)"
+Lines: 3
+
+$ echo -e "line four\nline five" >> growth_test.txt && echo "Lines: $(wc -l < growth_test.txt)"
+Lines: 5
+
+$ cat growth_test.txt
+line one
+line two
+line three
+line four
+line five
+
+KEY ANSWERS TO QUESTIONS:
+--------------------------
+Q: What is the count at each step?
+A: Step 1: 0 | Step 2: 1 | Step 3: 2 | Step 4: 3 | Step 5: 5
+
+Q: What does echo -e do vs plain echo?
+A: The -e flag enables interpretation of backslash escape sequences. Without -e,
+   echo treats \n as the literal characters backslash and n. With -e, \n becomes
+   a real newline character, so the output contains two separate lines.
+
+Q: Why does Step 5 add 2 lines instead of 1?
+A: Because echo -e "line four\nline five" outputs two lines due to the \n
+   escape sequence. Both lines are appended to the file.
+
+Q: Difference between wc -l file vs wc -l < file?
+A: wc -l file prints "N filename" (number plus filename).
+   wc -l < file prints only "N" (just the number, no filename).
+   The < version is cleaner for embedding in messages via $().
+
+KEY LEARNING POINT:
+-------------------
+`wc -l` is a useful real-time verification tool when building files with >>.
+echo -e can append multiple lines in a single call using \n.
+
+COMMON MISTAKES:
+----------------
+- Forgetting the space inside $( wc -l < file ) — syntax must be exact
+- Using echo without -e and expecting \n to become a newline
+
+================================================================================
+LEVEL 1 — EXERCISE 3: Create a Changelog
+================================================================================
+
+COMMANDS AND EXPECTED OUTPUT:
+------------------------------
+$ echo "## Changelog" > changelog.txt
+$ echo "" >> changelog.txt
+$ echo "### v1.0.0 - $(date +%Y-%m-%d)" >> changelog.txt
+$ echo "- Initial release" >> changelog.txt
+$ echo "- Added user authentication" >> changelog.txt
+$ echo "" >> changelog.txt
+$ echo "### v1.1.0 - $(date +%Y-%m-%d)" >> changelog.txt
+$ echo "- Added data export feature" >> changelog.txt
+$ echo "- Fixed login timeout bug" >> changelog.txt
+$ cat changelog.txt && wc -l changelog.txt
+
+## Changelog
+
+### v1.0.0 - 2024-03-01
+- Initial release
+- Added user authentication
+
+### v1.1.0 - 2024-03-01
+- Added data export feature
+- Fixed login timeout bug
+9 changelog.txt
+
+KEY ANSWERS TO QUESTIONS:
+--------------------------
+Q: How many lines does changelog.txt contain?
+A: 9 lines
+
+Q: Which step used > instead of >> — and why?
+A: Step 1 used >. This was correct because it creates the file (or clears it
+   if it already exists) and writes the first line. If >> were used and the
+   file already existed from a previous run, the new changelog would be
+   appended to old content.
+
+Q: What would happen if Step 1 used >> and the file already existed?
+A: The new "## Changelog" heading would be appended after the old content.
+   On the second run the file would have 18 lines with two complete changelog
+   blocks concatenated.
+
+Q: How does $(date +%Y-%m-%d) work?
+A: $() is command substitution. The shell runs the command inside () and
+   replaces the entire $() expression with the command's output. So
+   $(date +%Y-%m-%d) becomes the current date like 2024-03-01.
+
+KEY LEARNING POINT:
+-------------------
+Professional pattern: one > to initialize, then >> for all subsequent content.
+Never use >> for the very first write when you want a predictable clean start.
+
+COMMON MISTAKES:
+----------------
+- Using >> in Step 1 — content accumulates on repeated runs
+- Forgetting the + before the date format string: date +%Y-%m-%d not date %Y-%m-%d
+
+================================================================================
+LEVEL 2 — EXERCISE 4: Append with grep: Cumulative Warning Collection
+================================================================================
+
+COMMANDS AND EXPECTED OUTPUT:
+------------------------------
+$ grep "WARN" ../../data/server.log >> warnings.txt && cat warnings.txt
+2024-03-01 08:02:15 WARN  Slow query detected: 3200ms (threshold: 1000ms)
+2024-03-01 08:06:00 WARN  Retrying SSL on alternate port 9443
+2024-03-01 08:08:00 WARN  Deployment running in degraded mode: 1 node offline
+2024-03-01 08:12:00 WARN  Memory usage at 82%: consider restarting app workers
+2024-03-01 08:15:00 WARN  Connection pool near capacity: 9/10 connections active
+2024-03-01 08:17:00 WARN  Slow query detected: 2800ms (threshold: 1000ms)
+
+$ wc -l warnings.txt
+6 warnings.txt
+
+$ grep "WARN" ../../data/server.log >> warnings.txt
+
+$ wc -l warnings.txt
+12 warnings.txt
+
+$ grep "WARN" ../../data/server.log > warnings_clean.txt && wc -l warnings_clean.txt
+6 warnings_clean.txt
+
+$ cat warnings.txt | sort | uniq | wc -l
+6
+
+KEY ANSWERS TO QUESTIONS:
+--------------------------
+Q: How many lines after Step 2?
+A: 6 lines (one for each WARN entry in server.log)
+
+Q: How many lines after Step 4?
+A: 12 lines (the same 6 WARN lines were appended a second time)
+
+Q: When would doubling be a problem in production?
+A: In any report or alert system where unique counts matter — for example,
+   if you count WARN occurrences to trigger an alert at a threshold of 10,
+   duplicate appends would fire the alert after only 5 real warnings. Also
+   problematic for billing/reporting dashboards, compliance logs, or any
+   process that reads the file expecting unique records.
+
+Q: Trade-off between > and >> for log collection?
+A: >> preserves history across runs (useful for audit trails, trends over time).
+   > gives a clean current snapshot (useful for dashboards, current-state reports).
+   Choice depends on whether the reader needs history or only needs "right now."
+
+KEY LEARNING POINT:
+-------------------
+>> in a repeated script = accumulating duplicates unless you add deduplication
+(sort | uniq) or reset with > at the start of each run.
+
+COMMON MISTAKES:
+----------------
+- Not realizing the second grep doubled the content
+- Using cat | sort | uniq without understanding it only de-duplicates in output,
+  not in the file itself (warnings.txt still has 12 lines after the pipe)
+
+================================================================================
+LEVEL 2 — EXERCISE 5: Adding Headers Between Sections
+================================================================================
+
+COMMANDS AND EXPECTED OUTPUT:
+------------------------------
+> report.txt
+echo "========================================" >> report.txt
+echo "SYSTEM REPORT - $(date)" >> report.txt
+echo "========================================" >> report.txt
+echo "" >> report.txt
+echo "--- DISK USAGE ---" >> report.txt
+df -h >> report.txt
+echo "" >> report.txt
+echo "--- MEMORY ---" >> report.txt
+free -h >> report.txt
+echo "" >> report.txt
+echo "--- END OF REPORT ---" >> report.txt
+cat report.txt && wc -l report.txt
+
+Example output (line counts vary by system):
+========================================
+SYSTEM REPORT - Fri Mar  1 08:15:00 UTC 2024
+========================================
+
+--- DISK USAGE ---
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1        50G   12G   36G  25% /
+tmpfs           2.0G     0  2.0G   0% /dev/shm
+...
+
+--- MEMORY ---
+              total        used        free      shared  buff/cache   available
+Mem:           7.7G        2.1G        3.8G        180M        1.8G        5.2G
+Swap:          2.0G          0B        2.0G
+
+--- END OF REPORT ---
+~22 report.txt      (exact count varies with df output)
+
+KEY ANSWERS TO QUESTIONS:
+--------------------------
+Q: How many named sections?
+A: 3 sections: DISK USAGE, MEMORY, END OF REPORT
+
+Q: Why > in Step 1 and >> for everything else?
+A: > in Step 1 ensures the file starts empty before the new report is written.
+   If >> were used in Step 1, running the script twice would produce one file
+   with two complete reports concatenated — which is almost never desired for
+   a current-state system report.
+
+Q: What if Step 1 changed from > to >> on a second run?
+A: The second report would be appended after the first. The file would contain
+   two SYSTEM REPORT blocks, making it harder to read and growing indefinitely.
+
+Q: Why are blank lines important?
+A: They visually separate sections, making the report human-readable at a glance.
+   Without blank lines, df -h output and the memory header would run together.
+
+KEY LEARNING POINT:
+-------------------
+Mixing echo "" >> (blank lines), decorative separator lines, and real command
+output with >> produces professional, readable structured reports.
+
+COMMON MISTAKES:
+----------------
+- Forgetting > in Step 1 — running twice creates a doubled report
+- Using echo without quotes around the separator line — bash may interpret = signs
+
+================================================================================
+LEVEL 2 — EXERCISE 6: Given File + Append (data/inventory.txt)
+================================================================================
+
+COMMANDS AND EXPECTED OUTPUT:
+------------------------------
+$ cat ../../data/inventory.txt
+item_id,category,quantity,unit_price,status
+item_001,laptop,2,1200.00,available
+... (20 data lines + 1 header = 21 lines total)
+
+$ wc -l ../../data/inventory.txt
+21 ../../data/inventory.txt
+
+$ echo "item_021,laptop,4,1200.00,available" >> ../../data/inventory.txt
+$ echo "item_022,monitor,6,350.00,available" >> ../../data/inventory.txt
+$ echo "item_023,keyboard,15,45.00,available" >> ../../data/inventory.txt
+
+$ wc -l ../../data/inventory.txt
+24 ../../data/inventory.txt
+
+$ tail -5 ../../data/inventory.txt
+item_019,chair,2,275.00,reserved
+item_020,tablet,5,490.00,available
+item_021,laptop,4,1200.00,available
+item_022,monitor,6,350.00,available
+item_023,keyboard,15,45.00,available
+
+KEY ANSWERS TO QUESTIONS:
+--------------------------
+Q: Line count before appending?
+A: 21 lines (1 header row + 20 data rows)
+
+Q: Line count after appending?
+A: 24 lines (21 + 3 new items)
+
+Q: What does tail -5 show and why is it useful?
+A: tail -5 shows the last 5 lines: items 019-023. It is useful because when you
+   append to a large file you only need to verify the end, not re-read the whole
+   file. tail is the standard tool for confirming appended records.
+
+Q: What if > was used in Step 3?
+A: The entire inventory.txt would be destroyed and replaced with only one line:
+   "item_021,laptop,4,1200.00,available". All 21 existing rows would be lost.
+
+KEY LEARNING POINT:
+-------------------
+When extending an existing data file, >> is the only safe operator.
+tail -N is the standard way to verify the append was successful.
+
+COMMON MISTAKES:
+----------------
+- Using > in the first echo — destroys all existing data
+- Running from wrong directory — the relative path ../../data/inventory.txt
+  must be correct relative to level2/
+
+================================================================================
+LEVEL 3 — EXERCISE 7: Spot the Bug: > Where >> Was Needed
+================================================================================
+
+COMMANDS AND EXPECTED OUTPUT:
+------------------------------
+$ cat ../../data/broken_append_script.sh
+(shows the script — all 5 echo lines use > )
+
+$ bash ../../data/broken_append_script.sh && cat daily_log.txt
+Done. Check daily_log.txt
+EVENT 5: Fri Mar  1 08:20:00 UTC 2024 - Evening check: script complete
+
+$ wc -l daily_log.txt
+1 daily_log.txt
+
+After creating and running fixed_append_script.sh:
+
+$ bash fixed_append_script.sh && cat daily_log.txt
+Done. Check daily_log.txt
+EVENT 1: Fri Mar  1 08:20:01 UTC 2024 - Morning system check: all services OK
+EVENT 2: Fri Mar  1 08:20:01 UTC 2024 - Disk usage: 25%
+EVENT 3: Fri Mar  1 08:20:01 UTC 2024 - Active users: 1
+EVENT 4: Fri Mar  1 08:20:01 UTC 2024 - Memory free: 3.8G
+EVENT 5: Fri Mar  1 08:20:01 UTC 2024 - Evening check: script complete
+
+$ wc -l daily_log.txt
+5 daily_log.txt
+
+KEY ANSWERS TO QUESTIONS:
+--------------------------
+Q: How many lines from the broken script?
+A: 1 line — only EVENT 5. Each > overwrote the previous output.
+
+Q: How many lines from the fixed script?
+A: 5 lines — all five EVENT lines are present.
+
+Q: What was the bug?
+A: Every echo statement used > (overwrite) instead of >> (append). Each event
+   silently destroyed the previous event, leaving only the last one written.
+
+Q: Why does EVENT 1 still use > in the fixed version?
+A: EVENT 1 uses > intentionally to reset daily_log.txt at the start of each
+   script run. This ensures that running the script multiple times produces a
+   fresh 5-line log each time, not an ever-growing file.
+
+KEY LEARNING POINT:
+-------------------
+Shell scripts produce no error when > overwrites content. The bug is invisible
+until you check the output and notice data is missing. Always audit redirect
+operators in scripts that are expected to produce multi-line logs.
+
+COMMON MISTAKES:
+----------------
+- Changing EVENT 1 to >> as well — causes the log to grow on each script run
+- Not noticing the bug while reading the script because > looks "normal"
+
+================================================================================
+LEVEL 3 — EXERCISE 8: Simulated Cron Job: Hourly Log Entries
+================================================================================
+
+COMMANDS AND EXPECTED OUTPUT:
+------------------------------
+After Steps 1-5 and Step 6:
+$ cat hourly.log && wc -l hourly.log
+[08:00] myhostname: Health check OK - all services running
+[09:00] myhostname: Health check OK - disk at 45%
+[10:00] myhostname: WARN - disk usage at 78%
+[11:00] myhostname: Health check OK - disk normalized to 52%
+[12:00] myhostname: Health check OK - all services running
+5 hourly.log
+
+$ grep "WARN" hourly.log
+[10:00] myhostname: WARN - disk usage at 78%
+
+After Step 8 (3 more entries) and Step 9:
+$ cat hourly.log && wc -l hourly.log
+[08:00] ... [12:00] ... (5 original lines)
+[13:00] myhostname: Health check OK - all services running
+[14:00] myhostname: WARN - high memory usage at 89%
+[15:00] myhostname: Health check OK - memory normalized to 61%
+8 hourly.log
+
+$ grep "WARN" hourly.log
+[10:00] myhostname: WARN - disk usage at 78%
+[14:00] myhostname: WARN - high memory usage at 89%
+
+KEY ANSWERS TO QUESTIONS:
+--------------------------
+Q: Lines after Step 6?
+A: 5 lines
+
+Q: Lines after Step 9?
+A: 8 lines
+
+Q: How many WARN entries in the final log?
+A: 2 WARN entries (10:00 and 14:00)
+
+Q: Why would > in a real cron job be dangerous?
+A: The job runs every hour. With >, each run overwrites the log so only the
+   most recent hour's entry exists. You lose all history, cannot detect trends,
+   and any alerts based on searching the log for patterns will be unreliable.
+   The entire purpose of a cron log — to show what happened over time — is
+   defeated.
+
+KEY LEARNING POINT:
+-------------------
+Cron jobs use >> because they run repeatedly and must accumulate a record
+across executions. The log file IS the history. Destroying it on each run
+eliminates auditability.
+
+COMMON MISTAKES:
+----------------
+- Accidentally using > for any of the entries — log will not show all hours
+- Not including $(hostname) in the format — messages look identical across servers
+
+================================================================================
+LEVEL 3 — EXERCISE 9: Final Challenge: Rolling Log with Timestamps
+================================================================================
+
+COMMANDS AND EXPECTED OUTPUT:
+------------------------------
+After Steps 1-7 (Session 1):
+$ cat rolling.log && wc -l rolling.log
+2024-03-01 08:21:00 | student | myhostname | INFO | Session started
+2024-03-01 08:21:00 | student | myhostname | INFO | Reading configuration
+2024-03-01 08:21:01 | student | myhostname | WARN | Config missing, using defaults
+2024-03-01 08:21:01 | student | myhostname | INFO | Service started on port 8080
+2024-03-01 08:21:01 | student | myhostname | INFO | Session complete
+5 rolling.log
+
+$ grep "WARN" rolling.log
+2024-03-01 08:21:01 | student | myhostname | WARN | Config missing, using defaults
+
+After Step 9 (Session 2 — file reset with > then new entries):
+$ cat rolling.log
+2024-03-01 08:22:05 | student | myhostname | INFO | Session started
+2024-03-01 08:22:05 | student | myhostname | INFO | Reading configuration
+2024-03-01 08:22:05 | student | myhostname | WARN | Config missing, using defaults
+2024-03-01 08:22:05 | student | myhostname | INFO | Service started on port 8080
+2024-03-01 08:22:06 | student | myhostname | INFO | Session complete
+(5 lines with new timestamps — session 1 is gone)
+
+KEY ANSWERS TO QUESTIONS:
+--------------------------
+Q: Lines after Step 7?
+A: 5 lines
+
+Q: After Step 10, 10 lines or 5 lines?
+A: 5 lines. The > at the start of Session 2 reset the file. This is a rolling
+   log — it shows only the current session, not all past sessions.
+
+Q: Difference between rolling log and cumulative audit log?
+A: A rolling log is reset at the start of each session/run with >. It shows
+   only the current session's activity. A cumulative audit log uses >> without
+   a reset, so all sessions accumulate. The choice depends on whether you need
+   current-state clarity (rolling) or long-term traceability (cumulative).
+
+Q: When would you choose cumulative (>> without >) over rolling (> then >>)?
+A: Cumulative when: you need an audit trail, compliance requires logging all
+   activity, you are debugging intermittent issues that need history, or you
+   are feeding the log into a monitoring system that reads all entries.
+   Rolling when: the log is for the current run only, file size must be
+   controlled, or each session is self-contained and previous sessions
+   are irrelevant.
+
+KEY LEARNING POINT:
+-------------------
+The combination of > (to reset) followed by >> (to build) is the deliberate
+pattern for rolling logs. It is NOT a mistake — it is a design choice that
+prioritizes current-session clarity over long-term accumulation.
+
+COMMON MISTAKES:
+----------------
+- Forgetting the > at the start of Session 2 — file grows to 10 lines instead of 5
+- Using plain date instead of date '+%Y-%m-%d %H:%M:%S' — timestamps look inconsistent
+- Omitting | separators — log format becomes hard to parse with awk/cut later
+
+================================================================================
+GRADING RUBRIC
+================================================================================
+
+LEVEL 1 — 3 POINTS TOTAL (1 point per exercise)
+  Exercise 1: 1 pt — session_info.txt has 4 lines, student can explain > vs >>
+  Exercise 2: 1 pt — growth counts correct (0,1,2,3,5), explains echo -e and \n
+  Exercise 3: 1 pt — changelog.txt has 9 lines, identifies Step 1 > correctly
+
+LEVEL 2 — 3 POINTS TOTAL (1 point per exercise)
+  Exercise 4: 1 pt — identifies 6 then 12 lines, explains duplicate risk
+  Exercise 5: 1 pt — report generated with 3 sections, explains > vs >> choice
+  Exercise 6: 1 pt — line count goes from 21 to 24, uses tail -5 correctly
+
+LEVEL 3 — 3 POINTS TOTAL (1 point per exercise)
+  Exercise 7: 1 pt — identifies bug (> instead of >>), fixed script produces 5 lines
+  Exercise 8: 1 pt — log grows 5 to 8, 2 WARN entries found, explains cron >> need
+  Exercise 9: 1 pt — rolling log resets to 5 lines in session 2, explains trade-off
+
+TOTAL: 9 POINTS
+
+BONUS (optional, ungraded):
+  Can the student modify broken_append_script.sh to also append a timestamp
+  header before each run's block? (requires understanding of both > and >>)
+
+================================================================================
+END OF SOLUTIONS
+================================================================================

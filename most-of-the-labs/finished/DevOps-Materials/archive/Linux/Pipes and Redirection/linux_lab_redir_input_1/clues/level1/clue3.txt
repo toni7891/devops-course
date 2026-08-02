@@ -1,0 +1,69 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 3
+                "Sort a File Using Input Redirection"
+================================================================================
+
+BACKGROUND:
+-----------
+`sort` arranges lines of text in order. By default it sorts alphabetically
+(lexicographic order). It also supports reverse sort (-r) and numeric sort (-n).
+
+Like `wc`, sort accepts either a filename argument or stdin. When you use `<`,
+sort reads from stdin and writes the sorted result to stdout. Crucially, sort
+NEVER modifies the original file — it always reads input and writes a new
+sorted stream. The original file is untouched unless you explicitly redirect
+the output back (but do NOT redirect to the same file you are reading from!).
+
+The difference between default sort and numeric sort (-n) is important:
+  - Default (lexicographic): "10" comes before "9" because "1" < "9" as text
+  - Numeric (-n): "9" comes before "10" because 9 < 10 as numbers
+
+EXERCISE:
+---------
+Step 1: View the unsorted file first so you know the original order:
+  cat ../../data/unsorted.txt
+
+Step 2: Sort using a filename argument (works fine):
+  sort ../../data/unsorted.txt
+
+Step 3: Sort using input redirection (identical result):
+  sort < ../../data/unsorted.txt
+
+Step 4: Verify the original file is unchanged:
+  cat ../../data/unsorted.txt
+  (Should be exactly the same as Step 1 — sort did NOT modify it)
+
+Step 5: Sort in reverse alphabetical order:
+  sort -r < ../../data/unsorted.txt
+
+Step 6: Look at the numbers file:
+  cat ../../data/numbers.txt
+
+Step 7: Sort numbers with default (lexicographic) sort — watch what happens:
+  sort < ../../data/numbers.txt
+  (156 may appear before 4 because "1" sorts before "4" as text)
+
+Step 8: Sort numbers with numeric sort (-n):
+  sort -n < ../../data/numbers.txt
+  (Now 4 comes before 156, as expected numerically)
+
+Step 9: Sort numbers in reverse numeric order (largest first):
+  sort -rn < ../../data/numbers.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- After Step 4, is data/unsorted.txt still in its original order? Why?
+- What does the -r flag do to sort?
+- In Steps 7 and 8, what is the key difference in output between
+  `sort` and `sort -n` for numbers.txt?
+- What number appears first in Step 7 (default sort)?
+- What number appears first in Step 8 (numeric sort)?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L1E3: Yes, unsorted.txt is unchanged — sort reads stdin and writes stdout; it does not modify files. -r reverses the sort order. Default sort treats numbers as text so 156 comes before 4. sort -n treats them as numbers so 4 comes first." >> ../../my_answers.txt
+
+================================================================================
+Level 1 complete! Move to Level 2:
+  cat clues/level2/clue1.txt
+================================================================================

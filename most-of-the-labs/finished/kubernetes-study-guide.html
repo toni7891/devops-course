@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kubernetes Study Guide — IITC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & BASE ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #060b14;
+  --bg2:       #0c1525;
+  --bg3:       #111d30;
+  --border:    rgba(255,255,255,0.08);
+  --text:      #c9d6e8;
+  --text-dim:  #566882;
+  --c1: #00d4ff;   /* Section 1 — cyan   */
+  --c2: #00e97a;   /* Section 2 — green  */
+  --c3: #ff9e2c;   /* Section 3 — amber  */
+  --c4: #c77dff;   /* Section 4 — violet */
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
+}
+
+html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--font-body); }
+
+/* ─── DECK ─── */
+.deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 48px 80px 48px 200px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .45s ease, transform .45s ease;
+  transform: translateY(20px);
+}
+.slide.active { opacity: 1; pointer-events: all; transform: translateY(0); }
+.slide.exit { opacity: 0; transform: translateY(-20px); }
+
+/* ─── SIDEBAR NAV ─── */
+.sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 140px;
+  background: var(--bg2); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center; padding: 28px 0; gap: 6px;
+  z-index: 100;
+}
+.sidebar-logo {
+  font-family: var(--font-head); font-size: 10px; font-weight: 800;
+  letter-spacing: .2em; color: var(--text-dim); text-transform: uppercase;
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  margin-bottom: 24px; margin-top: 8px;
+}
+.nav-section { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.nav-section-label {
+  font-size: 8px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--text-dim); margin: 10px 0 4px; opacity: .5;
+}
+.nav-dot {
+  width: 28px; height: 5px; border-radius: 3px;
+  background: var(--border); cursor: pointer;
+  transition: all .25s; border: none; outline: none;
+}
+.nav-dot:hover { background: rgba(255,255,255,.2); }
+.nav-dot.active { width: 48px; }
+[data-sec="0"] .nav-dot.active { background: var(--c1); }
+[data-sec="1"] .nav-dot.active { background: var(--c2); }
+[data-sec="2"] .nav-dot.active { background: var(--c3); }
+[data-sec="3"] .nav-dot.active { background: var(--c4); }
+
+/* ─── SLIDE COUNTER & CONTROLS ─── */
+.controls {
+  position: fixed; bottom: 28px; right: 36px;
+  display: flex; align-items: center; gap: 12px; z-index: 100;
+}
+.ctrl-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); cursor: pointer; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.ctrl-btn:hover { border-color: rgba(255,255,255,.3); color: #fff; transform: scale(1.05); }
+.slide-counter {
+  font-family: var(--font-code); font-size: 11px; color: var(--text-dim);
+  min-width: 44px; text-align: center;
+}
+
+/* ─── SECTION ACCENT BAR ─── */
+.accent-bar {
+  position: fixed; top: 0; left: 140px; right: 0; height: 3px;
+  transition: background .4s;
+}
+
+/* ─── CONTENT HELPERS ─── */
+.slide-inner { width: 100%; max-width: 1000px; }
+
+.sec-tag {
+  font-family: var(--font-code); font-size: 10px; font-weight: 600;
+  letter-spacing: .2em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 4px; display: inline-block; margin-bottom: 16px;
+}
+.sec-tag.c1 { color: var(--c1); background: rgba(0,212,255,.08); }
+.sec-tag.c2 { color: var(--c2); background: rgba(0,233,122,.08); }
+.sec-tag.c3 { color: var(--c3); background: rgba(255,158,44,.08); }
+.sec-tag.c4 { color: var(--c4); background: rgba(199,125,255,.08); }
+
+h1 { font-family: var(--font-head); font-size: clamp(32px,5vw,64px); font-weight: 800; line-height: 1.05; }
+h2 { font-family: var(--font-head); font-size: clamp(22px,3vw,36px); font-weight: 700; line-height: 1.15; margin-bottom: 28px; }
+h3 { font-family: var(--font-head); font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+p  { font-size: 15px; line-height: 1.7; color: var(--text); }
+.lead { font-size: 18px; color: var(--text-dim); line-height: 1.6; max-width: 700px; }
+
+/* ─── CODE BLOCK ─── */
+pre {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+  padding: 20px 24px; font-family: var(--font-code); font-size: 13px; line-height: 1.7;
+  overflow-x: auto; position: relative;
+}
+.code-label {
+  position: absolute; top: 10px; right: 14px;
+  font-family: var(--font-code); font-size: 9px; font-weight: 600; letter-spacing: .15em;
+  text-transform: uppercase; color: var(--text-dim);
+}
+.kw  { color: #ff6b9d; }   /* keywords  */
+.val { color: #f9c74f; }   /* values    */
+.str { color: var(--c2); } /* strings   */
+.cmt { color: var(--text-dim); font-style: italic; } /* comments */
+.key { color: var(--c1); } /* keys      */
+
+/* ─── BOXES / CARDS ─── */
+.box {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px;
+}
+.box.c1 { border-color: rgba(0,212,255,.25); }
+.box.c2 { border-color: rgba(0,233,122,.25); }
+.box.c3 { border-color: rgba(255,158,44,.25); }
+.box.c4 { border-color: rgba(199,125,255,.25); }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.grid4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+
+/* ─── APPROACH CARDS ─── */
+.approach-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 22px 20px; position: relative; overflow: hidden;
+}
+.approach-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.approach-card:nth-child(1)::before { background: var(--c1); }
+.approach-card:nth-child(2)::before { background: var(--c3); }
+.approach-card:nth-child(3)::before { background: var(--c2); }
+.approach-num {
+  font-family: var(--font-code); font-size: 10px; color: var(--text-dim); margin-bottom: 8px;
+}
+.approach-card h3 { font-size: 15px; margin-bottom: 8px; }
+.approach-card code {
+  display: block; font-family: var(--font-code); font-size: 11px;
+  background: var(--bg3); padding: 6px 10px; border-radius: 6px;
+  color: var(--c2); margin: 8px 0;
+}
+.pros { color: var(--c2); font-size: 12px; }
+.cons { color: #ff6b6b; font-size: 12px; }
+
+/* ─── YAML ANATOMY ─── */
+.yaml-anatomy {
+  display: flex; gap: 24px; align-items: flex-start;
+}
+.yaml-code-side { flex: 1; }
+.yaml-callouts { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.callout {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 14px; border-radius: 10px; border-left: 3px solid;
+}
+.callout.a1 { background: rgba(0,212,255,.05); border-color: var(--c1); }
+.callout.a2 { background: rgba(0,233,122,.05); border-color: var(--c2); }
+.callout.a3 { background: rgba(255,158,44,.05); border-color: var(--c3); }
+.callout.a4 { background: rgba(199,125,255,.05); border-color: var(--c4); }
+.callout-num {
+  font-family: var(--font-code); font-size: 9px; font-weight: 600;
+  width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.a1 .callout-num { background: rgba(0,212,255,.15); color: var(--c1); }
+.a2 .callout-num { background: rgba(0,233,122,.15); color: var(--c2); }
+.a3 .callout-num { background: rgba(255,158,44,.15); color: var(--c3); }
+.a4 .callout-num { background: rgba(199,125,255,.15); color: var(--c4); }
+.callout-body strong { font-size: 13px; display: block; margin-bottom: 2px; }
+.callout-body p { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+
+/* ─── SERVICE DIAGRAM ─── */
+.svc-diagram {
+  display: flex; align-items: center; gap: 0; justify-content: center; margin: 20px 0;
+}
+.svc-node {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 18px; text-align: center;
+  font-size: 13px; font-weight: 500; min-width: 90px;
+}
+.svc-node.svc-special { border-color: var(--c2); color: var(--c2); }
+.svc-arrow {
+  width: 50px; display: flex; align-items: center; justify-content: center;
+  color: var(--text-dim); font-size: 20px;
+}
+.pod-group { display: flex; flex-direction: column; gap: 8px; }
+.pod-node {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 14px; font-size: 12px;
+  font-family: var(--font-code);
+}
+.pod-node.dead { opacity: .35; text-decoration: line-through; position: relative; }
+.pod-node.new  { border-color: var(--c2); color: var(--c2); }
+.pod-note { font-size: 10px; color: var(--text-dim); text-align: center; margin-top: 4px; }
+
+/* ─── SERVICE TYPE CARDS ─── */
+.svc-card {
+  border-radius: 14px; padding: 18px 16px;
+  border: 1px solid var(--border); background: var(--bg2);
+}
+.svc-card-icon { font-size: 26px; margin-bottom: 8px; }
+.svc-card h3 { font-size: 14px; margin-bottom: 6px; }
+.svc-card p { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+.svc-card code {
+  display: block; margin-top: 8px; font-family: var(--font-code); font-size: 11px;
+  background: var(--bg3); padding: 4px 8px; border-radius: 5px; color: var(--c2);
+}
+.svc-card.t1 { border-top: 3px solid var(--c1); }
+.svc-card.t2 { border-top: 3px solid var(--c3); }
+.svc-card.t3 { border-top: 3px solid var(--c2); }
+.svc-card.t4 { border-top: 3px solid var(--c4); }
+
+/* ─── LABEL BADGES ─── */
+.label-badge {
+  display: inline-flex; align-items: center; gap: 0; border-radius: 5px;
+  overflow: hidden; font-family: var(--font-code); font-size: 11px;
+  border: 1px solid var(--border);
+}
+.badge-k { background: rgba(0,212,255,.12); color: var(--c1); padding: 2px 7px; }
+.badge-v { background: rgba(0,212,255,.04); color: var(--text); padding: 2px 7px; border-left: 1px solid var(--border); }
+.label-group { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+
+.pod-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 14px; flex: 1; min-width: 140px;
+}
+.pod-card .pod-name { font-family: var(--font-code); font-size: 11px; color: var(--text-dim); margin-bottom: 6px; }
+
+/* ─── NAMESPACE BUILDING ─── */
+.building {
+  border: 2px solid var(--border); border-radius: 14px; padding: 16px;
+  position: relative; flex: 1;
+}
+.building-label {
+  position: absolute; top: -11px; left: 14px;
+  font-family: var(--font-code); font-size: 10px; font-weight: 600;
+  padding: 0 8px; border-radius: 4px;
+}
+.apartment {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px; margin-bottom: 8px;
+  font-size: 12px;
+}
+.apartment:last-child { margin-bottom: 0; }
+
+/* ─── RESOURCE BARS ─── */
+.resource-bar-wrap { font-size: 12px; margin: 8px 0; }
+.resource-bar-label { display: flex; justify-content: space-between; margin-bottom: 3px; color: var(--text-dim); }
+.resource-bar-bg { background: var(--bg3); border-radius: 4px; height: 8px; overflow: hidden; }
+.resource-bar-fill { height: 100%; border-radius: 4px; transition: width .5s; }
+
+/* ─── HEALTH PROBE TIMELINE ─── */
+.probe-timeline {
+  display: flex; align-items: center; gap: 0; margin: 20px 0; position: relative;
+}
+.probe-block {
+  flex: 1; text-align: center; padding: 14px 10px;
+  border-radius: 10px; border: 1px solid var(--border);
+  font-size: 12px; position: relative;
+}
+.probe-block h3 { font-size: 13px; margin-bottom: 6px; }
+.probe-arrow {
+  padding: 0 8px; color: var(--text-dim); font-size: 18px; flex-shrink: 0;
+}
+.probe-loop {
+  font-size: 10px; color: var(--text-dim); text-align: center; margin-top: 4px;
+  font-family: var(--font-code);
+}
+
+/* ─── VOLUME VISUAL ─── */
+.vol-scope {
+  border: 1px dashed; border-radius: 10px; padding: 12px; position: relative;
+  text-align: center;
+}
+.vol-scope-label {
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; padding: 0 8px; border-radius: 4px; white-space: nowrap;
+  font-family: var(--font-code);
+}
+.vol-inner { margin-top: 8px; }
+.vol-icon { font-size: 28px; margin-bottom: 4px; }
+.vol-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.vol-desc { font-size: 11px; color: var(--text-dim); }
+
+/* ─── PV PVC DIAGRAM ─── */
+.pv-flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.pv-box {
+  border-radius: 10px; padding: 14px 16px; text-align: center;
+  border: 1px solid; min-width: 100px;
+}
+.pv-box.app  { border-color: var(--c2); color: var(--c2); background: rgba(0,233,122,.06); }
+.pv-box.pvc  { border-color: var(--c3); color: var(--c3); background: rgba(255,158,44,.06); }
+.pv-box.pv   { border-color: var(--c4); color: var(--c4); background: rgba(199,125,255,.06); }
+.pv-box.disk { border-color: var(--text-dim); color: var(--text-dim); background: var(--bg2); }
+.pv-box small { display: block; font-size: 10px; opacity: .7; margin-top: 2px; }
+.pv-arrow { color: var(--text-dim); font-size: 18px; }
+.pv-label {
+  font-size: 9px; font-family: var(--font-code); letter-spacing: .1em;
+  text-transform: uppercase; color: var(--text-dim); margin: 2px 0; display: block;
+}
+
+/* ─── TABLE ─── */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: var(--bg3); padding: 10px 14px; text-align: left; font-weight: 600; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); border-bottom: 1px solid var(--border); }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,.02); }
+
+/* ─── STATEFULSET vs DEPLOYMENT ─── */
+.compare-row { display: flex; gap: 16px; }
+.compare-col {
+  flex: 1; border-radius: 12px; padding: 18px; border: 1px solid var(--border);
+}
+.compare-col.dep { border-top: 3px solid var(--c3); }
+.compare-col.sts { border-top: 3px solid var(--c4); }
+.compare-pod {
+  background: var(--bg3); border-radius: 7px; padding: 7px 10px;
+  font-family: var(--font-code); font-size: 11px; margin-bottom: 6px;
+  border: 1px solid var(--border);
+}
+.compare-pod.stable { border-color: var(--c4); color: var(--c4); }
+.compare-pod.random { color: var(--text-dim); }
+
+/* ─── SECTION TITLE SLIDES ─── */
+.sec-title-slide {
+  background: radial-gradient(ellipse at 30% 50%, rgba(var(--sec-rgb),.08) 0%, transparent 70%);
+  text-align: left;
+}
+.sec-number {
+  font-family: var(--font-code); font-size: 180px; font-weight: 600;
+  position: absolute; right: 60px; top: 50%; transform: translateY(-50%);
+  opacity: .04; line-height: 1; pointer-events: none;
+}
+
+/* ─── MISC ─── */
+.emoji-big { font-size: 32px; margin-bottom: 12px; display: block; }
+.tag {
+  display: inline-block; padding: 2px 8px; border-radius: 4px;
+  font-size: 11px; font-weight: 600; margin: 2px;
+  font-family: var(--font-code);
+}
+.tag.green { background: rgba(0,233,122,.12); color: var(--c2); }
+.tag.red   { background: rgba(255,107,107,.12); color: #ff6b6b; }
+.tag.blue  { background: rgba(0,212,255,.12); color: var(--c1); }
+.tag.amber { background: rgba(255,158,44,.12); color: var(--c3); }
+.tag.violet{ background: rgba(199,125,255,.12); color: var(--c4); }
+
+ul.nice { list-style: none; padding: 0; }
+ul.nice li { padding: 5px 0 5px 20px; position: relative; font-size: 14px; color: var(--text); }
+ul.nice li::before { content: '›'; position: absolute; left: 0; color: var(--text-dim); }
+
+/* ─── COVER SLIDE ─── */
+.cover-slide {
+  background:
+    radial-gradient(ellipse at 20% 60%, rgba(0,212,255,.07) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 30%, rgba(199,125,255,.06) 0%, transparent 50%);
+}
+.cover-kube {
+  font-size: 100px; position: absolute; right: 80px; top: 50%; transform: translateY(-50%);
+  opacity: .12; font-family: var(--font-code); font-weight: 800; letter-spacing: -.02em;
+  writing-mode: vertical-rl; transform: rotate(180deg) translateX(50%);
+}
+.cover-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 100px; padding: 6px 16px 6px 10px;
+  font-size: 13px; color: var(--text-dim); margin-bottom: 24px;
+}
+.cover-badge span { width: 8px; height: 8px; border-radius: 50%; background: var(--c2); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+
+.section-pillars {
+  display: flex; gap: 10px; flex-wrap: wrap; margin-top: 32px;
+}
+.pillar {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 14px; font-size: 13px;
+}
+.pillar-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* scroll for slide content */
+.slide-inner.scrollable { max-height: calc(100vh - 100px); overflow-y: auto; padding-right: 8px; }
+.slide-inner.scrollable::-webkit-scrollbar { width: 4px; }
+.slide-inner.scrollable::-webkit-scrollbar-track { background: transparent; }
+.slide-inner.scrollable::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+  .slide { padding: 20px 20px 60px 20px; }
+  .sidebar { width: 0; overflow: hidden; }
+  .accent-bar { left: 0; }
+  h1 { font-size: 28px; }
+  .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
+  .yaml-anatomy { flex-direction: column; }
+  .compare-row { flex-direction: column; }
+  .sec-number { display: none; }
+  .cover-kube { display: none; }
+}
+
+/* ─── QUICK REF ─── */
+.qr-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 10px;
+}
+.qr-item {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px;
+}
+.qr-item code {
+  display: block; font-family: var(--font-code); font-size: 11px; color: var(--c2);
+  margin-top: 4px;
+}
+.qr-item small { color: var(--text-dim); font-size: 11px; }
+
+/* title stripe on section covers */
+.stripe {
+  display: inline-block; width: 40px; height: 4px; border-radius: 2px; margin-right: 8px;
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">Kubernetes</div>
+
+  <div class="nav-section" data-sec="0">
+    <div class="nav-section-label" style="color:var(--c1)">YAML</div>
+  </div>
+  <div class="nav-section" data-sec="1">
+    <div class="nav-section-label" style="color:var(--c2)">Services</div>
+  </div>
+  <div class="nav-section" data-sec="2">
+    <div class="nav-section-label" style="color:var(--c3)">Resources</div>
+  </div>
+  <div class="nav-section" data-sec="3">
+    <div class="nav-section-label" style="color:var(--c4)">Storage</div>
+  </div>
+</nav>
+
+<!-- ACCENT BAR -->
+<div class="accent-bar" id="accentBar"></div>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <button class="ctrl-btn" id="prevBtn">←</button>
+  <span class="slide-counter" id="counter">1 / 1</span>
+  <button class="ctrl-btn" id="nextBtn">→</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE DECK
+══════════════════════════════════════════════════════════ -->
+<div class="deck" id="deck">
+
+<!-- ── COVER ─────────────────────────────────────── -->
+<div class="slide cover-slide active" data-section="intro">
+  <div class="slide-inner">
+    <div class="cover-badge"><span></span> IITC IT Professional Academy</div>
+    <h1>Kubernetes<br><span style="color:var(--c1)">Study Guide</span></h1>
+    <p class="lead" style="margin-top:16px">A visual reference for the four core topics of the course — from object management to persistent storage.</p>
+    <div class="section-pillars">
+      <div class="pillar"><div class="pillar-dot" style="background:var(--c1)"></div>Object Management &amp; YAML</div>
+      <div class="pillar"><div class="pillar-dot" style="background:var(--c2)"></div>Services Deep Dive</div>
+      <div class="pillar"><div class="pillar-dot" style="background:var(--c3)"></div>Resources Management</div>
+      <div class="pillar"><div class="pillar-dot" style="background:var(--c4)"></div>Storage &amp; Persistence</div>
+    </div>
+    <p style="margin-top:28px;font-size:12px;color:var(--text-dim)">Use ← → arrow keys or the buttons below to navigate</p>
+  </div>
+  <div class="cover-kube">K8s</div>
+</div>
+
+<!-- ─────────────────────────────────────────────────
+     SECTION 1 — Object Management & YAML
+───────────────────────────────────────────────────── -->
+
+<!-- S1 Cover -->
+<div class="slide sec-title-slide" data-section="s1" style="--sec-rgb:0,212,255">
+  <div class="slide-inner">
+    <div class="sec-tag c1">Section 01</div>
+    <h1 style="color:var(--c1)">Object Management<br>&amp; YAML Manifests</h1>
+    <p class="lead" style="margin-top:16px">Three ways to talk to Kubernetes, and how to write the config files that describe what you want.</p>
+  </div>
+  <div class="sec-number" style="color:var(--c1)">01</div>
+</div>
+
+<!-- S1 — 3 Approaches -->
+<div class="slide" data-section="s1">
+  <div class="slide-inner scrollable">
+    <div class="sec-tag c1">Object Management</div>
+    <h2>Three Ways to Manage Objects</h2>
+    <div class="grid3">
+
+      <div class="approach-card">
+        <div class="approach-num">01 / IMPERATIVE CLI</div>
+        <div style="font-size:28px;margin-bottom:8px">⌨️</div>
+        <h3>Imperative Commands</h3>
+        <p style="font-size:12px;color:var(--text-dim);margin-bottom:10px">Type commands directly in the terminal. Fast, but nothing is saved.</p>
+        <code>kubectl run nginx --image=nginx</code>
+        <code>kubectl delete pod nginx</code>
+        <div style="margin-top:10px">
+          <div class="pros">✓ Fast &amp; simple</div>
+          <div class="pros">✓ Great for learning</div>
+          <div class="cons">✗ Hard to reproduce</div>
+          <div class="cons">✗ No history / version control</div>
+        </div>
+      </div>
+
+      <div class="approach-card">
+        <div class="approach-num">02 / IMPERATIVE FILES</div>
+        <div style="font-size:28px;margin-bottom:8px">📄</div>
+        <h3>Imperative with Config Files</h3>
+        <p style="font-size:12px;color:var(--text-dim);margin-bottom:10px">Use files, but tell K8s the action explicitly (create / replace).</p>
+        <code>kubectl create -f pod.yaml</code>
+        <code>kubectl replace -f pod.yaml</code>
+        <div style="margin-top:10px">
+          <div class="pros">✓ Files are reusable</div>
+          <div class="pros">✓ Stored in version control</div>
+          <div class="cons">✗ You manage the state</div>
+          <div class="cons">✗ Easy to make mistakes</div>
+        </div>
+      </div>
+
+      <div class="approach-card">
+        <div class="approach-num">03 / DECLARATIVE ★</div>
+        <div style="font-size:28px;margin-bottom:8px">✨</div>
+        <h3>Declarative with Apply</h3>
+        <p style="font-size:12px;color:var(--text-dim);margin-bottom:10px">Tell K8s <em>what you want</em>. It figures out what to create/update/delete.</p>
+        <code>kubectl apply -f pod.yaml</code>
+        <code>kubectl apply -f ./configs/</code>
+        <div style="margin-top:10px">
+          <div class="pros">✓ Kubernetes manages state</div>
+          <div class="pros">✓ Safe to run repeatedly</div>
+          <div class="pros">✓ <strong>Recommended for production</strong></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="box" style="margin-top:16px;padding:12px 16px;font-size:13px">
+      💡 <strong>Key insight:</strong> With declarative, you just say <em>"I want 3 replicas of nginx"</em>. Kubernetes compares that to the current state and does whatever is needed — create, update, or nothing.
+    </div>
+  </div>
+</div>
+
+<!-- S1 — YAML Anatomy -->
+<div class="slide" data-section="s1">
+  <div class="slide-inner scrollable">
+    <div class="sec-tag c1">YAML Manifest</div>
+    <h2>Anatomy of a Manifest</h2>
+    <div class="yaml-anatomy">
+      <div class="yaml-code-side">
+        <pre style="font-size:13px"><span class="cmt"># Every K8s YAML has 4 required fields</span>
+
+<span class="key">①  apiVersion</span>: <span class="val">v1</span>
+
+<span class="key">②  kind</span>: <span class="val">Pod</span>
+
+<span class="key">③  metadata</span>:
+     <span class="key">name</span>: <span class="str">my-nginx</span>
+     <span class="key">labels</span>:
+       <span class="key">app</span>: <span class="str">nginx</span>
+       <span class="key">env</span>: <span class="str">production</span>
+
+<span class="key">④  spec</span>:
+     <span class="key">containers</span>:
+     - <span class="key">name</span>: <span class="str">nginx</span>
+       <span class="key">image</span>: <span class="str">nginx:1.25</span>
+       <span class="key">ports</span>:
+       - <span class="key">containerPort</span>: <span class="val">80</span></pre>
+      </div>
+      <div class="yaml-callouts">
+        <div class="callout a1">
+          <div class="callout-num">①</div>
+          <div class="callout-body">
+            <strong>apiVersion</strong>
+            <p>Which API group and version to use. <code style="font-family:var(--font-code);font-size:11px;color:var(--c1)">v1</code>, <code style="font-family:var(--font-code);font-size:11px;color:var(--c1)">apps/v1</code>, <code style="font-family:var(--font-code);font-size:11px;color:var(--c1)">batch/v1</code>…</p>
+          </div>
+        </div>
+        <div class="callout a2">
+          <div class="callout-num">②</div>
+          <div class="callout-body">
+            <strong>kind</strong>
+            <p>The type of object. Pod, Service, Deployment, ConfigMap, etc.</p>
+          </div>
+        </div>
+        <div class="callout a3">
+          <div class="callout-num">③</div>
+          <div class="callout-body">
+            <strong>metadata</strong>
+            <p>Name, namespace, labels, annotations. How Kubernetes identifies and finds this object.</p>
+          </div>
+        </div>
+        <div class="callout a4">
+          <div class="callout-num">④</div>
+          <div class="callout-body">
+            <strong>spec</strong>
+            <p>The desired state. What containers to run, what volumes to mount, what ports to expose, etc.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S1 — Quick Ref -->
+<div class="slide" data-section="s1">
+  <div class="slide-inner">
+    <div class="sec-tag c1">Quick Reference</div>
+    <h2>⚡ YAML &amp; Object Management Cheatsheet</h2>
+    <div class="qr-grid">
+      <div class="qr-item">
+        <small>Run a pod (imperative)</small>
+        <code>kubectl run nginx --image=nginx</code>
+      </div>
+      <div class="qr-item">
+        <small>Apply a manifest (declarative)</small>
+        <code>kubectl apply -f pod.yaml</code>
+      </div>
+      <div class="qr-item">
+        <small>Apply entire directory</small>
+        <code>kubectl apply -f ./configs/</code>
+      </div>
+      <div class="qr-item">
+        <small>List all pods</small>
+        <code>kubectl get pods</code>
+      </div>
+      <div class="qr-item">
+        <small>Describe an object</small>
+        <code>kubectl describe pod nginx</code>
+      </div>
+      <div class="qr-item">
+        <small>Delete from file</small>
+        <code>kubectl delete -f pod.yaml</code>
+      </div>
+      <div class="qr-item">
+        <small>View live YAML</small>
+        <code>kubectl get pod nginx -o yaml</code>
+      </div>
+      <div class="qr-item">
+        <small>Common apiVersions</small>
+        <code>v1 · apps/v1 · batch/v1</code>
+      </div>
+    </div>
+    <div class="box c1" style="margin-top:16px;font-size:13px;padding:12px 16px">
+      🧠 <strong>Remember the 4 fields:</strong> Every manifest needs <span class="tag blue">apiVersion</span> <span class="tag blue">kind</span> <span class="tag blue">metadata</span> <span class="tag blue">spec</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────
+     SECTION 2 — Services
+───────────────────────────────────────────────────── -->
+
+<!-- S2 Cover -->
+<div class="slide sec-title-slide" data-section="s2" style="--sec-rgb:0,233,122">
+  <div class="slide-inner">
+    <div class="sec-tag c2">Section 02</div>
+    <h1 style="color:var(--c2)">Services<br>Deep Dive</h1>
+    <p class="lead" style="margin-top:16px">Pods are temporary. Services are stable. Here's why that matters and how services work.</p>
+  </div>
+  <div class="sec-number" style="color:var(--c2)">02</div>
+</div>
+
+<!-- S2 — The Problem -->
+<div class="slide" data-section="s2">
+  <div class="slide-inner">
+    <div class="sec-tag c2">The Problem</div>
+    <h2>Why Do We Need Services?</h2>
+    <p style="margin-bottom:20px;font-size:15px">Pods are <strong>ephemeral</strong>. When a pod dies and restarts, it gets a <strong>new IP address</strong>. If your frontend is connecting directly to a pod IP — that connection breaks. 💥</p>
+
+    <!-- Diagram -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:20px">
+      <p style="font-size:11px;font-family:var(--font-code);color:var(--text-dim);margin-bottom:16px">WITHOUT A SERVICE — BROKEN</p>
+      <div class="svc-diagram">
+        <div class="svc-node">Frontend</div>
+        <div class="svc-arrow">→</div>
+        <div class="pod-group">
+          <div class="pod-node dead">pod-abc · 10.0.0.5 ☠️</div>
+          <div class="pod-node new">pod-xyz · 10.0.0.9 ✓ NEW</div>
+        </div>
+      </div>
+      <div class="pod-note">Frontend still points to 10.0.0.5 → Connection refused!</div>
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid rgba(0,233,122,.25);border-radius:14px;padding:24px">
+      <p style="font-size:11px;font-family:var(--font-code);color:var(--c2);margin-bottom:16px">WITH A SERVICE — STABLE ✓</p>
+      <div class="svc-diagram">
+        <div class="svc-node">Frontend</div>
+        <div class="svc-arrow">→</div>
+        <div class="svc-node svc-special">Service<br><span style="font-size:10px;font-family:var(--font-code)">10.0.0.100 (stable)</span></div>
+        <div class="svc-arrow">→</div>
+        <div class="pod-group">
+          <div class="pod-node dead">pod-abc · 10.0.0.5 ☠️</div>
+          <div class="pod-node new">pod-xyz · 10.0.0.9 ✓</div>
+        </div>
+      </div>
+      <div class="pod-note">Service always has the same IP &amp; DNS name. It routes to whatever pods match its selector.</div>
+    </div>
+  </div>
+</div>
+
+<!-- S2 — How Services Work -->
+<div class="slide" data-section="s2">
+  <div class="slide-inner">
+    <div class="sec-tag c2">How It Works</div>
+    <h2>Services Find Pods via <span style="color:var(--c2)">Selectors</span></h2>
+    <div class="grid2" style="gap:20px">
+      <div>
+        <h3 style="margin-bottom:12px;font-size:15px">The Service</h3>
+        <pre><span class="key">apiVersion</span>: <span class="val">v1</span>
+<span class="key">kind</span>: <span class="val">Service</span>
+<span class="key">metadata</span>:
+  <span class="key">name</span>: <span class="str">nginx-svc</span>
+<span class="key">spec</span>:
+  <span class="key">selector</span>:
+    <span class="key">app</span>: <span class="str">nginx</span>   <span class="cmt"># ← Match pods with this label</span>
+  <span class="key">ports</span>:
+  - <span class="key">port</span>: <span class="val">80</span>        <span class="cmt"># Service port</span>
+    <span class="key">targetPort</span>: <span class="val">80</span>  <span class="cmt"># Pod port</span></pre>
+      </div>
+      <div>
+        <h3 style="margin-bottom:12px;font-size:15px">Matched Pods</h3>
+        <div class="pod-card" style="margin-bottom:10px">
+          <div class="pod-name">pod-abc</div>
+          <div class="label-group">
+            <span class="label-badge"><span class="badge-k">app</span><span class="badge-v">nginx</span></span>
+            <span class="label-badge"><span class="badge-k">env</span><span class="badge-v">prod</span></span>
+          </div>
+          <span class="tag green">✓ Matched</span>
+        </div>
+        <div class="pod-card" style="margin-bottom:10px">
+          <div class="pod-name">pod-xyz</div>
+          <div class="label-group">
+            <span class="label-badge"><span class="badge-k">app</span><span class="badge-v">nginx</span></span>
+          </div>
+          <span class="tag green">✓ Matched</span>
+        </div>
+        <div class="pod-card">
+          <div class="pod-name">pod-def</div>
+          <div class="label-group">
+            <span class="label-badge"><span class="badge-k">app</span><span class="badge-v">redis</span></span>
+          </div>
+          <span class="tag red">✗ Not matched</span>
+        </div>
+      </div>
+    </div>
+    <div class="box c2" style="margin-top:16px;font-size:13px;padding:12px 16px">
+      🔑 The Service gets a stable <strong>ClusterIP</strong> and a <strong>DNS name</strong> (e.g. <code style="font-family:var(--font-code);color:var(--c2)">nginx-svc.default.svc.cluster.local</code>). It load-balances across all matched pods automatically.
+    </div>
+  </div>
+</div>
+
+<!-- S2 — 4 Service Types -->
+<div class="slide" data-section="s2">
+  <div class="slide-inner scrollable">
+    <div class="sec-tag c2">Service Types</div>
+    <h2>4 Types of Services</h2>
+    <div class="grid2" style="gap:14px">
+
+      <div class="svc-card t1">
+        <div class="svc-card-icon">🔒</div>
+        <h3>ClusterIP <span class="tag blue">Default</span></h3>
+        <p>Accessible <strong>only inside the cluster</strong>. Perfect for internal communication between microservices. Gets a virtual IP within the cluster network.</p>
+        <code>type: ClusterIP</code>
+        <div style="margin-top:8px;font-size:11px;color:var(--text-dim)">Port range: cluster internal only</div>
+      </div>
+
+      <div class="svc-card t2">
+        <div class="svc-card-icon">🚪</div>
+        <h3>NodePort</h3>
+        <p>Opens a <strong>port on every node</strong> in the cluster (30000–32767). Traffic hits any node on that port and gets routed to the service.</p>
+        <code>type: NodePort</code>
+        <div style="margin-top:8px;font-size:11px;color:var(--text-dim)">External: NodeIP:30080 → Pod:80</div>
+      </div>
+
+      <div class="svc-card t3">
+        <div class="svc-card-icon">☁️</div>
+        <h3>LoadBalancer</h3>
+        <p>Provisions a <strong>cloud load balancer</strong> (AWS ELB, GCP LB…). Gets a real external IP. The recommended way to expose services to the internet.</p>
+        <code>type: LoadBalancer</code>
+        <div style="margin-top:8px;font-size:11px;color:var(--text-dim)">Cloud provider creates the LB for you</div>
+      </div>
+
+      <div class="svc-card t4">
+        <div class="svc-card-icon">🔗</div>
+        <h3>ExternalName</h3>
+        <p>Maps the service name to an <strong>external DNS name</strong>. No proxy — just a CNAME record. Useful to access external services from inside the cluster.</p>
+        <code>type: ExternalName</code>
+        <div style="margin-top:8px;font-size:11px;color:var(--text-dim)">externalName: api.example.com</div>
+      </div>
+
+    </div>
+
+    <!-- Visual hierarchy -->
+    <div style="margin-top:16px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;font-size:12px">
+      <div style="font-family:var(--font-code);color:var(--text-dim);margin-bottom:10px;font-size:10px">ACCESS SCOPE ————————————————————————————————————</div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span class="tag blue">ClusterIP</span>
+        <span style="color:var(--text-dim)">→</span>
+        <span class="tag amber">NodePort</span>
+        <span style="color:var(--text-dim)">→</span>
+        <span class="tag green">LoadBalancer</span>
+        <span style="color:var(--text-dim)">→</span>
+        <span class="tag violet">ExternalName</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:8px;color:var(--text-dim)">
+        <span style="min-width:80px">Internal only</span>
+        <span style="flex:1;height:2px;background:linear-gradient(90deg,var(--c1),var(--c2));border-radius:2px"></span>
+        <span>Internet / External</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S2 — NodePort YAML -->
+<div class="slide" data-section="s2">
+  <div class="slide-inner">
+    <div class="sec-tag c2">Service YAML Examples</div>
+    <h2>Service Manifest Snippets</h2>
+    <div class="grid2" style="gap:16px">
+      <div>
+        <h3 style="font-size:14px;margin-bottom:8px;color:var(--c3)">NodePort</h3>
+        <pre style="font-size:12px"><span class="key">spec</span>:
+  <span class="key">type</span>: <span class="val">NodePort</span>
+  <span class="key">selector</span>:
+    <span class="key">app</span>: <span class="str">nginx</span>
+  <span class="key">ports</span>:
+  - <span class="key">port</span>: <span class="val">80</span>        <span class="cmt"># Service port</span>
+    <span class="key">targetPort</span>: <span class="val">80</span>  <span class="cmt"># Pod port</span>
+    <span class="key">nodePort</span>: <span class="val">30080</span>  <span class="cmt"># Node port (30000-32767)</span></pre>
+      </div>
+      <div>
+        <h3 style="font-size:14px;margin-bottom:8px;color:var(--c2)">LoadBalancer</h3>
+        <pre style="font-size:12px"><span class="key">spec</span>:
+  <span class="key">type</span>: <span class="val">LoadBalancer</span>
+  <span class="key">selector</span>:
+    <span class="key">app</span>: <span class="str">nginx</span>
+  <span class="key">ports</span>:
+  - <span class="key">port</span>: <span class="val">80</span>
+    <span class="key">targetPort</span>: <span class="val">80</span></pre>
+        <h3 style="font-size:14px;margin-bottom:8px;color:var(--c4);margin-top:14px">ExternalName</h3>
+        <pre style="font-size:12px"><span class="key">spec</span>:
+  <span class="key">type</span>: <span class="val">ExternalName</span>
+  <span class="key">externalName</span>: <span class="str">api.example.com</span></pre>
+      </div>
+    </div>
+
+    <!-- Port explanation -->
+    <div class="box" style="margin-top:16px">
+      <h3 style="font-size:14px;margin-bottom:10px">Understanding Ports in NodePort</h3>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px">
+        <div style="text-align:center">
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 14px">Client</div>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:4px">outside world</div>
+        </div>
+        <div style="color:var(--text-dim)">→<br><span style="font-size:10px;font-family:var(--font-code)">:30080</span></div>
+        <div style="text-align:center">
+          <div style="background:var(--bg3);border:1px solid var(--c3);border-radius:8px;padding:8px 14px;color:var(--c3)">Node</div>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:4px">nodePort</div>
+        </div>
+        <div style="color:var(--text-dim)">→<br><span style="font-size:10px;font-family:var(--font-code)">:80</span></div>
+        <div style="text-align:center">
+          <div style="background:var(--bg3);border:1px solid var(--c2);border-radius:8px;padding:8px 14px;color:var(--c2)">Service</div>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:4px">port</div>
+        </div>
+        <div style="color:var(--text-dim)">→<br><span style="font-size:10px;font-family:var(--font-code)">:80</span></div>
+        <div style="text-align:center">
+          <div style="background:var(--bg3);border:1px solid var(--c1);border-radius:8px;padding:8px 14px;color:var(--c1)">Pod</div>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:4px">targetPort</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────
+     SECTION 3 — Resources Management
+───────────────────────────────────────────────────── -->
+
+<!-- S3 Cover -->
+<div class="slide sec-title-slide" data-section="s3" style="--sec-rgb:255,158,44">
+  <div class="slide-inner">
+    <div class="sec-tag c3">Section 03</div>
+    <h1 style="color:var(--c3)">Resources<br>Management</h1>
+    <p class="lead" style="margin-top:16px">Labels, annotations, namespaces, resource limits, and health probes — how Kubernetes organizes and monitors everything.</p>
+  </div>
+  <div class="sec-number" style="color:var(--c3)">03</div>
+</div>
+
+<!-- S3 — Labels -->
+<div class="slide" data-section="s3">
+  <div class="slide-inner scrollable">
+    <div class="sec-tag c3">Labels &amp; Selectors</div>
+    <h2>Labels — Tags for Your Objects</h2>
+    <p style="margin-bottom:16px">Labels are <strong>key=value pairs</strong> attached to any Kubernetes object. They're how you group, find, and connect objects.</p>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+      <div class="pod-card">
+        <div class="pod-name">frontend-pod</div>
+        <div class="label-group">
+          <span class="label-badge"><span class="badge-k">app</span><span class="badge-v">frontend</span></span>
+          <span class="label-badge"><span class="badge-k">env</span><span class="badge-v">prod</span></span>
+          <span class="label-badge"><span class="badge-k">version</span><span class="badge-v">v2</span></span>
+        </div>
+      </div>
+      <div class="pod-card">
+        <div class="pod-name">backend-pod</div>
+        <div class="label-group">
+          <span class="label-badge"><span class="badge-k">app</span><span class="badge-v">backend</span></span>
+          <span class="label-badge"><span class="badge-k">env</span><span class="badge-v">prod</span></span>
+          <span class="label-badge"><span class="badge-k">tier</span><span class="badge-v">api</span></span>
+        </div>
+      </div>
+      <div class="pod-card">
+        <div class="pod-name">staging-pod</div>
+        <div class="label-group">
+          <span class="label-badge"><span class="badge-k">app</span><span class="badge-v">frontend</span></span>
+          <span class="label-badge"><span class="badge-k">env</span><span class="badge-v">staging</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2" style="gap:14px">
+      <div class="box c3">
+        <h3 style="font-size:14px;margin-bottom:10px;color:var(--c3)">Equality-Based Selectors</h3>
+        <pre style="font-size:12px"><span class="cmt"># kubectl filter</span>
+kubectl get pods -l <span class="str">env=prod</span>
+kubectl get pods -l <span class="str">env!=staging</span>
+
+<span class="cmt"># In YAML selector:</span>
+<span class="key">selector</span>:
+  <span class="key">matchLabels</span>:
+    <span class="key">env</span>: <span class="str">prod</span></pre>
+      </div>
+      <div class="box c3">
+        <h3 style="font-size:14px;margin-bottom:10px;color:var(--c3)">Set-Based Selectors</h3>
+        <pre style="font-size:12px"><span class="cmt"># More powerful filtering</span>
+kubectl get pods -l <span class="str">'env in (prod,staging)'</span>
+kubectl get pods -l <span class="str">'env notin (dev)'</span>
+kubectl get pods -l <span class="str">'tier'</span> <span class="cmt"># key exists</span>
+
+<span class="key">matchExpressions</span>:
+- <span class="key">key</span>: <span class="str">env</span>
+  <span class="key">operator</span>: <span class="val">In</span>
+  <span class="key">values</span>: [<span class="str">prod</span>, <span class="str">staging</span>]</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3 — Annotations -->
+<div class="slide" data-section="s3">
+  <div class="slide-inner">
+    <div class="sec-tag c3">Annotations</div>
+    <h2>Annotations — Metadata Without Filtering</h2>
+    <div class="grid2" style="gap:20px;align-items:start">
+      <div>
+        <p style="margin-bottom:16px">Annotations are also key-value pairs, but they're meant for <strong>tools and config</strong>, not for selecting/filtering objects. They can hold larger, more complex values.</p>
+        <div class="box" style="margin-bottom:14px">
+          <div style="display:flex;gap:16px">
+            <div style="flex:1">
+              <div style="color:var(--c3);font-size:13px;font-weight:700;margin-bottom:6px">Labels</div>
+              <ul class="nice" style="font-size:13px">
+                <li>Short key=value</li>
+                <li>Used for filtering</li>
+                <li>Used by selectors</li>
+                <li>Organizing objects</li>
+              </ul>
+            </div>
+            <div style="flex:1">
+              <div style="color:var(--c4);font-size:13px;font-weight:700;margin-bottom:6px">Annotations</div>
+              <ul class="nice" style="font-size:13px">
+                <li>Any size value</li>
+                <li>NOT used for filtering</li>
+                <li>For tools / config</li>
+                <li>Ingress, CI/CD info…</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-size:14px;margin-bottom:8px">Real example — Ingress Nginx config</h3>
+        <pre style="font-size:12px"><span class="key">metadata</span>:
+  <span class="key">name</span>: <span class="str">my-ingress</span>
+  <span class="key">annotations</span>:
+    <span class="cmt"># Config for the Ingress Controller</span>
+    <span class="key">nginx.ingress.kubernetes.io/rewrite-target</span>: <span class="str">/</span>
+    <span class="key">nginx.ingress.kubernetes.io/ssl-redirect</span>: <span class="str">"true"</span>
+    <span class="key">nginx.ingress.kubernetes.io/proxy-body-size</span>: <span class="str">10m</span>
+    <span class="key">kubernetes.io/ingress.class</span>: <span class="str">nginx</span></pre>
+        <div class="box" style="margin-top:10px;font-size:12px;padding:10px 12px">
+          💡 The Ingress controller <em>reads</em> these annotations to configure itself — Kubernetes itself doesn't understand them.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3 — Namespaces -->
+<div class="slide" data-section="s3">
+  <div class="slide-inner">
+    <div class="sec-tag c3">Namespaces</div>
+    <h2>Namespaces — Virtual Clusters 🏢</h2>
+    <p style="margin-bottom:20px">Think of a cluster as an <strong>apartment building</strong>. Namespaces are the individual apartments — isolated spaces that share the same infrastructure.</p>
+
+    <div style="display:flex;gap:16px;margin-bottom:20px">
+      <!-- The cluster building -->
+      <div class="building" style="border-color:rgba(255,158,44,.3)">
+        <div class="building-label" style="background:var(--bg);color:var(--c3)">🏢 Cluster</div>
+        <div class="apartment" style="border-color:rgba(0,212,255,.25)">
+          <div style="font-family:var(--font-code);font-size:10px;color:var(--c1);margin-bottom:4px">namespace: production</div>
+          <div style="font-size:11px;color:var(--text-dim)">frontend-pod · backend-pod · db-pod</div>
+        </div>
+        <div class="apartment" style="border-color:rgba(0,233,122,.25)">
+          <div style="font-family:var(--font-code);font-size:10px;color:var(--c2);margin-bottom:4px">namespace: staging</div>
+          <div style="font-size:11px;color:var(--text-dim)">frontend-pod · backend-pod</div>
+        </div>
+        <div class="apartment">
+          <div style="font-family:var(--font-code);font-size:10px;color:var(--text-dim);margin-bottom:4px">namespace: monitoring</div>
+          <div style="font-size:11px;color:var(--text-dim)">prometheus · grafana</div>
+        </div>
+        <div class="apartment">
+          <div style="font-family:var(--font-code);font-size:10px;color:var(--text-dim);margin-bottom:4px">namespace: kube-system</div>
+          <div style="font-size:11px;color:var(--text-dim)">coredns · kube-proxy</div>
+        </div>
+      </div>
+
+      <div style="flex:1">
+        <div class="box" style="margin-bottom:12px">
+          <h3 style="font-size:13px;margin-bottom:8px">Benefits</h3>
+          <ul class="nice" style="font-size:13px">
+            <li>Isolate teams / environments</li>
+            <li>Apply RBAC per namespace</li>
+            <li>Set resource quotas per namespace</li>
+            <li>Same name, different namespaces = no conflict</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h3 style="font-size:13px;margin-bottom:8px">Cross-Namespace DNS</h3>
+          <pre style="font-size:11px"><span class="cmt"># Inside same namespace:</span>
+<span class="str">nginx-svc</span>
+
+<span class="cmt"># From another namespace:</span>
+<span class="str">nginx-svc.production.svc.cluster.local</span>
+
+<span class="cmt"># Format:</span>
+<span class="str">{service}.{namespace}.svc.cluster.local</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3 — Resource Quotas -->
+<div class="slide" data-section="s3">
+  <div class="slide-inner scrollable">
+    <div class="sec-tag c3">Resource Management</div>
+    <h2>Requests, Limits &amp; Quotas</h2>
+
+    <div class="grid2" style="gap:16px;margin-bottom:16px">
+      <div class="box c3">
+        <h3 style="font-size:14px;color:var(--c3);margin-bottom:6px">Container Level</h3>
+        <p style="font-size:12px;color:var(--text-dim);margin-bottom:10px">Per-container resource guarantee &amp; cap</p>
+        <pre style="font-size:11px"><span class="key">resources</span>:
+  <span class="key">requests</span>:       <span class="cmt"># Minimum guaranteed</span>
+    <span class="key">memory</span>: <span class="str">"64Mi"</span>
+    <span class="key">cpu</span>: <span class="str">"250m"</span>
+  <span class="key">limits</span>:         <span class="cmt"># Maximum allowed</span>
+    <span class="key">memory</span>: <span class="str">"128Mi"</span>
+    <span class="key">cpu</span>: <span class="str">"500m"</span></pre>
+
+        <!-- resource bars -->
+        <div style="margin-top:12px">
+          <div class="resource-bar-wrap">
+            <div class="resource-bar-label"><span>CPU</span><span>250m request / 500m limit</span></div>
+            <div class="resource-bar-bg">
+              <div class="resource-bar-fill" style="width:50%;background:linear-gradient(90deg,var(--c3),var(--c2))"></div>
+            </div>
+          </div>
+          <div class="resource-bar-wrap">
+            <div class="resource-bar-label"><span>Memory</span><span>64Mi request / 128Mi limit</span></div>
+            <div class="resource-bar-bg">
+              <div class="resource-bar-fill" style="width:50%;background:linear-gradient(90deg,var(--c3),var(--c2))"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="box">
+        <h3 style="font-size:14px;margin-bottom:6px">Namespace Level (ResourceQuota)</h3>
+        <p style="font-size:12px;color:var(--text-dim);margin-bottom:10px">Total cap for an entire namespace</p>
+        <pre style="font-size:11px"><span class="key">kind</span>: <span class="val">ResourceQuota</span>
+<span class="key">spec</span>:
+  <span class="key">hard</span>:
+    <span class="key">pods</span>: <span class="str">"10"</span>           <span class="cmt"># Max 10 pods</span>
+    <span class="key">requests.cpu</span>: <span class="str">"2"</span>    <span class="cmt"># 2 CPU total</span>
+    <span class="key">requests.memory</span>: <span class="str">4Gi</span>
+    <span class="key">limits.cpu</span>: <span class="str">"4"</span>
+    <span class="key">limits.memory</span>: <span class="str">8Gi</span></pre>
+      </div>
+    </div>
+
+    <div class="box c3" style="font-size:13px;padding:12px 16px">
+      <span class="tag amber">Request</span> = "I need at least this much" — used by scheduler to place the pod<br>
+      <span class="tag red">Limit</span> = "I must never use more than this" — CPU is throttled; exceed memory = OOMKill
+    </div>
+  </div>
+</div>
+
+<!-- S3 — Health Probes -->
+<div class="slide" data-section="s3">
+  <div class="slide-inner scrollable">
+    <div class="sec-tag c3">Health Probes</div>
+    <h2>Health Probes — Automatic Health Checks</h2>
+    <p style="margin-bottom:20px">Kubernetes runs these checks automatically and takes action when they fail.</p>
+
+    <!-- Timeline -->
+    <div class="probe-timeline">
+      <div class="probe-block" style="border-color:rgba(0,212,255,.3)">
+        <div style="font-size:20px;margin-bottom:6px">🚀</div>
+        <h3 style="color:var(--c1)">Startup Probe</h3>
+        <p style="font-size:11px;color:var(--text-dim);line-height:1.5">Runs first. Gives slow-starting apps time to boot. Liveness &amp; readiness wait until this passes.</p>
+        <div class="probe-loop">fails → kill &amp; restart</div>
+      </div>
+      <div class="probe-arrow">→</div>
+      <div class="probe-block" style="border-color:rgba(255,158,44,.3)">
+        <div style="font-size:20px;margin-bottom:6px">💓</div>
+        <h3 style="color:var(--c3)">Liveness Probe</h3>
+        <p style="font-size:11px;color:var(--text-dim);line-height:1.5">Runs continuously. Is the container still alive? If it fails, the container is restarted.</p>
+        <div class="probe-loop">🔄 repeats forever<br>fails → restart pod</div>
+      </div>
+      <div class="probe-arrow">→</div>
+      <div class="probe-block" style="border-color:rgba(0,233,122,.3)">
+        <div style="font-size:20px;margin-bottom:6px">✅</div>
+        <h3 style="color:var(--c2)">Readiness Probe</h3>
+        <p style="font-size:11px;color:var(--text-dim);line-height:1.5">Runs continuously. Is the container ready to serve traffic? If it fails, removed from Service endpoints.</p>
+        <div class="probe-loop">🔄 repeats forever<br>fails → remove from LB</div>
+      </div>
+    </div>
+
+    <div class="box" style="margin-top:16px">
+      <h3 style="font-size:14px;margin-bottom:10px">Probe Types</h3>
+      <pre style="font-size:12px"><span class="key">livenessProbe</span>:
+  <span class="key">httpGet</span>:            <span class="cmt"># HTTP 200 = healthy</span>
+    <span class="key">path</span>: <span class="str">/healthz</span>
+    <span class="key">port</span>: <span class="val">8080</span>
+  <span class="key">initialDelaySeconds</span>: <span class="val">10</span>   <span class="cmt"># Wait before first check</span>
+  <span class="key">periodSeconds</span>: <span class="val">5</span>          <span class="cmt"># Check every 5s</span>
+  <span class="key">failureThreshold</span>: <span class="val">3</span>       <span class="cmt"># 3 fails = restart</span>
+<span class="cmt"># Other types: exec (run command), tcpSocket (check TCP port)</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- S3 — Quick Ref -->
+<div class="slide" data-section="s3">
+  <div class="slide-inner">
+    <div class="sec-tag c3">Quick Reference</div>
+    <h2>⚡ Resources Management Cheatsheet</h2>
+    <div class="qr-grid">
+      <div class="qr-item">
+        <small>Filter by label</small>
+        <code>kubectl get pods -l app=nginx</code>
+      </div>
+      <div class="qr-item">
+        <small>List namespaces</small>
+        <code>kubectl get namespaces</code>
+      </div>
+      <div class="qr-item">
+        <small>Work in namespace</small>
+        <code>kubectl get pods -n production</code>
+      </div>
+      <div class="qr-item">
+        <small>Set default namespace</small>
+        <code>kubectl config set-context --current --namespace=prod</code>
+      </div>
+      <div class="qr-item">
+        <small>View resource quotas</small>
+        <code>kubectl describe quota -n staging</code>
+      </div>
+      <div class="qr-item">
+        <small>Top pods (resource usage)</small>
+        <code>kubectl top pods</code>
+      </div>
+    </div>
+    <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div class="box c3" style="font-size:12px;padding:12px">
+        <div style="color:var(--c3);font-weight:700;margin-bottom:6px">🏷️ Labels</div>
+        Key-value pairs for filtering and connecting objects
+      </div>
+      <div class="box" style="font-size:12px;padding:12px">
+        <div style="color:var(--text);font-weight:700;margin-bottom:6px">📝 Annotations</div>
+        Metadata for tools — NOT for filtering
+      </div>
+      <div class="box" style="font-size:12px;padding:12px">
+        <div style="color:var(--c4);font-weight:700;margin-bottom:6px">🏢 Namespaces</div>
+        Virtual isolation within a cluster
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────
+     SECTION 4 — Storage & Persistence
+───────────────────────────────────────────────────── -->
+
+<!-- S4 Cover -->
+<div class="slide sec-title-slide" data-section="s4" style="--sec-rgb:199,125,255">
+  <div class="slide-inner">
+    <div class="sec-tag c4">Section 04</div>
+    <h1 style="color:var(--c4)">Storage &amp;<br>Persistence</h1>
+    <p class="lead" style="margin-top:16px">Containers are stateless by default. Volumes, PVs, PVCs, and StatefulSets solve the data persistence problem.</p>
+  </div>
+  <div class="sec-number" style="color:var(--c4)">04</div>
+</div>
+
+<!-- S4 — Why Volumes -->
+<div class="slide" data-section="s4">
+  <div class="slide-inner">
+    <div class="sec-tag c4">The Problem</div>
+    <h2>Containers Lose Data When They Die 💀</h2>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">
+      <p style="font-size:11px;font-family:var(--font-code);color:var(--text-dim);margin-bottom:16px">WITHOUT VOLUMES</p>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div style="text-align:center">
+          <div style="background:var(--bg3);border:1px solid var(--c2);border-radius:10px;padding:12px 16px;color:var(--c2)">Container<br><small style="font-family:var(--font-code);opacity:.7">+ data: /var/data</small></div>
+        </div>
+        <div style="font-size:28px">💥</div>
+        <div style="text-align:center">
+          <div style="background:var(--bg3);border:1px solid rgba(255,107,107,.5);border-radius:10px;padding:12px 16px;color:#ff6b6b;text-decoration:line-through;opacity:.5">Container<br><small style="font-family:var(--font-code)">data: GONE</small></div>
+        </div>
+        <div style="font-size:20px;color:var(--text-dim)">→</div>
+        <div style="text-align:center">
+          <div style="background:var(--bg3);border:1px solid var(--c2);border-radius:10px;padding:12px 16px;color:var(--c2)">New Container<br><small style="font-family:var(--font-code);opacity:.7">data: ∅ empty</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid rgba(199,125,255,.25);border-radius:14px;padding:24px">
+      <p style="font-size:11px;font-family:var(--font-code);color:var(--c4);margin-bottom:16px">WITH A VOLUME ✓</p>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div style="text-align:center">
+          <div style="background:var(--bg3);border:1px solid var(--c2);border-radius:10px;padding:12px 16px;color:var(--c2)">Container<br><small style="font-family:var(--font-code);opacity:.7">mounts /data</small></div>
+        </div>
+        <div style="color:var(--text-dim);font-size:18px">↕</div>
+        <div style="text-align:center">
+          <div style="background:rgba(199,125,255,.1);border:1px solid var(--c4);border-radius:10px;padding:12px 16px;color:var(--c4)">📦 Volume<br><small style="font-family:var(--font-code);opacity:.7">data lives here</small></div>
+        </div>
+        <div style="font-size:28px">💥</div>
+        <div style="color:var(--text-dim);font-size:18px">↕</div>
+        <div style="text-align:center">
+          <div style="background:var(--bg3);border:1px solid var(--c2);border-radius:10px;padding:12px 16px;color:var(--c2)">New Container<br><small style="font-family:var(--font-code);opacity:.7">mounts same /data</small></div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--text-dim);text-align:center;margin-top:10px">Volume outlives the container — data is safe ✓</div>
+    </div>
+  </div>
+</div>
+
+<!-- S4 — Volume Types -->
+<div class="slide" data-section="s4">
+  <div class="slide-inner scrollable">
+    <div class="sec-tag c4">Volume Types</div>
+    <h2>Volume Scope — Where Does Data Live?</h2>
+
+    <!-- Nested scope diagram -->
+    <div style="border:2px dashed rgba(199,125,255,.3);border-radius:14px;padding:20px;position:relative;margin-bottom:16px">
+      <div style="position:absolute;top:-12px;left:20px;background:var(--bg);font-family:var(--font-code);font-size:10px;padding:0 10px;color:var(--c4)">🏗️ CLUSTER SCOPE</div>
+      <div style="text-align:center;margin-bottom:12px;color:var(--c4);font-size:12px;font-family:var(--font-code)">PersistentVolume (PV) — exists independently of pods &amp; nodes</div>
+      <div style="border:2px dashed rgba(255,158,44,.3);border-radius:12px;padding:16px;position:relative;margin-bottom:12px">
+        <div style="position:absolute;top:-10px;left:16px;background:var(--bg);font-family:var(--font-code);font-size:10px;padding:0 8px;color:var(--c3)">🖥️ NODE SCOPE</div>
+        <div style="text-align:center;color:var(--c3);font-size:12px;font-family:var(--font-code)">Local Volume — tied to a specific node's disk</div>
+        <div style="border:2px dashed rgba(0,212,255,.3);border-radius:10px;padding:14px;position:relative;margin-top:12px">
+          <div style="position:absolute;top:-10px;left:14px;background:var(--bg);font-family:var(--font-code);font-size:10px;padding:0 8px;color:var(--c1)">📦 POD SCOPE</div>
+          <div style="text-align:center;color:var(--c1);font-size:12px;font-family:var(--font-code)">emptyDir — shared between containers, deleted with pod</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid3" style="gap:12px">
+      <div class="box c1">
+        <h3 style="font-size:13px;color:var(--c1);margin-bottom:6px">📦 emptyDir</h3>
+        <ul class="nice" style="font-size:12px">
+          <li>Created when pod starts</li>
+          <li>Shared between containers in same pod</li>
+          <li>Deleted when pod is removed</li>
+        </ul>
+        <pre style="margin-top:8px;font-size:11px"><span class="key">volumes</span>:
+- <span class="key">name</span>: <span class="str">cache</span>
+  <span class="key">emptyDir</span>: {}</pre>
+      </div>
+      <div class="box c3">
+        <h3 style="font-size:13px;color:var(--c3);margin-bottom:6px">🖥️ Local Volume</h3>
+        <ul class="nice" style="font-size:12px">
+          <li>Uses a directory on a specific node</li>
+          <li>Survives pod restarts</li>
+          <li>Requires <code style="font-family:var(--font-code);font-size:11px">nodeAffinity</code></li>
+        </ul>
+        <pre style="margin-top:8px;font-size:11px"><span class="key">volumes</span>:
+- <span class="key">name</span>: <span class="str">local-data</span>
+  <span class="key">local</span>:
+    <span class="key">path</span>: <span class="str">/mnt/data</span></pre>
+      </div>
+      <div class="box c4">
+        <h3 style="font-size:13px;color:var(--c4);margin-bottom:6px">☁️ PersistentVolume</h3>
+        <ul class="nice" style="font-size:12px">
+          <li>Cluster-level storage resource</li>
+          <li>Survives pod AND node</li>
+          <li>Claimed via PVC (see next slide)</li>
+        </ul>
+        <pre style="margin-top:8px;font-size:11px"><span class="cmt"># Claimed via PVC ↓</span>
+<span class="key">volumes</span>:
+- <span class="key">name</span>: <span class="str">data</span>
+  <span class="key">persistentVolumeClaim</span>:
+    <span class="key">claimName</span>: <span class="str">my-pvc</span></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4 — PV/PVC -->
+<div class="slide" data-section="s4">
+  <div class="slide-inner">
+    <div class="sec-tag c4">PV &amp; PVC</div>
+    <h2>PersistentVolume &amp; PersistentVolumeClaim</h2>
+    <p style="margin-bottom:16px">Think of it like renting an apartment: the <strong>PV</strong> is the apartment (exists independently), the <strong>PVC</strong> is your rental agreement, and <strong>your app</strong> just moves in.</p>
+
+    <!-- Static Provisioning flow -->
+    <div class="box" style="margin-bottom:14px;padding:16px">
+      <div style="font-size:11px;font-family:var(--font-code);color:var(--text-dim);margin-bottom:12px">STATIC PROVISIONING (admin creates PV manually)</div>
+      <div class="pv-flow">
+        <div class="pv-box disk">
+          <div style="font-size:20px">💿</div>
+          Physical Disk<br><small>AWS EBS / NFS / Local</small>
+        </div>
+        <div style="text-align:center">
+          <div class="pv-arrow">→</div>
+          <div class="pv-label">admin creates</div>
+        </div>
+        <div class="pv-box pv">
+          <div style="font-size:20px">🗃️</div>
+          PersistentVolume<br><small>capacity, accessMode</small>
+        </div>
+        <div style="text-align:center">
+          <div class="pv-arrow">⟷</div>
+          <div class="pv-label">1:1 binding</div>
+        </div>
+        <div class="pv-box pvc">
+          <div style="font-size:20px">📋</div>
+          PVC<br><small>requests storage</small>
+        </div>
+        <div style="text-align:center">
+          <div class="pv-arrow">→</div>
+          <div class="pv-label">mounted by</div>
+        </div>
+        <div class="pv-box app">
+          <div style="font-size:20px">🐳</div>
+          Pod<br><small>uses /data</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dynamic Provisioning -->
+    <div class="box c4" style="padding:16px">
+      <div style="font-size:11px;font-family:var(--font-code);color:var(--c4);margin-bottom:12px">DYNAMIC PROVISIONING ✨ (automatic, no pre-created PV)</div>
+      <div class="pv-flow">
+        <div class="pv-box app">🐳 Pod</div>
+        <div style="text-align:center"><div class="pv-arrow">→</div><div class="pv-label">requests</div></div>
+        <div class="pv-box pvc">📋 PVC<br><small>storageClass: fast</small></div>
+        <div style="text-align:center"><div class="pv-arrow">→</div><div class="pv-label">triggers</div></div>
+        <div class="pv-box" style="border-color:var(--c3);color:var(--c3);background:rgba(255,158,44,.06)">⚙️ StorageClass<br><small>provisioner</small></div>
+        <div style="text-align:center"><div class="pv-arrow">→</div><div class="pv-label">auto-creates</div></div>
+        <div class="pv-box pv">🗃️ PV<br><small>auto-provisioned</small></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4 — Access Modes -->
+<div class="slide" data-section="s4">
+  <div class="slide-inner">
+    <div class="sec-tag c4">Access Modes</div>
+    <h2>PV Access Modes &amp; Reclaim Policies</h2>
+
+    <h3 style="font-size:15px;margin-bottom:12px">Access Modes</h3>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px">
+      <table>
+        <thead>
+          <tr><th>Mode</th><th>Full Name</th><th>Meaning</th><th>Example Use</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag blue">RWO</span></td>
+            <td style="font-family:var(--font-code);font-size:12px">ReadWriteOnce</td>
+            <td>1 node can read &amp; write</td>
+            <td>Database (MySQL)</td>
+          </tr>
+          <tr>
+            <td><span class="tag violet">RWOP</span></td>
+            <td style="font-family:var(--font-code);font-size:12px">ReadWriteOncePod</td>
+            <td>1 pod can read &amp; write</td>
+            <td>Strict single-writer</td>
+          </tr>
+          <tr>
+            <td><span class="tag green">RWX</span></td>
+            <td style="font-family:var(--font-code);font-size:12px">ReadWriteMany</td>
+            <td>Many nodes read &amp; write</td>
+            <td>Shared file storage (NFS)</td>
+          </tr>
+          <tr>
+            <td><span class="tag amber">ROX</span></td>
+            <td style="font-family:var(--font-code);font-size:12px">ReadOnlyMany</td>
+            <td>Many nodes read only</td>
+            <td>Static assets, configs</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="font-size:15px;margin-bottom:12px">Reclaim Policies</h3>
+    <div class="grid3" style="gap:10px">
+      <div class="box" style="font-size:12px;border-top:3px solid var(--c2)">
+        <div style="color:var(--c2);font-weight:700;margin-bottom:4px">Retain</div>
+        PV is kept after PVC is deleted. Admin must manually reclaim.
+        <span class="tag green" style="margin-top:6px;display:inline-block">Safe for data</span>
+      </div>
+      <div class="box" style="font-size:12px;border-top:3px solid #ff6b6b">
+        <div style="color:#ff6b6b;font-weight:700;margin-bottom:4px">Delete</div>
+        PV and underlying storage are deleted automatically.
+        <span class="tag red" style="margin-top:6px;display:inline-block">Data deleted!</span>
+      </div>
+      <div class="box" style="font-size:12px;border-top:3px solid var(--text-dim)">
+        <div style="color:var(--text-dim);font-weight:700;margin-bottom:4px">Recycle ⚠️</div>
+        Wipes data (rm -rf) and makes PV available again.
+        <span class="tag" style="margin-top:6px;display:inline-block;background:rgba(255,255,255,.05);color:var(--text-dim)">Deprecated</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4 — StatefulSets -->
+<div class="slide" data-section="s4">
+  <div class="slide-inner scrollable">
+    <div class="sec-tag c4">StatefulSets</div>
+    <h2>StatefulSets vs Deployments</h2>
+    <p style="margin-bottom:16px">Use StatefulSets when each pod needs a <strong>stable identity</strong> and its <strong>own persistent storage</strong> — like databases.</p>
+
+    <div class="compare-row" style="margin-bottom:16px">
+      <div class="compare-col dep">
+        <h3 style="font-size:14px;color:var(--c3);margin-bottom:10px">🚀 Deployment</h3>
+        <p style="font-size:12px;color:var(--text-dim);margin-bottom:10px">Pods are interchangeable. Random names. Shared or no storage.</p>
+        <div class="compare-pod random">pod-7d9f8b-xqrzt</div>
+        <div class="compare-pod random">pod-7d9f8b-plmkj</div>
+        <div class="compare-pod random">pod-7d9f8b-bnvca</div>
+        <ul class="nice" style="font-size:12px;margin-top:10px">
+          <li>Pods created in any order</li>
+          <li>Deleted all at once (scale down)</li>
+          <li>Random generated names</li>
+          <li>Usually one shared PVC or none</li>
+        </ul>
+      </div>
+      <div class="compare-col sts">
+        <h3 style="font-size:14px;color:var(--c4);margin-bottom:10px">🗄️ StatefulSet</h3>
+        <p style="font-size:12px;color:var(--text-dim);margin-bottom:10px">Pods have stable identity, ordered creation, own PVC per pod.</p>
+        <div class="compare-pod stable">mysql-0 · PVC: data-mysql-0</div>
+        <div class="compare-pod stable">mysql-1 · PVC: data-mysql-1</div>
+        <div class="compare-pod stable">mysql-2 · PVC: data-mysql-2</div>
+        <ul class="nice" style="font-size:12px;margin-top:10px">
+          <li>Created in order: 0, 1, 2…</li>
+          <li>Deleted in reverse: 2, 1, 0</li>
+          <li>Stable hostname: {name}-{index}</li>
+          <li>Each pod gets its own PVC</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="box c4" style="font-size:13px;padding:12px 16px">
+      🔗 <strong>Headless Service</strong> pairs with StatefulSets — set <code style="font-family:var(--font-code);color:var(--c4)">clusterIP: None</code>. Gives each pod stable DNS: <code style="font-family:var(--font-code);font-size:12px;color:var(--c4)">mysql-0.mysql-svc.default.svc.cluster.local</code>
+    </div>
+  </div>
+</div>
+
+<!-- S4 — Quick Ref -->
+<div class="slide" data-section="s4">
+  <div class="slide-inner">
+    <div class="sec-tag c4">Quick Reference</div>
+    <h2>⚡ Storage &amp; Persistence Cheatsheet</h2>
+    <div class="qr-grid">
+      <div class="qr-item">
+        <small>List PersistentVolumes</small>
+        <code>kubectl get pv</code>
+      </div>
+      <div class="qr-item">
+        <small>List PVCs</small>
+        <code>kubectl get pvc</code>
+      </div>
+      <div class="qr-item">
+        <small>Describe a PVC</small>
+        <code>kubectl describe pvc my-claim</code>
+      </div>
+      <div class="qr-item">
+        <small>List StatefulSets</small>
+        <code>kubectl get statefulsets</code>
+      </div>
+      <div class="qr-item">
+        <small>List StorageClasses</small>
+        <code>kubectl get storageclass</code>
+      </div>
+      <div class="qr-item">
+        <small>Headless Service</small>
+        <code>clusterIP: None</code>
+      </div>
+    </div>
+    <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="box c4" style="font-size:12px;padding:12px">
+        <div style="font-weight:700;margin-bottom:6px;color:var(--c4)">🔑 PV / PVC Relationship</div>
+        <ul class="nice" style="font-size:12px">
+          <li>Always 1-to-1 binding</li>
+          <li>PVC requests; PV provides</li>
+          <li>Static: admin creates PV</li>
+          <li>Dynamic: StorageClass creates PV</li>
+        </ul>
+      </div>
+      <div class="box" style="font-size:12px;padding:12px">
+        <div style="font-weight:700;margin-bottom:6px">📊 Volume Comparison</div>
+        <table style="font-size:11px">
+          <tr><th>Type</th><th>Scope</th><th>Survives</th></tr>
+          <tr><td>emptyDir</td><td>Pod</td><td>Container restart</td></tr>
+          <tr><td>Local</td><td>Node</td><td>Pod restart</td></tr>
+          <tr><td>PV</td><td>Cluster</td><td>Pod + Node</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FINAL SLIDE ──────────────────────────────── -->
+<div class="slide" data-section="outro">
+  <div class="slide-inner" style="text-align:center">
+    <div style="font-size:60px;margin-bottom:20px">🎓</div>
+    <h1 style="margin-bottom:16px">You've Got This!</h1>
+    <p class="lead" style="text-align:center;margin:0 auto 32px">You've covered all four core Kubernetes topics. Practice with <code style="font-family:var(--font-code)">kubectl</code> daily — hands-on experience is the fastest path to mastery.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <span class="tag blue">Object Management</span>
+      <span class="tag green">Services</span>
+      <span class="tag amber">Resources</span>
+      <span class="tag violet">Storage</span>
+    </div>
+    <div style="margin-top:32px;font-size:13px;color:var(--text-dim)">
+      IITC IT Professional Academy · Instructor: Lirone Fitoussi
+    </div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+// ─── SLIDE ENGINE ───────────────────────────────────────────
+const slides   = Array.from(document.querySelectorAll('.slide'));
+const counter  = document.getElementById('counter');
+const accentBar= document.getElementById('accentBar');
+const prevBtn  = document.getElementById('prevBtn');
+const nextBtn  = document.getElementById('nextBtn');
+
+const sectionColors = {
+  intro: 'transparent',
+  s1:    'var(--c1)',
+  s2:    'var(--c2)',
+  s3:    'var(--c3)',
+  s4:    'var(--c4)',
+  outro: 'var(--c4)',
+};
+
+let current = 0;
+let isAnimating = false;
+
+function goTo(idx, direction = 1) {
+  if (isAnimating || idx === current || idx < 0 || idx >= slides.length) return;
+  isAnimating = true;
+
+  const from = slides[current];
+  const to   = slides[idx];
+
+  from.classList.remove('active');
+  from.classList.add('exit');
+  to.style.transform = direction > 0 ? 'translateY(20px)' : 'translateY(-20px)';
+  to.classList.add('active');
+
+  current = idx;
+  updateUI();
+
+  setTimeout(() => {
+    from.classList.remove('exit');
+    to.style.transform = '';
+    isAnimating = false;
+  }, 450);
+}
+
+function updateUI() {
+  counter.textContent = `${current + 1} / ${slides.length}`;
+  const sec = slides[current].dataset.section || 'intro';
+  accentBar.style.background = sectionColors[sec] || 'transparent';
+
+  // sidebar dots
+  document.querySelectorAll('.nav-dot').forEach(d => d.classList.remove('active'));
+  const sIdx = ['s1','s2','s3','s4'].indexOf(sec);
+  if (sIdx >= 0) {
+    const dots = document.querySelectorAll(`[data-sec="${sIdx}"] .nav-dot`);
+    const inSec = slides.filter(s => s.dataset.section === sec);
+    const posInSec = inSec.indexOf(slides[current]);
+    if (dots[posInSec]) dots[posInSec].classList.add('active');
+  }
+}
+
+// Build nav dots
+['s1','s2','s3','s4'].forEach((sec, si) => {
+  const group = document.querySelector(`[data-sec="${si}"]`);
+  const secSlides = slides.filter(s => s.dataset.section === sec);
+  secSlides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot';
+    dot.title = `${sec} slide ${i+1}`;
+    dot.addEventListener('click', () => {
+      const globalIdx = slides.indexOf(secSlides[i]);
+      goTo(globalIdx);
+    });
+    group.appendChild(dot);
+  });
+});
+
+// Controls
+prevBtn.addEventListener('click', () => goTo(current - 1, -1));
+nextBtn.addEventListener('click', () => goTo(current + 1,  1));
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+    e.preventDefault(); goTo(current + 1, 1);
+  }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault(); goTo(current - 1, -1);
+  }
+});
+
+// Touch swipe
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 50) goTo(current + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+});
+
+updateUI();
+</script>
+</body>
+</html>

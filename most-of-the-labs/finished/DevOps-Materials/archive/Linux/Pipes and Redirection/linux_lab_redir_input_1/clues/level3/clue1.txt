@@ -1,0 +1,60 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 1
+                "Transform and Save: tr + < + >"
+================================================================================
+
+BACKGROUND:
+-----------
+Now that you know how to use `<` to feed a file to a command, and `>` to
+save output to a file, you can chain these together into multi-step
+transformations. Each step takes the output of the previous step as its
+input — either by saving to an intermediate file (and reading that with `<`)
+or by connecting commands with pipes (`|`).
+
+In this exercise you will split a sentence into individual words (one per
+line), sort them, and find unique words. This is a classic text-processing
+workflow that demonstrates how small, focused commands combine to do
+meaningful work. You will see a preview of pipes here — a full pipe lab
+follows later.
+
+EXERCISE:
+---------
+Step 1: Preview what splitting on spaces does (does not save anything):
+  tr ' ' '\n' < ../../data/sentence.txt && echo "---"
+
+Step 2: Save the words-per-line result to a file, then view it:
+  tr ' ' '\n' < ../../data/sentence.txt > words_per_line.txt && cat words_per_line.txt
+
+Step 3: Count how many words (lines) are in the new file:
+  wc -l < words_per_line.txt
+
+Step 4: Sort the words alphabetically and save:
+  sort < words_per_line.txt > words_sorted.txt && cat words_sorted.txt
+
+Step 5: Remove duplicate words and save (preview of sort | uniq):
+  sort < words_per_line.txt | uniq > words_unique.txt && cat words_unique.txt
+
+Step 6: Count unique words:
+  wc -l < words_unique.txt
+
+Step 7: Compare total word count vs unique word count:
+  echo "Total words:"
+  wc -l < words_per_line.txt
+  echo "Unique words:"
+  wc -l < words_unique.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many total words does sentence.txt contain (Step 3)?
+- How many unique words does sentence.txt contain (Step 6)?
+- How many duplicate words are there (total minus unique)?
+- Which word(s) appear more than once in sentence.txt?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L3E1: sentence.txt has 10 total words. After removing duplicates there are 9 unique words. There is 1 duplicate: 'the' appears twice (at the start and near the end of the sentence)." >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level3/clue2.txt
+================================================================================

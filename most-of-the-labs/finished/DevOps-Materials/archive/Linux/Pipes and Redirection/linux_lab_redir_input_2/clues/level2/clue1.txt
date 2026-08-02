@@ -1,0 +1,60 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 1
+                    "Sort and Save: Ranking Scores"
+================================================================================
+
+BACKGROUND:
+-----------
+The `sort` command orders lines of text. By default it sorts alphabetically,
+which gives wrong results for numbers (e.g., "9" sorts after "10"). The `-n`
+flag tells sort to treat values as numbers. Adding `-r` reverses the order,
+so `-rn` gives you numbers sorted from highest to lowest.
+
+Combining `sort` with input redirection is a common pattern for producing
+ranked lists, leaderboards, or prioritized reports. After sorting you can
+use `head` to get the top result and `tail` to get the bottom result — both
+reading from the saved file rather than re-running the sort.
+
+In this exercise you will sort a list of 15 raw test scores, save the ranked
+results to a file, and then extract the highest and lowest scores. You will
+also compare the behavior of `sort` versus `sort -n` to understand why the
+numeric flag matters.
+
+EXERCISE:
+---------
+Step 1: View the unsorted scores:
+  cat ../../data/scores.txt
+
+Step 2: Sort scores in ascending order (smallest to largest):
+  sort -n < ../../data/scores.txt
+
+Step 3: Sort scores in descending order (largest to smallest):
+  sort -rn < ../../data/scores.txt
+
+Step 4: Save the descending (ranked) list to a file and display it:
+  sort -rn < ../../data/scores.txt > ranked.txt && cat ranked.txt
+
+Step 5: Show the highest score (first line of ranked file):
+  head -1 ranked.txt
+
+Step 6: Show the lowest score (last line of ranked file):
+  tail -1 ranked.txt
+
+Step 7: Count how many scores there are:
+  wc -l ranked.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- What is the highest score?
+- What is the lowest score?
+- How many total scores are in the file?
+- What is the difference between `sort` (no flags) and `sort -n` for numbers?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L2E1 - Highest: <score>, Lowest: <score>, Total: <count>" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue2.txt
+================================================================================

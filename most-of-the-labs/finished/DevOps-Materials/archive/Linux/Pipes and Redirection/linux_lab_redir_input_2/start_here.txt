@@ -1,0 +1,72 @@
+================================================================================
+         WELCOME BACK - Linux Lab: Input Redirection in Practice
+                           *** PART 2 ***
+================================================================================
+
+Good to see you again!
+
+If you completed Part 1, you already know the core idea:
+
+  command < file
+
+This tells the shell to open the file and feed its contents into the command
+through standard input (stdin) — as if you had typed the contents yourself.
+
+--------------------------------------------------------------------------------
+QUICK REMINDER - THE BASICS:
+--------------------------------------------------------------------------------
+
+  # These two commands produce the same output:
+  cat myfile.txt
+  cat < myfile.txt
+
+  # But < gives you power when combining with other tools:
+  wc -l < myfile.txt
+  sort < myfile.txt | uniq | wc -l
+  tr 'a-z' 'A-Z' < myfile.txt > uppercase.txt
+
+--------------------------------------------------------------------------------
+WHAT IS NEW IN PART 2:
+--------------------------------------------------------------------------------
+
+Part 2 moves beyond simple demos into real data processing tasks:
+
+  - CSV files with columns you need to extract
+  - Documents where you count and analyze content
+  - Score lists that need sorting and ranking
+  - Files with mixed case that need normalizing
+  - Data with duplicates that need deduplication
+  - User lists that need filtering by status
+  - A final multi-step pipeline challenge
+
+--------------------------------------------------------------------------------
+IMPORTANT NOTE:
+--------------------------------------------------------------------------------
+
+All exercise commands use paths like:
+
+  ../../data/filename.txt
+
+This means you should run commands FROM inside the clues/levelX/ directories,
+or adjust paths accordingly. The data/ folder is always two levels up from any
+clue file's directory.
+
+--------------------------------------------------------------------------------
+HOW TO NAVIGATE:
+--------------------------------------------------------------------------------
+
+  Level 1 - Foundations (clues/level1/)
+  Level 2 - Intermediate (clues/level2/)
+  Level 3 - Advanced     (clues/level3/)
+
+Each level has 3 exercises. Complete them in order.
+
+--------------------------------------------------------------------------------
+TO BEGIN:
+--------------------------------------------------------------------------------
+
+  cat clues/level1/clue1.txt
+
+================================================================================
+Good luck and enjoy the lab!
+================================================================================

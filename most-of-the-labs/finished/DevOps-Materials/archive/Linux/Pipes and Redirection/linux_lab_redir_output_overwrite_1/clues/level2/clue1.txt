@@ -1,0 +1,76 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 1
+                "The Overwrite Danger — Data You Can Lose in a Second"
+================================================================================
+
+BACKGROUND:
+-----------
+The most important thing to know about > is this:
+
+  > DESTROYS the existing content of a file before writing new content.
+
+There is NO warning. There is NO "are you sure?". There is NO undo.
+
+If you run:
+  echo "line 1" > notes.txt
+  echo "line 2" > notes.txt
+
+After the second command, notes.txt contains ONLY "line 2".
+"line 1" is gone forever.
+
+This is by design — sometimes you WANT to overwrite (replace old data with new).
+But it's critical to understand this behavior so you don't lose important data.
+
+EXERCISE:
+---------
+Step 1: Create a file with important content:
+
+  echo "This is my important data - do not lose this!" > important.txt
+  cat important.txt
+
+Step 2: Now accidentally overwrite it:
+
+  echo "Oops" > important.txt
+  cat important.txt
+
+Observe: The important data is gone.
+
+Step 3: Create it again, and this time overwrite with a longer redirect:
+
+  echo "Version 1 of my file" > versions.txt
+  cat versions.txt
+
+  echo "Version 2 of my file" > versions.txt
+  cat versions.txt
+
+  echo "Version 3 of my file" > versions.txt
+  cat versions.txt
+
+After all three commands, how many lines does versions.txt have?
+
+Step 4: Confirm:
+
+  wc -l versions.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many lines does versions.txt have after all three redirections?
+- What happened to Version 1 and Version 2?
+- When would overwriting be USEFUL? Give a real-world example.
+- When would overwriting be DANGEROUS? Give a real-world example.
+
+IMPORTANT LESSON:
+-----------------
+  > = Overwrite (dangerous if file has data you want to keep)
+  >> = Append  (safe — adds to the end without deleting)
+
+You will learn >> in the next lab. For now, remember: > replaces everything.
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L2C1: versions.txt has N lines after 3 redirections: $(wc -l < ../../versions.txt 2>/dev/null || echo 'N/A')" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue2.txt
+================================================================================

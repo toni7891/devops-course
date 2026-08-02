@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: color-api-pod
+spec:
+  containers:
+    - name: color-api
+      image: toni7891/color-api:1.2.1
+      ports:
+        - containerPort: 80
+      env:
+        - name: FAIL_LIVENESS
+          value: "true"
+      resources:
+        limits:
+          cpu: "500m"
+          memory: 512Mi
+      startupProbe:
+        httpGet:
+          path: /up
+          port: 80
+        failureThreshold: 2
+        periodSeconds: 3
+      livenessProbe:
+        httpGet:
+          path: /health
+          port: 80
+        failureThreshold: 3
+        periodSeconds: 10

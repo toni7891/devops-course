@@ -1,0 +1,38 @@
+================================================================================
+                    LEVEL 2 - EXERCISE 3
+                    Hidden File Access
+================================================================================
+
+EXERCISE:
+---------
+Instructions mention a file "config" but you can't find it. Use the 4 steps.
+
+INSTRUCTIONS:
+-------------
+1. You should be in scenario5_lost_path (or go there: cd ../../broken_scenarios/scenario5_lost_path).
+
+2. Try: cat config
+   (Error: No such file or directory – or maybe you tried .config and got Permission denied.)
+
+3. Use the 4 steps:
+   OBSERVE: What error?
+   INSPECT: ls (do you see config?) then ls -la (files starting with . are hidden!)
+   DIAGNOSE: The file might be named .config (hidden). It might also have wrong permissions.
+   RESOLVE: cat .config (if permissions OK), or chmod 644 .config then cat .config
+
+COMMANDS TO USE:
+----------------
+cd ../../broken_scenarios/scenario5_lost_path
+ls
+ls -la
+cat .config
+chmod 644 .config   (if needed)
+cat .config         (verify)
+
+NEXT STEP:
+----------
+You've completed Level 2! Proceed to Level 3:
+  cd ../level3
+  cat clue1.txt
+
+================================================================================

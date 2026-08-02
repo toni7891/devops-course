@@ -1,0 +1,38 @@
+# Helm values for ExternalDNS
+# Docs: https://github.com/kubernetes-sigs/external-dns/tree/master/charts/external-dns
+#
+# Install:
+#   helm repo add external-dns https://kubernetes-sigs.github.io/external-dns/
+#   helm repo update
+#   helm install external-dns external-dns/external-dns \
+#     --namespace kube-system \
+#     -f k8s/external-dns/values.yaml
+
+provider: aws
+
+env:
+  - name: AWS_DEFAULT_REGION
+    value: <REGION>   # TODO: replace (e.g. us-east-1)
+
+# Only create DNS records for this domain
+domainFilters:
+  - YOUR_DOMAIN   # TODO: replace (e.g. example.com)
+
+# sync = create and delete records to match Ingress/Service annotations
+# upsert-only = only create, never delete (safer for shared zones)
+policy: sync
+
+# txt registry prevents ExternalDNS from managing records owned by other instances
+registry: txt
+txtOwnerId: eks-orders-app   # unique ID — change if you run multiple clusters
+
+# Watch Ingress and Service resources for hostname annotations
+sources:
+  - service
+  - ingress
+
+# IRSA — ServiceAccount annotation grants this pod access to Route53
+serviceAccount:
+  annotations:
+    # TODO: replace <ACCOUNT_ID> and ensure ExternalDNSRole has Route53 permissions
+    eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT_ID>:role/ExternalDNSRole

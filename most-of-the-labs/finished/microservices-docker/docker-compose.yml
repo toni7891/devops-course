@@ -1,0 +1,76 @@
+services:
+  lb:
+    image: nginx:alpine
+    volumes:
+      - ./lb/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - edge-net
+      - public-net
+    depends_on:
+      - users-service
+      - products-service
+
+  users-service:
+    build: ./services/users-service
+    environment:
+      - MONGO_URI=mongodb://users-db:27017/users-db
+    networks:
+      - users-net
+      - edge-net
+    depends_on:
+      - users-db
+
+  products-service:
+    build: ./services/products-service
+    environment:
+      - MONGO_URI=mongodb://products-db:27017/products-db
+    networks:
+      - products-net
+      - edge-net
+    depends_on:
+      - products-db
+
+  users-db:
+    image: mongo:7
+    networks:
+      - users-net
+    volumes:
+      - users-db-data:/data/db
+
+  products-db:
+    image: mongo:7
+    networks:
+      - products-net
+    volumes:
+      - products-db-data:/data/db
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    networks:
+      - public-net
+    depends_on:
+      - lb
+
+networks:
+  users-net:
+    driver: bridge
+    internal: true
+
+  products-net:
+    driver: bridge
+    internal: true
+
+  edge-net:
+    driver: bridge
+    internal: true
+
+  public-net:
+    driver: bridge
+
+volumes:
+  users-db-data:
+    driver: local
+  products-db-data:
+    driver: local

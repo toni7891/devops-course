@@ -1,0 +1,7 @@
+existingSecret: custom-wp-credentials
+service:
+  type: LoadBalancer
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10

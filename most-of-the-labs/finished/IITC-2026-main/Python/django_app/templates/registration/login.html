@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 400px; margin: 50px auto; }
+        h2 { text-align: center; }
+        form { border: 1px solid #ccc; padding: 20px; border-radius: 5px; }
+        input[type="text"], input[type="password"] {
+            width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box;
+        }
+        button {
+            width: 100%; padding: 10px; background: #007bff; color: white; border: none;
+        }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h2>Login</h2>
+    {% if form.errors %}
+        <p class="error">Invalid username or password.</p>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>

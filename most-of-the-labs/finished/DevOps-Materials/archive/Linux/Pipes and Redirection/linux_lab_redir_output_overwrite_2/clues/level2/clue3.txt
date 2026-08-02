@@ -1,0 +1,56 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 3
+                "Build a System Report — The Overwrite Challenge Returns"
+================================================================================
+
+BACKGROUND:
+-----------
+Now you face a realistic scenario: building a multi-line system report. The
+instinct is to run one command per line and use > each time. As you saw in the
+previous exercise, this destroys each previous line. Here you will witness that
+failure again, then learn the professional solution: subshell grouping with ( ).
+
+A subshell groups multiple commands together so their combined output is treated
+as a single stream, which is then redirected once with a single >. This means
+all lines are captured together and written to the file at once — nothing is
+overwritten.
+
+EXERCISE:
+---------
+Step 1: Attempt to build a report the WRONG way:
+  echo "=== SYSTEM REPORT ===" > report.txt
+  hostname > report.txt
+  date > report.txt
+  uptime > report.txt
+  cat report.txt
+
+  The report only contains the uptime line. All earlier lines were destroyed.
+
+Step 2: Reflect on what went wrong. You used > four times. Each one wiped the
+        file. Only the last > left a trace. You need a way to run all four
+        commands but redirect only ONCE.
+
+Step 3: Fix it using subshell grouping — all commands inside ( ) share one >:
+  (echo "=== SYSTEM REPORT ==="; hostname; date; uptime) > report.txt
+  cat report.txt
+
+  Now all four pieces of information are present.
+
+Step 4: Verify the line count:
+  wc -l report.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- After step 1, how many lines does report.txt have?
+- What does the subshell ( ) grouping technique do that makes > work correctly
+  for a multi-line report?
+- After step 3, how many lines does report.txt have?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level2-Ex3: Lines after step1=___. Subshell does: ___. Lines after step3=___" >> ../../my_answers.txt
+
+================================================================================
+Move to the next level:
+  cat ../level3/clue1.txt
+================================================================================

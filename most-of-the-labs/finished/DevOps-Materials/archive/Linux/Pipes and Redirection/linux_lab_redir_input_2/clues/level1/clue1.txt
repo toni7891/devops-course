@@ -1,0 +1,53 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 1
+                "Simulating Message Input: cat < message.txt"
+================================================================================
+
+BACKGROUND:
+-----------
+Many programs and scripts read their body or content from standard input
+(stdin). When you use `cat < file`, the shell opens the file and connects it
+directly to the program's stdin — the program never knows whether a human
+is typing or a file is being read. This is one of the most fundamental uses
+of input redirection.
+
+In this exercise you will use a formal memo file to explore different ways
+of reading content with input redirection. You will use `wc` to count words
+and lines, and `grep -c` to count how many times a specific word appears.
+
+Understanding `cat < file` versus `cat file` is the foundation. Both display
+the same content, but `<` makes the mechanism explicit — you are wiring a file
+to stdin, not passing a filename as an argument.
+
+EXERCISE:
+---------
+Step 1: View the message file normally (filename as argument):
+  cat ../../data/message.txt
+
+Step 2: View the same file using input redirection (file fed via stdin):
+  cat < ../../data/message.txt
+
+Step 3: Count the number of words in the message:
+  wc -w < ../../data/message.txt
+
+Step 4: Count the number of lines in the message:
+  wc -l < ../../data/message.txt
+
+Step 5: Count how many lines contain the word "important":
+  grep -c "important" < ../../data/message.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many words are in message.txt?
+- How many lines are in message.txt?
+- How many lines contain the word "important"?
+- What is the visual difference between Step 1 and Step 2 output?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L1E1 - Words: <your_answer>, Lines: <your_answer>, important appears: <your_answer> times" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue2.txt
+================================================================================

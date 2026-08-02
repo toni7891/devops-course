@@ -1,0 +1,56 @@
+================================================================================
+                            LEVEL 1 - EXERCISE 3
+                    "Who Owns What?" - Comparing Owners and Groups
+================================================================================
+
+Welcome to Exercise 3!
+
+You already know where owner and group appear in ls -l (Exercise 2). Now
+use that same listing to COMPARE files: which share an owner? which share
+a group? Why does that matter for who can read or change a file?
+
+EXERCISE:
+---------
+From the ls -l output you saw in data/files, list all the different owners
+and groups, and give one example of "files that share an owner" and one
+example of "files that share a group." Then connect this to access: the
+owner and group (with permissions) determine who can access the file.
+
+INSTRUCTIONS:
+-------------
+1. Use your ls -l output from data/files (or run again if needed:
+   cd ../../data/files && ls -l).
+
+2. Scan the third column (owner) and fourth column (group). Write down:
+   - Every distinct owner name you see (e.g. alice, bob, root)
+   - Every distinct group name you see (e.g. developers, team_dev, ...)
+
+3. Find at least one pair (or set) of files that have the SAME owner.
+   Example: "public_data.txt and report.sh both have owner alice."
+
+4. Find at least one pair (or set) of files that have the SAME group.
+   Example: "public_data.txt and report.sh both have group developers."
+
+5. Remember: owner and group (plus the permission string) decide who can
+   read, write, or execute the file. Different owners/groups = different
+   people can access different files.
+
+WHAT TO OBSERVE:
+----------------
+- How many different owners? How many different groups?
+- Which files share an owner? Which share a group?
+- Why it matters: only the owner (or users in the file's group, or "others"
+  if permissions allow) can access the file accordingly.
+
+WRITE YOUR ANSWER:
+------------------
+In my_answers.txt (main lab directory), write:
+- List all the owner(s) you see for files in data/files (no duplicates).
+- List all the group(s) you see (no duplicates).
+- One example: "These files have the same owner: ..."
+- One example: "These files have the same group: ..."
+
+Congratulations! You've completed Level 1!
+
+Now proceed to Level 2: cd ../../clues/level2
+Read clue1.txt to continue your permission journey.

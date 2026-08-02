@@ -1,0 +1,86 @@
+============================================================
+  LEVEL 2 — CLUE 1
+  Log Rotation Concept: Growing System Logs
+============================================================
+
+BACKGROUND
+----------
+Real Linux systems generate logs constantly. Tools like
+syslog, journald, and application daemons all append to
+log files continuously. Understanding >> is the foundation
+for understanding how logging works.
+
+A typical logging pattern looks like this:
+
+    echo "$(date) [INFO] Service started" >> /var/log/myapp.log
+    echo "$(date) [WARN] High load detected" >> /var/log/myapp.log
+    echo "$(date) [INFO] Load normalized" >> /var/log/myapp.log
+
+Each line is appended with a timestamp prefix.
+
+------------------------------------------------------------
+YOUR TASK
+------------------------------------------------------------
+
+Simulate a growing application log file.
+
+Step 1: Initialize the log file with a startup entry:
+
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO]  Application starting" > ~/app.log
+
+  Note: date '+%Y-%m-%d %H:%M:%S' formats the date as:
+        2024-01-15 14:32:07
+
+Step 2: Append several more log entries (simulate activity):
+
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO]  Loading configuration" >> ~/app.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO]  Connected to database" >> ~/app.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [WARN]  Cache miss rate above threshold" >> ~/app.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO]  Cache warming started" >> ~/app.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO]  Application ready" >> ~/app.log
+
+Step 3: View your simulated log:
+
+    cat ~/app.log
+
+Step 4: Count the log entries:
+
+    wc -l ~/app.log
+
+  Expected: 6 ~/app.log
+
+Step 5: Show only WARN entries (preview of grep + pipes):
+
+    grep WARN ~/app.log
+
+Step 6: Append a critical error entry:
+
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] Disk space below 10%" >> ~/app.log
+
+Step 7: Show only ERROR and WARN lines:
+
+    grep -E "WARN|ERROR" ~/app.log
+
+------------------------------------------------------------
+VERIFY
+------------------------------------------------------------
+
+Run: cat ~/app.log
+
+Your log should have 7 lines total, with timestamps,
+log levels in brackets, and descriptive messages.
+
+------------------------------------------------------------
+KEY INSIGHT
+------------------------------------------------------------
+
+The pattern:
+    echo "$(date '+FORMAT') [LEVEL] Message" >> logfile
+
+...is one of the most common shell scripting patterns
+in the entire Linux world. You will write this many times
+in your career as a DevOps engineer.
+
+------------------------------------------------------------
+NEXT: cat clue2.txt
+============================================================

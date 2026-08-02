@@ -1,0 +1,71 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 1
+                "Welcome to the Team" - Creating User Accounts
+================================================================================
+
+STORY:
+------
+It's your first morning. The team lead sends you a message:
+
+    "Hey! We need accounts for three people on the new server:
+     dev1, dev2, and ops1. Can you set them up today?"
+
+Time to create the team's user accounts.
+
+================================================================================
+    PART 1 - Create the Users
+================================================================================
+
+Create three users on the system:
+
+    dev1
+    dev2
+    ops1
+
+HINTS:
+- There is a command specifically designed for creating users on Ubuntu
+  in a user-friendly way (it asks for a password interactively)
+- You will need elevated privileges to create users
+- Run it once for each user
+
+COMMANDS THAT CAN HELP:
+- sudo         (run a command with elevated privileges)
+- adduser      (create a new user interactively)
+- passwd       (set or change a user's password)
+
+================================================================================
+    PART 2 - Verify the Users Exist
+================================================================================
+
+After creating the users, verify they were created successfully.
+
+HINTS:
+- All system users are listed in a file under /etc
+- The file is called /etc/passwd
+- You can display the contents of that file and look for your users
+- You can also use a text search tool to filter for specific usernames
+- There is also a dedicated command that shows information about a
+  specific user (like their UID and groups)
+
+COMMANDS THAT CAN HELP:
+- cat          (display the contents of a file)
+- grep         (search for a pattern inside a file or text)
+- id           (show user ID, group ID, and group memberships)
+
+WHAT TO OBSERVE:
+- Can you find all three users in the system file?
+- What UID was assigned to each user?
+- What is the default group for each user?
+
+WRITE YOUR ANSWER:
+------------------
+Save to my_answers.txt:
+- What command did you use to create the users?
+- What command did you use to verify they exist?
+- What UID was assigned to dev1?
+
+================================================================================
+
+When you're done, proceed to the next exercise:
+
+    cat clues/level1/clue2.txt

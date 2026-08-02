@@ -1,0 +1,37 @@
+================================================================================
+                    LEVEL 3 - EXERCISE 1
+                    Chain of Issues
+================================================================================
+
+EXERCISE:
+---------
+This scenario has MULTIPLE problems. Fix them one at a time using the 4 steps for each.
+
+INSTRUCTIONS:
+-------------
+1. Go to the scenario:
+   cd ../../broken_scenarios/scenario6_mixed_issues
+
+2. Try to run the backup script:
+   ./run_backup.sh
+   (You'll hit one problem. Fix it with the 4 steps. Then try again – you may hit another. Fix each one in turn.)
+
+3. For EACH problem: OBSERVE → INSPECT (ls -l, pwd, whoami) → DIAGNOSE → RESOLVE → verify.
+
+COMMANDS TO USE:
+----------------
+cd ../../broken_scenarios/scenario6_mixed_issues
+./run_backup.sh
+ls -l run_backup.sh
+chmod +x run_backup.sh
+ls -l data.txt
+chmod 644 data.txt   (or sudo chown if owned by root)
+ls -ld .
+chmod 755 .          (if directory missing write)
+./run_backup.sh      (verify)
+
+NEXT STEP:
+----------
+Proceed to clue2.txt (same folder: clues/level3).
+
+================================================================================

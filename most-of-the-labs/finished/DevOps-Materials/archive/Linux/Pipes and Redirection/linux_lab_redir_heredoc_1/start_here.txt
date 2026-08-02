@@ -1,0 +1,48 @@
+================================================================================
+         WELCOME TO LINUX LAB - HERE-DOCUMENT WITH << (PART 1)
+              Theme: Writing Multi-line Input Inline
+================================================================================
+
+WHAT IS A HEREDOC?
+------------------
+You already know that < reads input FROM a file:
+
+  command < file.txt
+
+But what if you want to provide multi-line input WITHOUT creating a file first?
+
+That is exactly what << does. It is called a HERE-DOCUMENT (or heredoc), and it
+lets you write the content INLINE right in the command itself.
+
+The content starts after the << DELIMITER line and ends when the DELIMITER word
+appears ALONE on its own line (no spaces before or after it).
+
+QUICK REFERENCE:
+----------------
+  cat << EOF
+  line one
+  line two
+  EOF
+
+  # Redirect to a file:
+  cat << EOF > myfile.txt
+  line one
+  line two
+  EOF
+
+  # Suppress variable expansion (quoted delimiter):
+  cat << 'EOF'
+  $THIS will not expand
+  EOF
+
+KEY RULES:
+----------
+  1. The closing delimiter (EOF) must be on its OWN line
+  2. No spaces or characters before or after the closing delimiter
+  3. EOF is just a convention — you can use any word
+  4. Variables EXPAND by default (unless you quote the delimiter)
+
+================================================================================
+QUICK START — Start with Level 1, Exercise 1:
+  cat clues/level1/clue1.txt
+================================================================================

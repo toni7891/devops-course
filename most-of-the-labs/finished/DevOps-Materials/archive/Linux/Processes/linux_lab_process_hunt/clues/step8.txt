@@ -1,0 +1,57 @@
+================================================================================
+                       STEP 8 of 10
+            "Multiple Processes" - Stopping Related Processes
+================================================================================
+
+* SETUP: Run first (from the lab root):  ./scripts/setup_step8.sh
+
+--------------------------------------------------------------------------------
+WHAT YOU'RE DOING
+--------------------------------------------------------------------------------
+Sometimes one application spawns multiple child processes. You might need to:
+- Stop just one child
+- Stop the parent (which orphans the children, reparenting them to init)
+- Stop a group of processes
+
+Your job: identify multiple related processes and practice stopping them in
+the right order.
+
+This is where understanding parent/child relationships (from Step 3) becomes
+crucial.
+
+--------------------------------------------------------------------------------
+INSTRUCTIONS
+--------------------------------------------------------------------------------
+1. Run the SETUP script. It starts several related processes.
+
+2. View the process tree:
+   ps auxf | grep -A 5 dummy
+
+   Look for the parent and its children. Children are usually indented.
+
+3. Kill one child process:
+   kill <PID_OF_CHILD>
+
+   Verify it's gone:
+   ps auxf | grep dummy
+
+4. Now kill the parent:
+   kill <PID_OF_PARENT>
+
+5. Check what happened to the children:
+   ps auxf | grep dummy
+
+   Did they get killed too? (Sometimes yes, sometimes no – depends on
+   how the parent exited.)
+
+6. Write in my_answers.txt:
+   "Step 8: The parent had [NUMBER] children. When I killed the parent,
+    the children were [reparented/killed]."
+
+7. Key insight: think carefully about the order. Killing a parent doesn't
+   always kill children – but it can orphan them (confusing to debug later).
+
+================================================================================
+CLEANUP (run when done with this step):  ./scripts/cleanup_step8.sh
+NEXT STEP:  cat clues/step9.txt
+================================================================================

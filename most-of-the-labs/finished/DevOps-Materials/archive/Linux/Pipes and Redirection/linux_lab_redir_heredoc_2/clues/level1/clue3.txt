@@ -1,0 +1,56 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 3
+                "Heredoc to Append: << >> Combination"
+================================================================================
+
+BACKGROUND:
+-----------
+Just as a single echo can use >> to append one line, a heredoc combined with
+>> appends an entire multi-line block to an existing file. The file's previous
+content is preserved; the heredoc block is added at the end. This is extremely
+useful for building log files, reports, and configuration files incrementally
+across multiple steps in a script.
+
+EXERCISE:
+---------
+Step 1: Create the initial file with a header line:
+
+  echo "=== Log Started ===" > combined.log
+
+Step 2: Append a 3-event block using heredoc + >>:
+
+  cat << EOF >> combined.log
+  Event 1: System started at $(date)
+  Event 2: User $(whoami) logged in
+  Event 3: Lab environment initialized
+  EOF
+
+Step 3: Read the file (you should see the header + 3 event lines):
+
+  cat combined.log
+
+Step 4: Append another block:
+
+  cat << EOF >> combined.log
+  Event 4: Configuration loaded
+  Event 5: Services started
+  EOF
+
+Step 5: Read the final file and count lines:
+
+  cat combined.log && wc -l combined.log
+
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many lines does combined.log contain after all steps?
+- Did the original "=== Log Started ===" line survive all the appends?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level1-Ex3: [your answer here]" >> ../../my_answers.txt
+
+================================================================================
+Move to the next level:
+  cat clues/level2/clue1.txt
+================================================================================

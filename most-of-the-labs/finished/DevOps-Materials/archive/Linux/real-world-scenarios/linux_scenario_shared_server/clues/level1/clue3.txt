@@ -1,0 +1,75 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 3
+            "Exploring the Battlefield" - The Project Directory
+================================================================================
+
+STORY:
+------
+The senior DevOps engineer tells you:
+
+    "The project is already deployed at /opt/project. Before we set
+     permissions, take a look around and understand the structure.
+     Know what you're working with before you change anything."
+
+================================================================================
+    PART 6 - Navigate and Explore
+================================================================================
+
+TASK 1: Navigate to the project directory
+
+HINTS:
+- The project is located at /opt/project
+- Use the command that changes your current directory
+
+COMMANDS THAT CAN HELP:
+- cd           (change directory)
+- pwd          (print where you are now)
+
+TASK 2: Explore the full directory structure
+
+HINTS:
+- List all files and directories with detailed information
+- There is a way to list files RECURSIVELY (showing subdirectories too)
+- Look at the ownership and permissions columns
+
+COMMANDS THAT CAN HELP:
+- ls -l        (list with details: permissions, owner, group, size)
+- ls -la       (same but also shows hidden files)
+- ls -lR       (list recursively - shows all subdirectories too)
+
+TASK 3: Understand what you see
+
+Look at the output carefully and answer these questions:
+- How many subdirectories are inside /opt/project?
+- Who currently owns all the files and directories?
+- What log files exist under logs/?
+- What scripts are available under scripts/?
+
+WHAT TO OBSERVE:
+- Everything is currently owned by root:root
+- The log files contain real application data (you'll analyze them later)
+- The scripts are executable shell scripts
+- The config files contain server configuration
+
+WRITE YOUR ANSWER:
+------------------
+Save to my_answers.txt:
+- What subdirectories exist inside /opt/project?
+- Who is the current owner of all files?
+- How many log files are there and what are their names?
+
+================================================================================
+
+Congratulations! You've completed Level 1.
+
+You have:
+  - Created three user accounts
+  - Set up the devteam group
+  - Added developers to the group
+  - Explored the project structure
+
+Now it's time to secure the server.
+
+Proceed to Level 2:
+
+    cat clues/level2/clue1.txt

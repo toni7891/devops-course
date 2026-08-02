@@ -1,0 +1,82 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 2
+                "Fix the Broken Heredoc"
+================================================================================
+
+BACKGROUND:
+-----------
+Heredoc syntax is strict — small mistakes cause silent failures or shell errors
+that can be confusing to diagnose. This exercise gives you a broken script with
+3 classic heredoc bugs to identify and fix. Learning to recognize these errors
+quickly is an important practical skill: you will encounter them in real scripts,
+stack traces, and CI/CD logs throughout your career.
+
+EXERCISE:
+---------
+Step 1: Read the broken script:
+
+  cat ../../data/broken_heredoc.sh
+
+Step 2: Try running it and observe the errors:
+
+  bash ../../data/broken_heredoc.sh
+
+Step 3: Identify BUG 1 — Space before closing delimiter.
+        Look for a line where the closing EOF has a leading space:
+           EOF       <-- space before it breaks the heredoc
+        Fix: the closing delimiter must be at COLUMN 0 with no leading spaces.
+
+Step 4: Identify BUG 2 — Undefined variable.
+        The variable $SCORE is used inside the heredoc but was never assigned.
+        This is not a crash — it just prints empty. But it is unexpected.
+        Fix: add  SCORE="100"  before the heredoc.
+
+Step 5: Identify BUG 3 — Wrong case for closing delimiter.
+        The heredoc opens with << EOF but closes with eof (lowercase).
+        The delimiter is CASE SENSITIVE — eof != EOF.
+        Fix: change the closing  eof  to  EOF.
+
+Step 6: Create a fixed version of the script:
+
+  cat << 'FIXED' > fixed_heredoc.sh
+  #!/bin/bash
+  # Fixed heredoc script
+
+  # Bug 1 fixed: no space before closing EOF
+  cat << EOF
+  This is some content
+  Line two of content
+  EOF
+
+  # Bug 2 fixed: SCORE is now defined
+  NAME="Alice"
+  SCORE="100"
+  cat << EOF
+  Hello, $NAME
+  Your score: $SCORE
+  EOF
+
+  # Bug 3 fixed: closing delimiter matches (EOF not eof)
+  cat << EOF
+  Final message here
+  EOF
+  FIXED
+
+Step 7: Run the fixed script and verify it works cleanly:
+
+  bash fixed_heredoc.sh
+
+
+QUESTIONS TO ANSWER:
+--------------------
+- What are the 3 bugs in broken_heredoc.sh?
+- What error message does Bug 1 (space before EOF) produce?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level3-Ex2: [your answer here]" >> ../../my_answers.txt
+
+================================================================================
+Move to the final exercise:
+  cat clues/level3/clue3.txt
+================================================================================

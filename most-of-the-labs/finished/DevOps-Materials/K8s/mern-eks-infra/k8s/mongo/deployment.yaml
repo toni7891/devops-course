@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+  namespace: orders-app
+spec:
+  replicas: 1   # single replica — MongoDB needs special config for HA
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:6
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db   # default MongoDB data directory
+      volumes:
+        - name: mongo-storage
+          persistentVolumeClaim:
+            claimName: mongo-pvc

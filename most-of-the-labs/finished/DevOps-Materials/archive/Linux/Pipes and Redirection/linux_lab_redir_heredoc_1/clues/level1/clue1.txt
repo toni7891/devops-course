@@ -1,0 +1,62 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 1
+                "What is a Heredoc? cat << EOF"
+================================================================================
+
+BACKGROUND:
+-----------
+A heredoc (here-document) lets you provide multi-line input directly in the
+command line or script — without needing a file or a text editor. You start with
+<< followed by a delimiter word (EOF is the most common convention). Everything
+you type after that line becomes the input, until the delimiter appears ALONE on
+its own line. That closing delimiter signals the end of the input.
+
+EXERCISE:
+---------
+Step 1: Run your first heredoc:
+
+  cat << EOF
+  Hello from a heredoc!
+  This is line two.
+  This is line three.
+  EOF
+
+Step 2: Observe the output. Everything between << EOF and the closing EOF is
+        printed. The EOF line itself does NOT appear in the output.
+
+Step 3: Try with different content:
+
+  cat << EOF
+  Name: Alice
+  Role: Developer
+  Team: Platform
+  EOF
+
+Step 4: The delimiter MUST appear on its own line with no leading or trailing
+        spaces. This works:
+
+  cat << EOF
+  this works fine
+  EOF
+
+        This does NOT work (space before EOF — shell keeps waiting):
+
+  cat << EOF
+  content here
+   EOF    <-- space here breaks it!
+
+
+QUESTIONS TO ANSWER:
+--------------------
+- What is printed when you run the first heredoc?
+- What happens when you type EOF on its own line?
+- Does the EOF line itself appear in the output?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level1-Ex1: [your answer here]" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level1/clue2.txt
+================================================================================

@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      fail_mode:
+        description: 'Force test failure (FAIL_MODE=1)'
+        type: boolean
+        default: false
+      flaky_mode:
+        description: 'Enable flaky test (FLAKY_MODE=1)'
+        type: boolean
+        default: false
+
+jobs:
+  lint-typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+
+  test:
+    needs: lint-typecheck
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: [20, 22]
+        include:
+          - os: ubuntu-latest
+            node: 18
+            experimental: true
+    continue-on-error: ${{ matrix.experimental == true }}
+    outputs:
+      result: ${{ steps.run-tests.outcome }}
+    env:
+      FAIL_MODE: ${{ inputs.fail_mode == true && '1' || '0' }}
+      FLAKY_MODE: ${{ inputs.flaky_mode == true && '1' || '0' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+
+      - name: Run tests
+        id: run-tests
+        run: npm test
+
+      - name: On success
+        if: success()
+        run: echo "Tests passed on Node ${{ matrix.node }} / ${{ matrix.os }}"
+
+      - name: On failure - collect diagnostics
+        if: failure()
+        run: |
+          echo "Tests FAILED on Node ${{ matrix.node }} / ${{ matrix.os }}"
+          npm test -- --verbose 2>&1 || true
+
+      - name: Cleanup (always)
+        if: always()
+        run: echo "Cleanup step - always runs regardless of outcome"
+
+  report:
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report pass
+        if: needs.test.result == 'success'
+        run: echo "All test matrix legs passed."
+
+      - name: Report failure
+        if: needs.test.result != 'success'
+        run: |
+          echo "Test matrix result: ${{ needs.test.result }}"
+          exit 1

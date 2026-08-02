@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  color-api
+  labels:
+    app:  color-api
+spec:
+  selector:
+    matchLabels:
+      app: color-api
+  replicas: 2
+
+  template:
+    metadata:
+      labels:
+        app:  color-api
+
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+      - name:  color-api
+        image:  toni7891/color-api:2.0.0
+
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+
+          limits:
+            cpu: 100m
+            memory: 100Mi
+
+        ports:
+        - containerPort:  80
+
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-color-db-creds
+              key: color_db_user
+
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-color-db-creds
+              key: color_db_password
+
+        - name: DB_HOST
+          value: mongodb-ss-0.mongodb-svc.default.svc.cluster.local
+
+        - name: DB_PORT
+          value: "27017"
+
+        - name: DB_NAME
+          value: color-db
+
+        - name: DB_URL
+          value: mongodb://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)
+
+

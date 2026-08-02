@@ -1,0 +1,72 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 3
+                "Final Challenge: Generate HTML with Variables"
+================================================================================
+
+EXERCISE:
+---------
+Step 1: Set your variables:
+
+  title="My Linux Lab Results"
+  student="$(whoami)"
+  date_str="$(date +%Y-%m-%d)"
+
+Step 2: Generate a complete HTML file using heredoc:
+
+  cat << EOF > lab_results.html
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <title>$title</title>
+  </head>
+  <body>
+      <h1>$title</h1>
+      <p>Student: $student</p>
+      <p>Date: $date_str</p>
+      <p>Host: $(hostname)</p>
+      <h2>Summary</h2>
+      <p>Completed the Linux Pipes and Redirection lab successfully.</p>
+  </body>
+  </html>
+  EOF
+
+Step 3: Read the generated HTML file:
+
+  cat lab_results.html
+
+Step 4: Count the lines:
+
+  wc -l lab_results.html
+
+Step 5: Find all paragraph tags:
+
+  grep "<p>" lab_results.html
+
+Step 6: CHALLENGE — append a new paragraph before </body> using >>:
+
+  echo "  <p>Lab Part 1 complete — heredocs mastered!</p>" >> lab_results.html
+
+        Then verify:
+
+  cat lab_results.html
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level3-Ex3: [your answer here]" >> ../../my_answers.txt
+
+================================================================================
+CONGRATULATIONS! You have completed Linux Lab - Heredoc Part 1!
+================================================================================
+
+KEY TAKEAWAYS:
+--------------
+  1. << is a HERE-DOCUMENT — it provides multi-line input inline in a command
+  2. Content goes between the opening << DELIMITER and the closing DELIMITER
+  3. EOF is a convention — ANY word can be the delimiter
+  4. Variables and command substitutions expand by default inside a heredoc
+  5. Quote the delimiter ('EOF') to SUPPRESS variable expansion
+  6. Use << > to write to a file; use << >> to append to a file
+  7. Heredocs are perfect for generating multi-line files in scripts
+  8. Nested heredocs (heredoc inside a script) use different delimiter names
+
+================================================================================

@@ -1,0 +1,130 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  DataBite Frontend Hosting — private S3 bucket + CloudFront OAC + ACM certificate.
+  Deploy in us-east-1. Stack will pause waiting for DNS validation — add the CNAME
+  shown in ACM to your DNS provider, then CloudFront will finish creating.
+
+Parameters:
+  BucketName:
+    Type: String
+    Default: iitc-static-site-toni7891
+    Description: S3 bucket name (must be globally unique)
+
+  DomainName:
+    Type: String
+    Default: tonyverin.dev
+    Description: Apex domain
+
+  WWWDomainName:
+    Type: String
+    Default: www.tonyverin.dev
+    Description: www subdomain
+
+Resources:
+
+  # ── S3 Bucket (private) ────────────────────────────────────────────────────
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  # ── ACM Certificate (DNS validation) ──────────────────────────────────────
+  # CloudFormation will pause here — add the CNAME record shown in ACM to
+  # Namecheap, then the stack will automatically continue.
+  Certificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      SubjectAlternativeNames:
+        - !Ref WWWDomainName
+      ValidationMethod: DNS
+
+  # ── CloudFront Origin Access Control ──────────────────────────────────────
+  OriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub '${BucketName}-oac'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  # ── CloudFront Distribution ────────────────────────────────────────────────
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    DependsOn: Certificate
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        DefaultRootObject: index.html
+        Aliases:
+          - !Ref DomainName
+          - !Ref WWWDomainName
+        ViewerCertificate:
+          AcmCertificateArn: !Ref Certificate
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
+        Origins:
+          - Id: S3Origin
+            DomainName: !GetAtt FrontendBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+            OriginAccessControlId: !GetAtt OriginAccessControl.Id
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD]
+          CachedMethods: [GET, HEAD]
+          # AWS managed CachingOptimized policy
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+        # SPA fallback — React Router deep links return index.html
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+        HttpVersion: http2
+        IPV6Enabled: true
+
+  # ── S3 Bucket Policy — allow CloudFront OAC to read objects ───────────────
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FrontendBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCloudFrontOAC
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub 'arn:aws:s3:::${BucketName}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
+
+Outputs:
+
+  BucketName:
+    Description: S3 bucket name — use as AWS_S3_BUCKET_NAME secret in GitHub
+    Value: !Ref FrontendBucket
+
+  CloudFrontDistributionId:
+    Description: Distribution ID — use as CLOUDFRONT_DISTRIBUTION_ID secret in GitHub
+    Value: !Ref CloudFrontDistribution
+
+  CloudFrontDomainName:
+    Description: CloudFront domain — point your DNS CNAME/ALIAS records here
+    Value: !GetAtt CloudFrontDistribution.DomainName
+
+  CertificateArn:
+    Description: ACM Certificate ARN
+    Value: !Ref Certificate

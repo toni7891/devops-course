@@ -1,0 +1,69 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 3
+                "Indented Heredoc: <<- for Cleaner Scripts"
+================================================================================
+
+BACKGROUND:
+-----------
+When writing a heredoc inside an indented block of code (an if statement, a
+function, a loop), the heredoc content must normally start at column 1 — which
+looks odd compared to the surrounding indented code. The <<- operator solves
+this: it strips any LEADING TAB characters from each line of the heredoc
+content. This lets you indent the content with tabs to match the surrounding
+code. IMPORTANT: <<- only strips TABS (ASCII 0x09), not spaces.
+
+EXERCISE:
+---------
+Step 1: Without <<-, heredoc content must start at column 1 (looks awkward):
+
+  if true; then
+  cat << EOF
+  this content starts at column 1
+  which looks odd when indented code surrounds it
+  EOF
+  fi
+
+Step 2: With <<-, you can indent the content using TAB characters.
+        (Make sure to press the TAB key — not spaces — before cat and the
+        content lines.)
+
+  if true; then
+  	cat <<- EOF
+  		This content is tab-indented
+  		And it looks cleaner in scripts
+  		The leading tabs are stripped from output
+  	EOF
+  fi
+
+Step 3: Write a small script that uses <<- inside a function:
+
+  cat << 'EOF' > indented_example.sh
+  #!/bin/bash
+  greet() {
+  	cat <<- GREETING
+  		Hello, World!
+  		This heredoc is inside a function
+  		And uses tab indentation
+  	GREETING
+  }
+  greet
+  EOF
+
+Step 4: Run the script and observe the output (leading tabs are stripped):
+
+  bash indented_example.sh
+
+
+QUESTIONS TO ANSWER:
+--------------------
+- What is the difference between << and <<- ?
+- What character does <<- strip from the beginning of each line?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level2-Ex3: [your answer here]" >> ../../my_answers.txt
+
+================================================================================
+Move to the next level:
+  cat clues/level3/clue1.txt
+================================================================================

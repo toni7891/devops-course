@@ -1,0 +1,45 @@
+================================================================================
+                       STEP 4 of 10
+            "Live Process Monitoring" - Using top
+================================================================================
+
+* SETUP: Run first (from the lab root):  ./scripts/setup_step4.sh
+
+--------------------------------------------------------------------------------
+WHAT YOU'RE DOING
+--------------------------------------------------------------------------------
+`top` shows a live, updating view of running processes. Unlike `ps`, which is
+a snapshot, `top` lets you see which processes are consuming the most CPU or
+memory right now.
+
+This is essential for process hunting – if something is slow, `top` shows you
+which process is the culprit.
+
+Your job: start top, find the heavy process (high CPU or RAM), and identify it.
+
+--------------------------------------------------------------------------------
+INSTRUCTIONS
+--------------------------------------------------------------------------------
+1. Run: top
+
+2. You'll see many processes listed with columns like:
+   - PID: process ID
+   - USER: who owns it
+   - RES (or MEM): memory used
+   - %CPU: CPU percentage
+   - COMMAND: what it is
+
+3. Look for the process(es) with the highest %CPU or RES (memory). The SETUP
+   script started a dummy process that uses CPU. Find it.
+
+4. Note the PID and command name of the high-resource process.
+
+5. Press 'q' to quit top.
+
+6. Write in my_answers.txt:
+   "Step 4: The process [COMMAND] with PID [PID] used the most [CPU/memory]."
+
+================================================================================
+CLEANUP (run when done with this step):  ./scripts/cleanup_step4.sh
+NEXT STEP:  cat clues/step5.txt
+================================================================================

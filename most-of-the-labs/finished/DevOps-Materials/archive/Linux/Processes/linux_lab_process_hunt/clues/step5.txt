@@ -1,0 +1,46 @@
+================================================================================
+                       STEP 5 of 10
+            "First Kill" - Stopping a Process Gracefully
+================================================================================
+
+* SETUP: Run first (from the lab root):  ./scripts/setup_step5.sh
+
+--------------------------------------------------------------------------------
+WHAT YOU'RE DOING
+--------------------------------------------------------------------------------
+Now comes the moment of truth: you'll use `kill` to stop a running process.
+
+Important: `kill` is NOT violence. It sends a signal (SIGTERM, signal 15) that
+politely asks a process to shut down. A well-written process can respond to
+this signal, save data, and exit cleanly.
+
+Your job: find a running process and stop it gracefully with kill.
+
+--------------------------------------------------------------------------------
+INSTRUCTIONS
+--------------------------------------------------------------------------------
+1. The SETUP script started a dummy process (sleep or dummy_normal).
+
+2. Find its PID:
+   ps aux | grep dummy
+
+3. Stop it gracefully:
+   kill <PID>
+
+   (Replace <PID> with the actual process ID.)
+
+4. Verify it stopped:
+   ps aux | grep dummy
+
+   You should no longer see the dummy process running (only the grep line).
+
+5. Write in my_answers.txt:
+   "Step 5: I sent SIGTERM (kill <PID>) and the process stopped cleanly."
+
+6. Key insight: this is the RIGHT way to stop processes. Always try gentle
+   kill first before using force (kill -9). More on that soon.
+
+================================================================================
+CLEANUP (run when done with this step):  ./scripts/cleanup_step5.sh
+NEXT STEP:  cat clues/step6.txt
+================================================================================

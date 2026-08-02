@@ -1,0 +1,61 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 3
+              "Create a Changelog: Building Version History"
+================================================================================
+
+BACKGROUND:
+-----------
+A changelog is one of the most common files built line by line with >> in
+software projects. The structure is predictable: a header, then version blocks,
+each with a date and a list of changes. Building one manually with echo and >>
+teaches you exactly what automation tools do behind the scenes. Notice the
+pattern: one single > to create (or reset) the file at the start, and then >>
+for every subsequent line. This guarantees you never accidentally clear work you
+have already added. The `date +%Y-%m-%d` format produces a clean ISO date like
+2024-03-01, which is the standard used in most professional changelogs.
+
+EXERCISE:
+---------
+Run these commands from inside the clues/level1/ directory.
+
+Step 1:  echo "## Changelog" > changelog.txt
+           (creates the file with the top-level heading)
+
+Step 2:  echo "" >> changelog.txt
+           (appends a blank line for spacing)
+
+Step 3:  echo "### v1.0.0 - $(date +%Y-%m-%d)" >> changelog.txt
+           (appends the first version header with today's date)
+
+Step 4:  echo "- Initial release" >> changelog.txt
+
+Step 5:  echo "- Added user authentication" >> changelog.txt
+
+Step 6:  echo "" >> changelog.txt
+           (blank line between version blocks)
+
+Step 7:  echo "### v1.1.0 - $(date +%Y-%m-%d)" >> changelog.txt
+           (appends the second version header)
+
+Step 8:  echo "- Added data export feature" >> changelog.txt
+
+Step 9:  echo "- Fixed login timeout bug" >> changelog.txt
+
+Step 10: cat changelog.txt && wc -l changelog.txt
+           (view the full file and confirm line count — expect 9 lines)
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many lines does changelog.txt contain after Step 10?
+- Which step used > instead of >> — and why was that the right choice?
+- What would happen if Step 1 used >> instead of > and changelog.txt already existed?
+- How does `$(date +%Y-%m-%d)` work — what does the $() syntax do?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L1E3: 9 lines; Step 1 used > to start fresh; $() runs a command and inserts its output" >> ../../my_answers.txt
+
+================================================================================
+Move to Level 2:
+  cat ../../clues/level2/clue1.txt
+================================================================================

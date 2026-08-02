@@ -1,0 +1,142 @@
+================================================================================
+              INSTRUCTOR SOLUTIONS - Linux Lab Pipes 1
+================================================================================
+
+LEVEL 1 - EXERCISE 1: What is a Pipe? ls | cat
+--------------------------------------------------------------------------------
+Q: Is the output of "ls | cat" different from "ls" alone?
+A: The output is essentially the same text. The difference is the data flow:
+   with "ls | cat", the output of ls travels through a pipe to cat rather
+   than directly to the terminal. The result on screen is the same.
+
+Q: What does "ls | wc -l" count?
+A: It counts the number of lines in the output of ls, which equals the number
+   of files and directories in the current directory. Each item listed by ls
+   occupies one line, so wc -l gives the item count.
+
+--------------------------------------------------------------------------------
+LEVEL 1 - EXERCISE 2: Paginate Long Output
+--------------------------------------------------------------------------------
+Q: How many lines in /etc/passwd?
+A: Varies by system. Typically 30-50 lines on a standard Linux system.
+   Run: cat /etc/passwd | wc -l
+
+Q: How many items in /etc?
+A: Varies by system. Typically 150-250 items. Run: ls /etc | wc -l
+
+--------------------------------------------------------------------------------
+LEVEL 1 - EXERCISE 3: Count Files: ls | wc -l
+--------------------------------------------------------------------------------
+Q: What exactly does wc -l count?
+A: wc -l counts the number of newline characters in its input, which
+   corresponds to the number of lines. When piped from ls, this equals
+   the number of files/directories listed.
+
+Q: How many programs in /usr/bin?
+A: Varies by system. Usually 1000-3000 programs. Run: ls /usr/bin | wc -l
+
+Q: How many lines in data/server.log?
+A: 30 lines. Run: cat data/server.log | wc -l
+
+--------------------------------------------------------------------------------
+LEVEL 2 - EXERCISE 1: Filter with grep
+--------------------------------------------------------------------------------
+Q: How many ERROR lines?
+A: 7 ERROR lines.
+   Command: cat data/server.log | grep "ERROR" | wc -l
+
+Q: How many WARN lines?
+A: 6 WARN lines.
+   Command: cat data/server.log | grep "WARN" | wc -l
+
+Q: What does ps aux | grep bash show?
+A: It shows all currently running processes whose command line contains the
+   text "bash". This typically includes your current shell session and any
+   other bash shells running on the system.
+
+--------------------------------------------------------------------------------
+LEVEL 2 - EXERCISE 2: Sort Piped Output
+--------------------------------------------------------------------------------
+Q: What is the first name alphabetically in data/names.txt?
+A: Alice (A comes first alphabetically among the names in the file).
+   Command: cat data/names.txt | sort | head -1
+
+Q: What does "sort -r" do?
+A: It sorts in reverse order — Z to A alphabetically, or largest to smallest
+   numerically (when combined with -n).
+
+Q: What does "cut -d':' -f1" extract from /etc/passwd?
+A: It extracts the first field (f1) using colon (:) as the delimiter (d).
+   In /etc/passwd, the first field is the username.
+
+--------------------------------------------------------------------------------
+LEVEL 2 - EXERCISE 3: Multi-Pipe Chain: sort | uniq
+--------------------------------------------------------------------------------
+Q: How many unique names in data/names.txt?
+A: 23 unique names (out of 26 total lines — Alice appears 3x, Bob 2x, Charlie 2x).
+   Command: cat data/names.txt | sort | uniq | wc -l
+
+Q: Which name appears most often?
+A: Alice, appearing 3 times.
+   Command: cat data/names.txt | sort | uniq -c | sort -rn | head -1
+
+Q: What does "uniq -c" add to the output?
+A: "uniq -c" prefixes each unique line with a count showing how many times
+   that line appeared in the sorted input. For example: "3 Alice" means
+   Alice appeared 3 times.
+
+--------------------------------------------------------------------------------
+LEVEL 3 - EXERCISE 1: Count Unique Values: Full Analytics Pipeline
+--------------------------------------------------------------------------------
+Q: How many INFO/WARN/ERROR lines?
+A: INFO=17, WARN=6, ERROR=7 (total=30 lines)
+   Command: cat data/server.log | grep -o "INFO\|WARN\|ERROR" | sort | uniq -c | sort -rn
+
+Q: How many unique IPs?
+A: 5 unique IPs: 10.0.0.5, 10.0.0.8, 192.168.1.5, 192.168.1.10, 192.168.1.15,
+                 192.168.1.20, 192.168.1.25, 192.168.1.30, 192.168.1.99
+   Command: cat data/server.log | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+" | sort | uniq
+
+Q: How many lines contain "user"?
+A: 5 lines (the lines with "user admin", "user guest", "user root",
+   "user alice", "user bob").
+   Command: cat data/server.log | grep "user" | wc -l
+
+--------------------------------------------------------------------------------
+LEVEL 3 - EXERCISE 2: Find and Process: ls -la | grep | wc
+--------------------------------------------------------------------------------
+Q: How many regular files vs directories in lab root?
+A: Run from the lab root directory:
+   ls -la | grep "^-" | wc -l   -> regular files
+   ls -la | grep "^d" | wc -l   -> directories
+
+Q: How many /etc items contain "conf"?
+A: Typically 20-40. Run: ls /etc | grep "conf" | wc -l
+
+Q: How many /usr/bin programs start with 'g'?
+A: Typically 30-80. Run: ls /usr/bin | grep "^g" | wc -l
+
+--------------------------------------------------------------------------------
+LEVEL 3 - EXERCISE 3: Final Pipeline: Analyze data/access.log
+--------------------------------------------------------------------------------
+Q: Total requests in access.log?
+A: 50 lines = 50 requests.
+   Command: cat data/access.log | wc -l
+
+Q: How many unique IPs?
+A: 5 unique IPs: 192.168.1.10, 192.168.1.20, 192.168.1.30, 192.168.1.40, 192.168.1.50
+   Command: cat data/access.log | cut -d' ' -f1 | sort | uniq | wc -l
+
+Q: Most frequent IP?
+A: 192.168.1.10 with 15 requests.
+   Command: cat data/access.log | cut -d' ' -f1 | sort | uniq -c | sort -rn | head -1
+
+Q: How many 404 responses?
+A: 7 lines with " 404 ".
+   Command: cat data/access.log | grep " 404 " | wc -l
+
+Q: How many 200 responses?
+A: 35 lines with " 200 ".
+   Command: cat data/access.log | grep " 200 " | wc -l
+
+================================================================================

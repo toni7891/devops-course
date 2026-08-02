@@ -1,0 +1,67 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 1
+                "Write a Config File with Heredoc"
+================================================================================
+
+BACKGROUND:
+-----------
+Heredocs are ideal for generating configuration files from scripts. Instead of
+manually editing a config file, an automated script can produce one with the
+correct values already substituted. This pattern is used constantly in DevOps:
+provisioning servers, setting up services, generating environment-specific
+configs, and deploying applications with dynamic settings baked in.
+
+EXERCISE:
+---------
+Step 1: Create an nginx-style server config file:
+
+  HOSTNAME=$(hostname)
+  PORT=8080
+  cat << EOF > server.conf
+  # Server Configuration
+  # Generated: $(date)
+  # Host: $HOSTNAME
+
+  server {
+      listen $PORT;
+      server_name $HOSTNAME;
+      root /var/www/html;
+      index index.html;
+  }
+  EOF
+
+Step 2: Read the generated config:
+
+  cat server.conf
+
+Step 3: Create a simpler key=value config file:
+
+  APP_NAME="myapp"
+  ENV="production"
+  cat << EOF > app.config
+  APP_NAME=$APP_NAME
+  ENVIRONMENT=$ENV
+  LOG_LEVEL=INFO
+  PORT=3000
+  DEBUG=false
+  EOF
+
+Step 4: Read the key=value config:
+
+  cat app.config
+
+
+QUESTIONS TO ANSWER:
+--------------------
+- What does HOSTNAME contain? (What did $(hostname) expand to?)
+- How many lines are in server.conf?
+- How many lines are in app.config?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level3-Ex1: [your answer here]" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level3/clue2.txt
+================================================================================

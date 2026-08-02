@@ -1,0 +1,56 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 2
+                   "Process a CSV: cut with Input Redirection"
+================================================================================
+
+BACKGROUND:
+-----------
+The `cut` command extracts specific fields (columns) from each line of text.
+When working with CSV (comma-separated values) files, you specify the delimiter
+with `-d','` and the field number(s) with `-f`. Like most Unix tools, `cut`
+reads from stdin, which means you can feed it a file using `<`.
+
+This is extremely useful in scripting: you can extract just the data you need
+from a structured file without loading the entire file into memory or using
+a full-blown spreadsheet tool. Input redirection with `cut` is a common
+pattern in shell scripts that process reports, exports, and logs.
+
+The employees.csv file has three columns: name, department, and salary. You
+will practice extracting each column individually, then combining columns,
+and finally saving a list of names to a new file.
+
+EXERCISE:
+---------
+Step 1: View the full CSV file to understand its structure:
+  cat ../../data/employees.csv
+
+Step 2: Extract column 1 (employee names only):
+  cut -d',' -f1 < ../../data/employees.csv
+
+Step 3: Extract column 2 (departments only):
+  cut -d',' -f2 < ../../data/employees.csv
+
+Step 4: Extract column 3 (salaries only):
+  cut -d',' -f3 < ../../data/employees.csv
+
+Step 5: Extract columns 1 and 3 together (name and salary):
+  cut -d',' -f1,3 < ../../data/employees.csv
+
+Step 6: Save the names list to a file and verify it:
+  cut -d',' -f1 < ../../data/employees.csv > employee_names.txt && cat employee_names.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many employees are listed (excluding the header row)?
+- What departments exist in the file?
+- Which employee name appears first alphabetically in the file (not sorted — just as it appears)?
+- What does the `-d','` flag tell cut to do?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L1E2 - Employees: <count>, Departments: <list>, First name in file: <name>" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue3.txt
+================================================================================

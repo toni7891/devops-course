@@ -1,0 +1,13 @@
+{
+  "name": "mern-eks-app",
+  "version": "1.0.0",
+  "description": "Simple order management system built for Kubernetes/EKS deployment practice.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "docker compose -f docker-compose.yml up --build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

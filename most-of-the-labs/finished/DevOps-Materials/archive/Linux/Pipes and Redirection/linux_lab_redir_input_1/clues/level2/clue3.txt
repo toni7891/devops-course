@@ -1,0 +1,66 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 3
+                "grep with Input Redirection"
+================================================================================
+
+BACKGROUND:
+-----------
+`grep` searches for lines matching a pattern. Like `sort` and `wc`, grep
+accepts either a filename argument OR reads from stdin via `<`. When reading
+from stdin (using `<`), grep behaves exactly the same as with a filename
+argument — it just cannot display the filename in its output (since it
+does not know one).
+
+Using `<` with grep is particularly useful in scripts, where you want
+consistent behavior regardless of whether input comes from a file, a pipe,
+or another redirection. It also forms a natural pattern with other
+redirections: `grep "pattern" < input.txt > matches.txt`
+
+Key grep flags you will use here:
+  -i    case-insensitive matching
+  -c    count matching lines (prints a number, not the lines themselves)
+  -v    invert match (print lines that do NOT match)
+  -n    show line numbers with each match
+
+EXERCISE:
+---------
+Step 1: Search for "error" in the app log using a filename argument:
+  grep "error" ../../data/app_log.txt
+
+Step 2: Search for "error" using input redirection (same result):
+  grep "error" < ../../data/app_log.txt
+
+Step 3: Case-insensitive search — find ERROR/error/Error all at once:
+  grep -i "error" < ../../data/app_log.txt
+
+Step 4: Count how many lines contain "error" (case-insensitive):
+  grep -c "error" < ../../data/app_log.txt
+  grep -ci "error" < ../../data/app_log.txt
+
+Step 5: Show lines that do NOT contain "INFO" (invert match):
+  grep -v "INFO" < ../../data/app_log.txt
+
+Step 6: Find all WARN lines and save them to a file, then view:
+  grep -i "warn" < ../../data/app_log.txt > warnings.txt && cat warnings.txt
+
+Step 7: Find ERROR lines with line numbers:
+  grep -n "ERROR" < ../../data/app_log.txt
+
+Step 8: Count INFO lines:
+  grep -c "INFO" < ../../data/app_log.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many lines contain "error" with case-sensitive search (Step 2)?
+- How many lines contain "error" with case-insensitive search (Step 4)?
+- What does grep -v do (Step 5)? What entries appear when you exclude INFO?
+- How many WARN entries are in the log? How many INFO? How many ERROR?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L2E3: Case-sensitive 'error' matches lines with lowercase 'error' in the message. Case-insensitive -i matches ERROR, error, Error etc — 4 total. grep -v prints lines that do NOT match the pattern (non-INFO lines). Log has 4 ERROR, 4 WARN, 12 INFO entries." >> ../../my_answers.txt
+
+================================================================================
+Level 2 complete! Move to Level 3:
+  cat clues/level3/clue1.txt
+================================================================================

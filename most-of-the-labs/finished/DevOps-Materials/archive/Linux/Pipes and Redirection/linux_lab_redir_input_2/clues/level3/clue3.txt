@@ -1,0 +1,108 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 3
+               "Final Challenge: Data Processing Pipeline"
+================================================================================
+
+BACKGROUND:
+-----------
+This final exercise brings together everything you have practiced in this lab.
+You will process a raw task report that contains entries with statuses such as
+"completed", "pending", and "failed" — and some duplicate entries mixed in.
+
+Your goal is to build a complete summary report using input redirection,
+pipelines, grep, sort, uniq, wc, and command substitution. Rather than
+running one command at a time, you will assemble multiple results into a
+single summary file using `>` and `>>`.
+
+This mirrors what a real automated reporting script does: gather counts from
+different filtered views of the same data file, then write them all into a
+consolidated output. By the end of this exercise, you will have produced a
+`report_summary.txt` that answers four key questions about the data — all
+without manually counting a single line.
+
+EXERCISE:
+---------
+Step 1: View the raw report file:
+  cat ../../data/raw_report.txt
+
+Step 2: Count the total number of entries (including duplicates):
+  wc -l < ../../data/raw_report.txt
+
+Step 3: Show all completed tasks:
+  grep "completed" < ../../data/raw_report.txt
+
+Step 4: Show completed tasks in sorted order:
+  grep "completed" < ../../data/raw_report.txt | sort
+
+Step 5: Save completed count and display it:
+  grep "completed" < ../../data/raw_report.txt | wc -l > completed_count.txt && cat completed_count.txt
+
+Step 6: Count unique entries (after deduplication) and save:
+  sort < ../../data/raw_report.txt | uniq | wc -l > unique_entries.txt && cat unique_entries.txt
+
+Step 7: Build the full summary report:
+  echo "Total entries: $(wc -l < ../../data/raw_report.txt)" > report_summary.txt
+  echo "Completed: $(grep -c 'completed' < ../../data/raw_report.txt)" >> report_summary.txt
+  echo "Pending: $(grep -c 'pending' < ../../data/raw_report.txt)" >> report_summary.txt
+  echo "Unique entries: $(sort < ../../data/raw_report.txt | uniq | wc -l)" >> report_summary.txt
+  cat report_summary.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many total entries are in raw_report.txt?
+- How many entries have status "completed"?
+- How many entries have status "pending"?
+- How many unique entries are there (after removing duplicates)?
+- How many duplicate entries exist?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L3E3 - Total: <n>, Completed: <n>, Pending: <n>, Unique: <n>, Duplicates: <n>" >> ../../my_answers.txt
+
+================================================================================
+                         CONGRATULATIONS!
+================================================================================
+
+You have completed the Linux Lab: Input Redirection in Practice (Part 2)!
+
+KEY TAKEAWAYS:
+--------------
+
+1. INPUT REDIRECTION (<) IS UNIVERSAL
+   Any command that reads from stdin can accept a file via <.
+   This includes: cat, wc, sort, tr, grep, cut, uniq, and many more.
+
+2. tr REQUIRES INPUT REDIRECTION
+   Unlike most tools, tr does not accept filename arguments.
+   You must always use: tr 'x' 'y' < file
+
+3. sort BEFORE uniq
+   The uniq command only removes consecutive duplicates.
+   Always sort first: sort < file | uniq
+
+4. PIPELINES START WITH < AND FLOW RIGHT
+   sort < file | uniq | wc -l
+   The < feeds the first command. Each | passes output to the next command.
+
+5. COMMAND SUBSTITUTION ENABLES ARITHMETIC
+   $(($(wc -l < file1) - $(wc -l < file2)))
+   Capture counts with $() then compute differences with $(( )).
+
+6. OUTPUT REDIRECTION SAVES WITHOUT MODIFYING SOURCE
+   tr 'a-z' 'A-Z' < original.txt > uppercase.txt
+   The original file is never touched.
+
+7. FILTER THEN EXTRACT
+   grep "pattern" < file | cut -d',' -f1 | sort
+   First narrow down the rows, then extract the columns you need.
+
+8. BUILD REPORTS WITH >> APPEND
+   Use > to start a report file, then >> to add more lines.
+   This lets you build a multi-line summary from multiple commands.
+
+--------------------------------------------------------------------------------
+Well done! You are now ready for more advanced redirection topics,
+including here-documents (<<), process substitution, and file descriptors.
+--------------------------------------------------------------------------------
+
+================================================================================

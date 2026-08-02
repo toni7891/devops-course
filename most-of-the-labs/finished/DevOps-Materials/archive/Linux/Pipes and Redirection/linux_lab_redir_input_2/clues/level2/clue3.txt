@@ -1,0 +1,60 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 3
+                    "Remove Duplicates from a File"
+================================================================================
+
+BACKGROUND:
+-----------
+The `uniq` command removes consecutive duplicate lines. The critical word is
+"consecutive" — uniq only removes duplicates that appear next to each other.
+If the same value appears at line 1 and line 10, uniq will NOT remove it
+unless the lines are adjacent.
+
+This is why `sort | uniq` is the standard pattern: first sort the data so
+that all identical values are grouped together, then pass to uniq which
+removes the adjacent duplicates. This two-step combination is one of the
+most commonly used pipelines in shell scripting.
+
+When you use `sort < file | uniq`, the `<` feeds the file into sort, sort
+outputs to the pipe, and uniq processes the pipe's output. The original file
+is never modified. You will then compare line counts to calculate exactly
+how many duplicates were removed.
+
+EXERCISE:
+---------
+Step 1: View the file with duplicates:
+  cat ../../data/duplicates.txt
+
+Step 2: Count the total number of lines (including duplicates):
+  wc -l < ../../data/duplicates.txt
+
+Step 3: Sort the file so duplicates become adjacent:
+  sort < ../../data/duplicates.txt
+
+Step 4: Sort and pipe to uniq to remove adjacent duplicates:
+  sort < ../../data/duplicates.txt | uniq
+
+Step 5: Save the unique lines to a file and display it:
+  sort < ../../data/duplicates.txt | uniq > unique.txt && cat unique.txt
+
+Step 6: Count unique lines in the saved file:
+  wc -l < unique.txt
+
+Step 7: Calculate and display how many duplicates were removed:
+  echo "Removed: $(($(wc -l < ../../data/duplicates.txt) - $(wc -l < unique.txt))) duplicates"
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many total lines are in duplicates.txt?
+- How many unique lines remain after deduplication?
+- How many duplicate lines were removed?
+- Why does `uniq` require the data to be sorted first?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L2E3 - Total lines: <n>, Unique lines: <n>, Duplicates removed: <n>" >> ../../my_answers.txt
+
+================================================================================
+Move to Level 3:
+  cat ../../clues/level3/clue1.txt
+================================================================================

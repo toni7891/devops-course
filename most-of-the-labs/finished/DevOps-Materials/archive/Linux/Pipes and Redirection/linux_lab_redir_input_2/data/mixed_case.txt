@@ -1,0 +1,8 @@
+The Quick Brown Fox
+JUMPS OVER the Lazy Dog
+Hello World from Linux
+BASH scripting IS powerful
+Input Redirection WITH less than
+OUTPUT redirection WITH greater than
+PIPES Connect commands TOGETHER
+learning never STOPS

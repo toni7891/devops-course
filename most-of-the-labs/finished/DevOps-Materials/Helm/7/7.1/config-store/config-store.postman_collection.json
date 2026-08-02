@@ -1,0 +1,532 @@
+{
+  "info": {
+    "name": "Config Store API",
+    "description": "Unit tests for the Config Store KV API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "testKey",
+      "value": "postman-test-key",
+      "type": "string"
+    },
+    {
+      "key": "testValue",
+      "value": "postman-test-value",
+      "type": "string"
+    },
+    {
+      "key": "updatedValue",
+      "value": "postman-updated-value",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "GET /api/kv - List all KV pairs",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response has data array', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('data');",
+              "  pm.expect(body.data).to.be.an('array');",
+              "});",
+              "",
+              "pm.test('Content-Type is application/json', function () {",
+              "  pm.response.to.have.header('Content-Type');",
+              "  pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+              "});",
+              "",
+              "pm.test('Response time is under 2000ms', function () {",
+              "  pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/kv",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "kv"]
+        }
+      }
+    },
+    {
+      "name": "POST /api/kv - Create a KV pair",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('Response contains created KV pair', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('data');",
+              "  pm.expect(body.data).to.have.property('key', pm.collectionVariables.get('testKey'));",
+              "  pm.expect(body.data).to.have.property('value', pm.collectionVariables.get('testValue'));",
+              "});",
+              "",
+              "pm.test('Content-Type is application/json', function () {",
+              "  pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+              "});",
+              "",
+              "pm.test('Response time is under 2000ms', function () {",
+              "  pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"key\": \"{{testKey}}\",\n  \"value\": \"{{testValue}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/kv",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "kv"]
+        }
+      }
+    },
+    {
+      "name": "POST /api/kv - Create duplicate key (should fail)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 400', function () {",
+              "  pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test('Response contains duplicate key error', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('error');",
+              "  pm.expect(body.error).to.equal('Key already present in DB');",
+              "});",
+              "",
+              "pm.test('Response time is under 2000ms', function () {",
+              "  pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"key\": \"{{testKey}}\",\n  \"value\": \"{{testValue}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/kv",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "kv"]
+        }
+      }
+    },
+    {
+      "name": "POST /api/kv - Missing key field (should fail)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 400', function () {",
+              "  pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test('Response contains validation error', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('error');",
+              "  pm.expect(body.error).to.equal('Both key and value fields are required');",
+              "});",
+              "",
+              "pm.test('Response time is under 2000ms', function () {",
+              "  pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"value\": \"some-value\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/kv",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "kv"]
+        }
+      }
+    },
+    {
+      "name": "POST /api/kv - Missing value field (should fail)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 400', function () {",
+              "  pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test('Response contains validation error', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('error');",
+              "  pm.expect(body.error).to.equal('Both key and value fields are required');",
+              "});",
+              "",
+              "pm.test('Response time is under 2000ms', function () {",
+              "  pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"key\": \"some-key\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/kv",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "kv"]
+        }
+      }
+    },
+    {
+      "name": "GET /api/kv/:key - Get existing KV pair",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response contains the requested KV pair', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('data');",
+              "  pm.expect(body.data).to.have.property('key', pm.collectionVariables.get('testKey'));",
+              "  pm.expect(body.data).to.have.property('value', pm.collectionVariables.get('testValue'));",
+              "});",
+              "",
+              "pm.test('Content-Type is application/json', function () {",
+              "  pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+              "});",
+              "",
+              "pm.test('Response time is under 2000ms', function () {",
+              "  pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/kv/{{testKey}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "kv", "{{testKey}}"]
+        }
+      }
+    },
+    {
+      "name": "GET /api/kv/:key - Get non-existent key (should fail)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 404', function () {",
+              "  pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test('Response contains not found error', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('error');",
+              "  pm.expect(body.error).to.equal('Key not found');",
+              "});",
+              "",
+              "pm.test('Response time is under 2000ms', function () {",
+              "  pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/kv/this-key-does-not-exist",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "kv", "this-key-does-not-exist"]
+        }
+      }
+    },
+    {
+      "name": "PUT /api/kv/:key - Update existing KV pair",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response contains updated KV pair', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('data');",
+              "  pm.expect(body.data).to.have.property('key', pm.collectionVariables.get('testKey'));",
+              "  pm.expect(body.data).to.have.property('value', pm.collectionVariables.get('updatedValue'));",
+              "});",
+              "",
+              "pm.test('Content-Type is application/json', function () {",
+              "  pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+              "});",
+              "",
+              "pm.test('Response time is under 2000ms', function () {",
+              "  pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"value\": \"{{updatedValue}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/kv/{{testKey}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "kv", "{{testKey}}"]
+        }
+      }
+    },
+    {
+      "name": "PUT /api/kv/:key - Update non-existent key (should fail)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 404', function () {",
+              "  pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test('Response contains not found error', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('error');",
+              "  pm.expect(body.error).to.equal('Key not found');",
+              "});",
+              "",
+              "pm.test('Response time is under 2000ms', function () {",
+              "  pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"value\": \"some-value\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/kv/this-key-does-not-exist",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "kv", "this-key-does-not-exist"]
+        }
+      }
+    },
+    {
+      "name": "PUT /api/kv/:key - Missing value field (should fail)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 400', function () {",
+              "  pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test('Response contains validation error', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('error');",
+              "  pm.expect(body.error).to.equal('Value field is required');",
+              "});",
+              "",
+              "pm.test('Response time is under 2000ms', function () {",
+              "  pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/kv/{{testKey}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "kv", "{{testKey}}"]
+        }
+      }
+    },
+    {
+      "name": "DELETE /api/kv/:key - Delete existing KV pair",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 204', function () {",
+              "  pm.response.to.have.status(204);",
+              "});",
+              "",
+              "pm.test('Response body is empty', function () {",
+              "  pm.expect(pm.response.text()).to.be.empty;",
+              "});",
+              "",
+              "pm.test('Response time is under 2000ms', function () {",
+              "  pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/kv/{{testKey}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "kv", "{{testKey}}"]
+        }
+      }
+    },
+    {
+      "name": "DELETE /api/kv/:key - Delete non-existent key (should fail)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 404', function () {",
+              "  pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test('Response contains not found error', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('error');",
+              "  pm.expect(body.error).to.equal('Key not found');",
+              "});",
+              "",
+              "pm.test('Response time is under 2000ms', function () {",
+              "  pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/kv/this-key-does-not-exist",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "kv", "this-key-does-not-exist"]
+        }
+      }
+    }
+  ]
+}

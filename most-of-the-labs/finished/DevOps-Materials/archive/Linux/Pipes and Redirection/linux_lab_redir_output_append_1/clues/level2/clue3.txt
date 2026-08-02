@@ -1,0 +1,104 @@
+============================================================
+  LEVEL 2 — CLUE 3
+  Build a Diary File: Timestamped Entries
+============================================================
+
+BACKGROUND
+----------
+A diary file is a simple but powerful concept: a plain text
+file where you append timestamped entries over time.
+DevOps engineers use this pattern for:
+
+  - Change logs ("what did I do today?")
+  - On-call notes ("what happened during the incident?")
+  - Lab notes ("what did I try, and what was the result?")
+
+The key feature: each entry has a timestamp so you can
+always tell WHEN something was recorded.
+
+------------------------------------------------------------
+YOUR TASK
+------------------------------------------------------------
+
+Build a multi-entry diary file step by step.
+
+Step 1: Create the diary with a title header:
+
+    echo "============================================" > ~/devops_diary.txt
+    echo "  DevOps Learning Diary" >> ~/devops_diary.txt
+    echo "============================================" >> ~/devops_diary.txt
+
+Step 2: Add the first diary entry:
+
+    echo "" >> ~/devops_diary.txt
+    echo "--- Entry: $(date '+%Y-%m-%d %H:%M') ---" >> ~/devops_diary.txt
+    echo "Topic: Output Redirection" >> ~/devops_diary.txt
+    echo "Learned: The >> operator appends without overwriting." >> ~/devops_diary.txt
+    echo "Status: In progress" >> ~/devops_diary.txt
+
+Step 3: Add a second entry (simulate a later time):
+
+    echo "" >> ~/devops_diary.txt
+    echo "--- Entry: $(date '+%Y-%m-%d %H:%M') ---" >> ~/devops_diary.txt
+    echo "Topic: Building log files" >> ~/devops_diary.txt
+    echo "Learned: Logs grow by appending one line at a time." >> ~/devops_diary.txt
+    echo "Status: Completed" >> ~/devops_diary.txt
+
+Step 4: Add a third entry — write your own!
+
+    echo "" >> ~/devops_diary.txt
+    echo "--- Entry: $(date '+%Y-%m-%d %H:%M') ---" >> ~/devops_diary.txt
+    echo "Topic: Your topic here" >> ~/devops_diary.txt
+    echo "Learned: What you learned here" >> ~/devops_diary.txt
+    echo "Status: Completed" >> ~/devops_diary.txt
+
+Step 5: View the complete diary:
+
+    cat ~/devops_diary.txt
+
+Step 6: Count total lines:
+
+    wc -l ~/devops_diary.txt
+
+  Expected: at least 18 lines
+
+Step 7: Show only the entry headers (lines starting with ---):
+
+    grep "^--- Entry:" ~/devops_diary.txt
+
+------------------------------------------------------------
+VERIFY
+------------------------------------------------------------
+
+Run: cat ~/devops_diary.txt
+
+You should see a formatted diary with:
+  - A title header (3 lines)
+  - Three entries, each with a timestamp, topic, learned, and status
+
+Run: grep "^--- Entry:" ~/devops_diary.txt
+  --> Should show exactly 3 entry header lines.
+
+------------------------------------------------------------
+KEY INSIGHT
+------------------------------------------------------------
+
+Notice the pattern used throughout this exercise:
+
+  > to start fresh (the title block)
+  >> for every subsequent addition
+
+This is the standard pattern. Use > exactly once at the
+beginning to create or reset the file. Use >> for
+everything that comes after.
+
+------------------------------------------------------------
+WELL DONE — LEVEL 2 COMPLETE!
+------------------------------------------------------------
+
+Move on to Level 3 (the final level):
+
+    cd ../level3
+    cat clue1.txt
+
+============================================================

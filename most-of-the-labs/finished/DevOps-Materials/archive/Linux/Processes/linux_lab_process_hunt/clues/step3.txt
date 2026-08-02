@@ -1,0 +1,46 @@
+================================================================================
+                       STEP 3 of 10
+            "Parent and Child Processes" - Process Families
+================================================================================
+
+* SETUP: Run first (from the lab root):  ./scripts/setup_step3.sh
+
+--------------------------------------------------------------------------------
+WHAT YOU'RE DOING
+--------------------------------------------------------------------------------
+Processes are not isolated – they have family relationships. Each process has
+a parent (PPID). When you start a process from bash, bash becomes its parent.
+
+Understanding parent/child relationships helps you find processes and predict
+what happens when you stop them.
+
+Your job: list processes with their parent PIDs and see the family tree.
+
+--------------------------------------------------------------------------------
+INSTRUCTIONS
+--------------------------------------------------------------------------------
+1. List processes with parent PIDs:
+   ps aux -f
+
+   Or with a cleaner tree view:
+   ps auxf
+
+   Or even better, use a process tree viewer:
+   pstree -p
+
+2. Look for the parent (PPID). The second column is PID; the column labeled
+   PPID is the parent. In tree view, you'll see indentation.
+
+3. Find the bash process and identify its parent (usually init/systemd or
+   another shell).
+
+4. Write in my_answers.txt:
+   "Step 3: [PROCESS_NAME] is the parent of bash, with PPID [PPID]."
+
+5. Key insight: when you kill a parent, its children might become orphaned
+   (reparented to init). More on this later.
+
+================================================================================
+CLEANUP (run when done with this step):  ./scripts/cleanup_step3.sh
+NEXT STEP:  cat clues/step4.txt
+================================================================================

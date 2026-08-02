@@ -1,0 +1,54 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 2
+             "Watching a File Grow: wc -l After Each Append"
+================================================================================
+
+BACKGROUND:
+-----------
+`wc -l` counts the number of newline characters in a file, which tells you how
+many lines it contains. When combined with >>, you can watch a file grow one
+append at a time. This is a useful debugging and monitoring technique: after
+each operation you can confirm the file grew by exactly the expected amount.
+The syntax `wc -l < filename` reads the file as stdin and prints only the
+number (no filename), making it easy to embed in a message with echo and
+command substitution. The `echo -e` flag enables backslash escape sequences,
+so `\n` becomes an actual newline — meaning one echo -e call can append
+multiple lines at once.
+
+EXERCISE:
+---------
+Run these commands from inside the clues/level1/ directory.
+
+Step 1: > growth_test.txt && echo "Lines: $(wc -l < growth_test.txt)"
+          (creates empty file; expect: Lines: 0)
+
+Step 2: echo "line one" >> growth_test.txt && echo "Lines: $(wc -l < growth_test.txt)"
+          (appends 1 line; expect: Lines: 1)
+
+Step 3: echo "line two" >> growth_test.txt && echo "Lines: $(wc -l < growth_test.txt)"
+          (appends 1 line; expect: Lines: 2)
+
+Step 4: echo "line three" >> growth_test.txt && echo "Lines: $(wc -l < growth_test.txt)"
+          (appends 1 line; expect: Lines: 3)
+
+Step 5: echo -e "line four\nline five" >> growth_test.txt && echo "Lines: $(wc -l < growth_test.txt)"
+          (appends 2 lines at once; expect: Lines: 5)
+
+Step 6: cat growth_test.txt
+          (view the complete file — should show all 5 lines)
+
+QUESTIONS TO ANSWER:
+--------------------
+- What is the line count reported at each step (Steps 1 through 5)?
+- What does the -e flag in echo -e do, and how is it different from plain echo?
+- Why does Step 5 add 2 lines instead of 1?
+- What would `wc -l growth_test.txt` output differently from `wc -l < growth_test.txt`?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L1E2: counts are 0,1,2,3,5; echo -e interprets escape sequences like \n as newline" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue3.txt
+================================================================================

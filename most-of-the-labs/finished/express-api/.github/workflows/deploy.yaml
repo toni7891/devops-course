@@ -1,0 +1,101 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build \
+            --build-arg COMMIT_SHA=${{ github.sha }} \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/student-api:${{ github.sha }} \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/student-api:latest \
+            .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/student-api:${{ github.sha }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/student-api:latest
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Sync MongoDB URI to SSM Parameter Store
+        run: |
+          aws ssm put-parameter \
+            --name /student-api/mongodb/uri \
+            --value "${{ secrets.MONGODB_URI }}" \
+            --type SecureString \
+            --overwrite
+
+      - name: Deploy via SSM and wait
+        run: |
+          INSTANCE_IDS=$(aws autoscaling describe-auto-scaling-groups \
+            --auto-scaling-group-names "${{ secrets.ASG_NAME }}" \
+            --query "AutoScalingGroups[0].Instances[?LifecycleState=='InService'].InstanceId" \
+            --output text | tr '\t' ' ')
+
+          echo "Deploying to instances: $INSTANCE_IDS"
+
+          IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/student-api:${{ github.sha }}"
+          SHA="${{ github.sha }}"
+
+          cat > /tmp/deploy.sh << 'ENDDEPLOY'
+          set -e
+          for i in $(seq 1 30); do /usr/local/bin/aws --version >/dev/null 2>&1 && break; echo "Waiting for AWS CLI... $i/30"; sleep 10; done
+          export PATH=$PATH:/usr/local/bin
+          for i in $(seq 1 30); do docker info >/dev/null 2>&1 && break; echo "Waiting for Docker... $i/30"; sleep 10; done
+          DH_USER=$(aws ssm get-parameter --region us-east-1 --name /student-api/dockerhub/username --query Parameter.Value --output text)
+          DH_TOKEN=$(aws ssm get-parameter --region us-east-1 --name /student-api/dockerhub/token --with-decryption --query Parameter.Value --output text)
+          MONGO_URI=$(aws ssm get-parameter --region us-east-1 --name /student-api/mongodb/uri --with-decryption --query Parameter.Value --output text)
+          echo "$DH_TOKEN" | docker login --username "$DH_USER" --password-stdin
+          docker pull IMAGE_PLACEHOLDER
+          docker stop student-api || true
+          docker rm student-api || true
+          docker run -d --name student-api --restart unless-stopped \
+            -p 3000:3000 \
+            -e COMMIT_SHA=SHA_PLACEHOLDER \
+            -e MONGODB_URI="$MONGO_URI" \
+            IMAGE_PLACEHOLDER
+          ENDDEPLOY
+
+          sed -i "s|IMAGE_PLACEHOLDER|$IMAGE|g" /tmp/deploy.sh
+          sed -i "s|SHA_PLACEHOLDER|$SHA|g" /tmp/deploy.sh
+
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids $INSTANCE_IDS \
+            --document-name "AWS-RunShellScript" \
+            --parameters "$(jq -Rs '{commands: [.]}' /tmp/deploy.sh)" \
+            --timeout-seconds 600 \
+            --query "Command.CommandId" \
+            --output text)
+
+          echo "SSM Command ID: $COMMAND_ID"
+
+          for INSTANCE_ID in $INSTANCE_IDS; do
+            echo "Waiting for deploy on $INSTANCE_ID..."
+            aws ssm wait command-executed \
+              --command-id "$COMMAND_ID" \
+              --instance-id "$INSTANCE_ID"
+          done
+
+          echo "Deploy complete on all instances."

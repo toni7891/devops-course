@@ -1,0 +1,64 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 2
+                "Combine < with >: Input from File, Output to File"
+================================================================================
+
+BACKGROUND:
+-----------
+You can use both `<` and `>` in a single command. The shell wires everything
+up before the command starts:
+  - `<` connects the input file to the command's stdin
+  - `>` connects the command's stdout to the output file
+
+The data flow looks like this:
+
+  input_file  -->  (stdin)  -->  command  -->  (stdout)  -->  output_file
+
+The original input file is NEVER modified. The command simply reads from
+one end (stdin) and writes to the other end (stdout). This is the foundation
+of safe, non-destructive file processing in Linux.
+
+IMPORTANT: Never redirect output to the same file you are reading from in
+the same command. For example, `sort < file.txt > file.txt` will destroy
+the file because the shell truncates the output file BEFORE running the
+command. Always use a different output filename.
+
+EXERCISE:
+---------
+Step 1: Sort unsorted.txt and save the result to a new file, then view it:
+  sort < ../../data/unsorted.txt > sorted_output.txt && cat sorted_output.txt
+
+Step 2: Convert lowercase.txt to uppercase and save it, then view:
+  tr 'a-z' 'A-Z' < ../../data/lowercase.txt > uppercase_output.txt && cat uppercase_output.txt
+
+Step 3: Count lines in words.txt and save just the number to a file:
+  wc -l < ../../data/words.txt > line_count.txt && cat line_count.txt
+
+Step 4: Sort unsorted.txt in reverse and save (no need to view immediately):
+  sort -r < ../../data/unsorted.txt > reverse_sorted.txt
+
+Step 5: Verify the original input file is still unchanged:
+  cat ../../data/unsorted.txt
+  (Should still be in the original unsorted order)
+
+Step 6: Delete vowels from sentence.txt and save to a file:
+  tr -d 'aeiouAEIOU' < ../../data/sentence.txt > no_vowels.txt && cat no_vowels.txt
+
+Step 7: List all the output files you created in this exercise:
+  ls -la *.txt 2>/dev/null || ls *.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- In Step 1, how many files are involved, and what role does each play?
+- Does the input file (unsorted.txt) change after Step 1? Why not?
+- Draw (or describe) the data flow: input_file -> command -> output_file
+- Why is it dangerous to use the same file for both < and > in one command?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L2E2: Step 1 involves 3 files: unsorted.txt (input/stdin), sort (command), sorted_output.txt (output/stdout). unsorted.txt is unchanged because sort only reads stdin and writes stdout. Data flow: unsorted.txt -> (stdin) -> sort -> (stdout) -> sorted_output.txt. Same file for input and output truncates the output file BEFORE reading." >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level2/clue3.txt
+================================================================================

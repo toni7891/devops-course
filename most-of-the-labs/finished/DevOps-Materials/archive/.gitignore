@@ -1,0 +1,39 @@
+# Large files that shouldn't be committed to GitHub
+Instructor Content/Docker/8/Build Context/some-large-file
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
+# Node modules (should be in bundles/archives, not directly committed)
+node_modules/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+
+# Python virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

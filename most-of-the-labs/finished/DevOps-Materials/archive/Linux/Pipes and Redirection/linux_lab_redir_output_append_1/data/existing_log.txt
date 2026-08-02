@@ -1,0 +1,10 @@
+2024-01-15 08:00:01 [INFO]  System startup complete
+2024-01-15 08:05:12 [INFO]  Web server started on port 8080
+2024-01-15 08:10:33 [INFO]  Database connection established
+2024-01-15 09:00:00 [INFO]  Scheduled backup started
+2024-01-15 09:04:47 [INFO]  Scheduled backup completed successfully
+2024-01-15 10:15:22 [WARN]  High memory usage detected: 82%
+2024-01-15 10:15:45 [INFO]  Memory usage returned to normal: 61%
+2024-01-15 11:30:09 [INFO]  User admin logged in from 192.168.1.10
+2024-01-15 12:00:00 [INFO]  Health check passed
+2024-01-15 13:45:58 [INFO]  Configuration reload triggered

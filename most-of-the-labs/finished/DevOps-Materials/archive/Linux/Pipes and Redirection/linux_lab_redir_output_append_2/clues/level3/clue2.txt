@@ -1,0 +1,63 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 8
+                "Simulated Cron Job: Hourly Log Entries"
+================================================================================
+
+BACKGROUND:
+-----------
+Real cron jobs use >> for exactly one reason: every time the job runs, the new
+output must be added to the existing log without erasing previous runs. A cron
+job that uses > instead of >> would reset its own log every hour, leaving only
+the most recent execution visible — a monitoring nightmare. In this exercise you
+simulate a series of hourly health checks by manually writing each entry with
+>>, watching the log accumulate. Each entry includes the hostname for traceability,
+simulating what a script running on multiple servers would produce. You will also
+practice using grep to extract only the warning entries from an otherwise healthy
+log — exactly as an on-call engineer would do when scanning overnight logs.
+
+EXERCISE:
+---------
+Run these commands from inside the clues/level3/ directory.
+
+Step 1: echo "[08:00] $(hostname): Health check OK - all services running" >> hourly.log
+
+Step 2: echo "[09:00] $(hostname): Health check OK - disk at 45%" >> hourly.log
+
+Step 3: echo "[10:00] $(hostname): WARN - disk usage at 78%" >> hourly.log
+
+Step 4: echo "[11:00] $(hostname): Health check OK - disk normalized to 52%" >> hourly.log
+
+Step 5: echo "[12:00] $(hostname): Health check OK - all services running" >> hourly.log
+
+Step 6: cat hourly.log && wc -l hourly.log
+          (view all entries so far — expect: 5 lines)
+
+Step 7: grep "WARN" hourly.log
+          (extract only warning entries — expect: 1 line, the 10:00 entry)
+
+Step 8: Add 3 more entries using >>:
+          echo "[13:00] $(hostname): Health check OK - all services running" >> hourly.log
+          echo "[14:00] $(hostname): WARN - high memory usage at 89%" >> hourly.log
+          echo "[15:00] $(hostname): Health check OK - memory normalized to 61%" >> hourly.log
+
+Step 9: cat hourly.log && wc -l hourly.log
+          (view complete log — expect: 8 lines)
+
+Step 10: grep "WARN" hourly.log
+           (expect: 2 WARN entries — at 10:00 and 14:00)
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many lines does hourly.log have after Step 6?
+- How many lines does hourly.log have after Step 9?
+- How many WARN entries are in the final log?
+- Why would using > instead of >> in a real cron job be dangerous?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L3E2: 5 lines after step 6, 8 after step 9, 2 WARN entries; > in cron job erases previous runs" >> ../../my_answers.txt
+
+================================================================================
+Move to the final exercise:
+  cat clue3.txt
+================================================================================

@@ -1,0 +1,108 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 3
+                "Final Challenge: Process data/raw_data.txt"
+================================================================================
+
+BACKGROUND:
+-----------
+This is your final challenge. You will apply everything you have learned —
+`<`, `>`, `|`, `sort`, `wc`, `grep`, and `tr` — to process a realistic
+data file. The file (raw_data.txt) contains 20 lines of username,status
+records. Your goal is to build a complete summary report using only input
+redirection and the commands you have practised.
+
+This exercise also introduces the `$(...)` command substitution syntax,
+which lets you capture the output of a command into a string:
+  echo "Count: $(wc -l < file.txt)"
+This runs `wc -l < file.txt`, takes its output, and puts it inside the
+echo string. Combined with `<`, this is a powerful pattern for building
+summary reports.
+
+EXERCISE:
+---------
+Step 1: View the raw data file:
+  cat ../../data/raw_data.txt
+
+Step 2: Count total lines in the file:
+  wc -l < ../../data/raw_data.txt
+
+Step 3: Sort the file and save:
+  sort < ../../data/raw_data.txt > sorted_raw.txt && cat sorted_raw.txt
+
+Step 4: Count unique entries (after sorting, use uniq | wc -l):
+  sort < ../../data/raw_data.txt | uniq | wc -l > unique_count.txt && cat unique_count.txt
+
+Step 5: Filter only active entries, save, and count:
+  grep "active" < ../../data/raw_data.txt > active_entries.txt && cat active_entries.txt && wc -l active_entries.txt
+
+Step 6: Filter only inactive entries:
+  grep "inactive" < ../../data/raw_data.txt > inactive_entries.txt && wc -l inactive_entries.txt
+
+Step 7: Extract just the usernames of active users (cut the username field):
+  grep "active" < ../../data/raw_data.txt | cut -d',' -f1 > active_users.txt && cat active_users.txt
+
+Step 8: Build a complete summary report using command substitution:
+  echo "Total lines: $(wc -l < ../../data/raw_data.txt)" > summary.txt
+  echo "Unique entries: $(sort < ../../data/raw_data.txt | uniq | wc -l)" >> summary.txt
+  echo "Active entries: $(grep -c 'active' < ../../data/raw_data.txt)" >> summary.txt
+  echo "Inactive entries: $(grep -c 'inactive' < ../../data/raw_data.txt)" >> summary.txt
+  echo "Duplicate entries: $(( $(wc -l < ../../data/raw_data.txt) - $(sort < ../../data/raw_data.txt | uniq | wc -l) ))" >> summary.txt
+  cat summary.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many total lines are in raw_data.txt?
+- How many unique entries are there?
+- How many entries have status "active"?
+- How many entries are duplicates (total minus unique)?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L3E3: raw_data.txt has 20 total lines. There are 17 unique entries (3 duplicates). 12 entries have status 'active'. 8 entries have status 'inactive' (note: grep -c 'active' also matches 'inactive' — use 'grep -c ',active' or 'grep -cw active' for exact active-only count)." >> ../../my_answers.txt
+
+================================================================================
+                        CONGRATULATIONS!
+================================================================================
+
+You have completed Linux Lab — Input Redirection with < (Part 1)!
+
+KEY TAKEAWAYS:
+--------------
+
+  1. < redirects a file's content into a command's stdin.
+     The command does not know where its data comes from — it just reads
+     from stdin, whether that is a file, a keyboard, or a pipe.
+
+  2. Some commands REQUIRE < because they only read from stdin.
+     tr is the prime example — it has no filename argument option.
+     Always use:  tr 'a-z' 'A-Z' < file.txt
+
+  3. Commands like sort, wc, and grep accept EITHER a filename argument
+     OR stdin via <. The < form gives cleaner output (no filename in results)
+     and is more consistent in scripts.
+
+  4. < does NOT modify the input file. It is a read-only connection.
+     Your source files are always safe when using <.
+
+  5. Combine < and > for safe file-to-file processing:
+     command < input.txt > output.txt
+     Input is read from input.txt; output is written to output.txt.
+     NEVER use the same file for both in one command.
+
+  6. < can be combined with | (pipes) for multi-step pipelines:
+     sort < file.txt | uniq -c | sort -rn
+     The < feeds the initial input; pipes connect subsequent commands.
+
+  7. wc -l < file.txt gives you just a number (no filename in output).
+     This is more useful in scripts and command substitution: $(wc -l < file.txt)
+
+WHAT IS NEXT:
+-------------
+  Part 2 of this series covers here-strings (<<<), here-documents (<<EOF),
+  and advanced redirection patterns including stderr redirection and
+  combining all three streams.
+
+  The Pipes lab covers | in depth — connecting commands in chains
+  without any intermediate files.
+
+================================================================================

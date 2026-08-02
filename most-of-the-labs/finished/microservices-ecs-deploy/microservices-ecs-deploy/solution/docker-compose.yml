@@ -1,0 +1,14 @@
+services:
+  inventory:
+    build: ./inventory-service
+    container_name: inventory
+
+  orders:
+    build: ./orders-service
+    container_name: orders
+    ports:
+      - "8080:8080"
+    environment:
+      INVENTORY_URL: http://inventory:8080
+    depends_on:
+      - inventory

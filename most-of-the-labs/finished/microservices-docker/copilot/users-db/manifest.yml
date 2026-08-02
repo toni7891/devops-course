@@ -1,0 +1,24 @@
+name: users-db
+type: Backend Service
+
+image:
+  location: mongo:7
+  port: 27017
+
+command:
+  - mongod
+  - --bind_ip_all
+
+storage:
+  volumes:
+    users-db-data:
+      path: /data/db
+      read_only: false
+      efs:
+        uid: 999
+        gid: 999
+
+cpu: 512
+memory: 1024
+count: 1
+exec: true

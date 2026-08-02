@@ -1,0 +1,7 @@
+name: movie-api
+port: 3000
+replicas: 3
+health_liveness: /health
+health_readiness: /health
+image: toni7891/movie-api:v2
+namespace: movies

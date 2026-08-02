@@ -1,0 +1,58 @@
+================================================================================
+                       STEP 6 of 10
+            "Understanding Signals" - What SIGTERM Does
+================================================================================
+
+* SETUP: Run first (from the lab root):  ./scripts/setup_step6.sh
+
+--------------------------------------------------------------------------------
+WHAT YOU'RE DOING
+--------------------------------------------------------------------------------
+When you run `kill`, you're sending a signal. The default signal is SIGTERM
+(signal 15 – "please stop").
+
+A well-written process listens for this signal and shuts down gracefully:
+- It saves open files
+- It closes connections
+- It cleans up resources
+- Then it exits
+
+Some processes ignore SIGTERM or don't handle it well. That's where kill -9
+comes in (but we'll get to that).
+
+Your job: see how a process handles SIGTERM gracefully.
+
+--------------------------------------------------------------------------------
+INSTRUCTIONS
+--------------------------------------------------------------------------------
+1. Run the SETUP script. It starts a dummy process that handles SIGTERM.
+
+2. Find its PID:
+   ps aux | grep dummy_normal
+
+3. Check what processes are running:
+   ps aux | wc -l
+
+   (Note the count.)
+
+4. Send a gentle kill:
+   kill <PID>
+
+5. Watch what happens. You might see a message printed by the dummy process
+   indicating it received the signal.
+
+6. Verify it stopped:
+   ps aux | wc -l
+
+   (The process count should be one less than before.)
+
+7. Write in my_answers.txt:
+   "Step 6: The dummy_normal process responded to SIGTERM and exited cleanly."
+
+8. Key learning: SIGTERM is "civilized" – it gives the process a chance to
+   clean up. This is always your first choice for stopping processes.
+
+================================================================================
+CLEANUP (run when done with this step):  ./scripts/cleanup_step6.sh
+NEXT STEP:  cat clues/step7.txt
+================================================================================

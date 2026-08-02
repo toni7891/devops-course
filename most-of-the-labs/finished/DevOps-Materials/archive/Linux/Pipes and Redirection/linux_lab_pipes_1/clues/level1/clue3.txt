@@ -1,0 +1,52 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 3
+                "Count Files: ls | wc -l"
+================================================================================
+
+BACKGROUND:
+-----------
+"wc -l" counts the number of lines in its input. When combined with ls,
+it becomes a quick way to count files and directories. This is a simple
+but extremely common two-command pipeline that system administrators use
+every day.
+
+Note: "ls -a" shows hidden files (those starting with a dot like .bashrc).
+Comparing "ls | wc -l" with "ls -a | wc -l" tells you how many hidden
+files are in a directory.
+
+EXERCISE:
+---------
+Step 1: Count files and directories in the current lab directory
+  ls | wc -l
+
+Step 2: Count everything including hidden files and special entries
+  ls -a | wc -l
+
+  (Note: ls -a always includes "." and ".." which adds 2 to the count)
+
+Step 3: Count how many items are in /etc
+  ls /etc | wc -l
+
+Step 4: Count how many programs are installed in /usr/bin
+  ls /usr/bin | wc -l
+
+  /usr/bin is where most user programs live — expect a large number!
+
+Step 5: Count lines in the lab data file
+  cat ../../data/server.log | wc -l
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many visible items are in the current directory?
+- How many programs are in /usr/bin?
+- How many lines are in data/server.log?
+- What exactly does wc -l count? (stdin lines, or files?)
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L1C3: current dir=<count>; /usr/bin=<count>; server.log lines=<count>; wc -l counts lines in its stdin" >> ../../my_answers.txt
+
+================================================================================
+Move to the next level:
+  cat clues/level2/clue1.txt
+================================================================================

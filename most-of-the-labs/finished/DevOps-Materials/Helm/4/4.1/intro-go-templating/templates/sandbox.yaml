@@ -1,0 +1,8 @@
+# This is a YAML comment and i will remain unchanged when rendered but the Go comment above will leave a blank line in the output
+{{- /* This is a Go comment and i will NOT remain when rendered */}}
+test: {{ .Values.test }}
+labels:
+  app: {{ .Release.Name }}
+  {{- /* app label */}}
+  chart: {{ .Chart.Name }}
+  {{- /* chart label */}}

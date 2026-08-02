@@ -1,0 +1,62 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 2
+                "SQL-like Multi-line Commands with Heredoc"
+================================================================================
+
+BACKGROUND:
+-----------
+In real DevOps and database administration work, heredocs are used to pass
+multi-line queries directly to database clients like mysql, psql, or sqlite3.
+Instead of writing a separate .sql file and then running it, you embed the
+entire query inline. The quoted delimiter ('EOF') is used here because SQL
+keywords like WHERE and FROM should not trigger any shell expansion, and dollar
+signs in SQL expressions must be treated literally.
+
+EXERCISE:
+---------
+Step 1: Display a multi-line SQL query using a quoted heredoc (cat to stdout):
+
+  cat << 'EOF'
+  SELECT users.name, orders.total
+  FROM users
+  JOIN orders ON users.id = orders.user_id
+  WHERE orders.total > 100
+  ORDER BY orders.total DESC
+  LIMIT 10;
+  EOF
+
+Step 2: Save a SQL script file using a quoted heredoc:
+
+  cat << 'EOF' > query.sql
+  -- Report: Top Customers
+  SELECT name, email, total_purchases
+  FROM customers
+  WHERE status = 'active'
+  ORDER BY total_purchases DESC
+  LIMIT 20;
+  EOF
+
+Step 3: Read the saved query file:
+
+  cat query.sql
+
+Step 4: Simulate running it (in real life you would pipe it to a DB client):
+
+  cat query.sql
+  # Real usage would be: mysql mydb < query.sql
+  # Or:                  psql mydb < query.sql
+
+
+QUESTIONS TO ANSWER:
+--------------------
+- Why use 'EOF' (quoted delimiter) for the SQL heredoc?
+- What would happen if you used an unquoted EOF and the SQL contained $1 or $USER?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level2-Ex2: [your answer here]" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level2/clue3.txt
+================================================================================

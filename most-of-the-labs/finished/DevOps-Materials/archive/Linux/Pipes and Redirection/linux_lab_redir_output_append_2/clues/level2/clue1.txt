@@ -1,0 +1,55 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 4
+            "Append with grep: Cumulative Warning Collection"
+================================================================================
+
+BACKGROUND:
+-----------
+When you use >> in an automated script that runs on a schedule, each run
+appends its output to the file. This is usually intentional — you want a
+growing history. However, if you run the same grep command twice against
+the same log file and append both results, you get duplicates. This is a
+very common bug in production scripts: a cron job runs hourly, each run
+appends the same extracted lines, and after 24 hours the file has 24 copies
+of the same data. The fix depends on intent: if you want a cumulative unique
+collection, start fresh with > before each grep. If you want a true history
+of when each grep ran, use >> but add a timestamp header before each run.
+Understanding this trade-off is essential for anyone writing shell scripts.
+
+EXERCISE:
+---------
+Run these commands from inside the clues/level2/ directory.
+
+Step 1: grep "WARN" ../../data/server.log >> warnings.txt && cat warnings.txt
+          (extracts all WARN lines and appends them; should show 6 lines)
+
+Step 2: wc -l warnings.txt
+          (confirm line count after first run — expect: 6)
+
+Step 3: grep "WARN" ../../data/server.log >> warnings.txt
+          (run the same grep again — simulates a second cron job execution)
+
+Step 4: wc -l warnings.txt
+          (count again — expect: 12, because the 6 lines were appended again)
+
+Step 5: grep "WARN" ../../data/server.log > warnings_clean.txt && wc -l warnings_clean.txt
+          (use > to start fresh — expect: 6, no duplicates)
+
+Step 6: cat warnings.txt | sort | uniq | wc -l
+          (another approach: de-duplicate after the fact — expect: 6)
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many lines does warnings.txt have after Step 2?
+- How many lines does warnings.txt have after Step 4?
+- In what real-world situation would accumulating duplicate entries be a problem?
+- What is the trade-off between using > vs >> for a log collection script?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L2E1: 6 lines after step 2, 12 after step 4; duplicates corrupt reporting; > resets vs >> accumulates" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue2.txt
+================================================================================

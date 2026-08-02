@@ -1,0 +1,57 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 2
+                "Head and Tail via Pipes"
+================================================================================
+
+BACKGROUND:
+-----------
+"head" and "tail" are simple but powerful pipeline tools:
+  head -N   outputs only the first N lines of its input
+  tail -N   outputs only the last N lines of its input
+
+They are commonly used at the END of a pipeline to limit how much output
+you see. For example, after sorting by frequency you pipe through "head -10"
+to see only the top 10 results.
+
+A useful advanced form of tail:
+  tail -n +N   skips the first N-1 lines and outputs from line N onwards.
+               Use this to skip header lines in CSV files.
+
+Combining head and tail extracts specific line ranges:
+  head -10 | tail -5   gives you lines 6-10 (first 10, then last 5 of those)
+
+EXERCISE:
+---------
+Step 1: Show the first 5 lines of the big file
+  cat ../../data/big_file.txt | head -5
+
+Step 2: Show the last 5 lines of the big file
+  cat ../../data/big_file.txt | tail -5
+
+Step 3: Show ONLY lines 6 through 10 (head 10 then tail 5)
+  cat ../../data/big_file.txt | head -10 | tail -5
+
+  How this works:
+    head -10  keeps lines 1-10
+    tail -5   keeps the last 5 of those (lines 6, 7, 8, 9, 10)
+
+Step 4: Show the last 3 ERROR lines from the server log
+  cat ../../data/server.log | grep "ERROR" | tail -3
+
+Step 5: Count the first 20 lines (should always be 20)
+  cat ../../data/big_file.txt | head -20 | wc -l
+
+QUESTIONS TO ANSWER:
+--------------------
+- What are the first 5 lines of data/big_file.txt?
+- What are the last 5 lines of data/big_file.txt?
+- What do you get from "head -10 | tail -5"? Which lines exactly?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L1C2: first 5 lines are Line 1-5; last 5 are Line 46-50; head -10|tail -5 gives lines 6 through 10" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level1/clue3.txt
+================================================================================

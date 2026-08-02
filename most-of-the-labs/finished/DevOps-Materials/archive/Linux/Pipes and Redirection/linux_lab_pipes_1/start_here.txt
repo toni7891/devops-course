@@ -1,0 +1,78 @@
+============================================================
+     Welcome to Linux Lab - Pipes with | (Part 1)
+            Theme: Connecting Commands
+============================================================
+
+WHAT IS A PIPE?
+---------------
+Think of a pipe like a water pipe in your house.
+
+  Water enters one end -> flows through the pipe -> exits the other end.
+
+  In Linux:
+
+  command1 | command2
+
+  Data (text) exits command1 -> flows through the pipe -> enters command2.
+
+The | symbol literally "connects" commands together.
+Output from the left becomes input for the right.
+
+------------------------------------------------------------
+
+THE PIPE OPERATOR: |
+--------------------
+  command1 | command2
+
+  - command1 runs and produces output (stdout)
+  - Instead of printing to screen, that output is sent to command2
+  - command2 receives it as input (stdin)
+  - command2's output goes to the screen (or to another pipe)
+
+You can chain as many pipes as you want:
+
+  command1 | command2 | command3 | command4
+
+Data flows left to right through each transformation.
+
+------------------------------------------------------------
+
+QUICK EXAMPLES:
+---------------
+  ls | wc -l          Count how many files are in the current directory
+  cat file | grep X   Show only lines in file that contain X
+  ps aux | grep ssh   Find running processes that match "ssh"
+
+------------------------------------------------------------
+
+QUICK REFERENCE:
+----------------
+  grep "word"    Filter - only pass lines containing "word"
+  sort           Sort lines alphabetically
+  sort -rn       Sort numerically, largest first
+  wc -l          Count lines
+  uniq           Remove consecutive duplicate lines
+  uniq -c        Count each unique line
+  head -5        Show only first 5 lines
+  tail -5        Show only last 5 lines
+  less           Scroll through output (press q to quit)
+
+------------------------------------------------------------
+
+HOW TO SAVE YOUR ANSWERS:
+--------------------------
+When a clue asks you a question, record your answer with:
+
+  echo "Level 1 Clue 1: <your answer>" >> ../../my_answers.txt
+
+------------------------------------------------------------
+
+QUICK START:
+------------
+Begin your journey here:
+
+  cat clues/level1/clue1.txt
+
+Good luck! Data flows left to right. Follow the pipes.
+
+============================================================

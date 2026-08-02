@@ -1,0 +1,47 @@
+================================================================================
+                    LEVEL 3 - EXERCISE 3
+                    Complete Debug Challenge
+================================================================================
+
+EXERCISE:
+---------
+Fix everything broken in scenario6_mixed_issues. Use the 4 steps for each problem.
+
+INSTRUCTIONS:
+-------------
+1. Go to: cd ../../broken_scenarios/scenario6_mixed_issues
+
+2. Try each of these (they will fail until you fix things):
+   - cat README.md
+   - ./run_backup.sh
+   - cat data.txt
+   - cd deep/nested/path && cat important.txt
+   - touch fixed.txt
+   Fix each problem with OBSERVE → INSPECT → DIAGNOSE → RESOLVE.
+
+3. When everything works, create your answers file in the lab root:
+   cd ../..   (or cd ../../.. if you're inside scenario6)
+   touch my_answers.txt
+   (Write in my_answers.txt: what you fixed and how, and a short reflection on the 4-step process.)
+
+COMMANDS TO USE:
+----------------
+chmod 644 README.md
+chmod +x run_backup.sh
+chmod 644 data.txt   (or sudo chown if needed)
+chmod 755 .          (directory write)
+chmod 755 deep deep/nested deep/nested/path
+touch fixed.txt
+cd ../..
+touch my_answers.txt
+
+================================================================================
+    CONGRATULATIONS!
+================================================================================
+
+You've completed the Debug Mindset lab. You now have a systematic way to
+debug Linux problems: OBSERVE → INSPECT → DIAGNOSE → RESOLVE.
+
+Lab complete. No further clues.
+
+================================================================================

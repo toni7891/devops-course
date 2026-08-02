@@ -1,0 +1,14 @@
+# PersistentVolume is cluster-scoped (no namespace field)
+# hostPath is fine for local dev / learning — use EBS CSI driver in production
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongo-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/mongo   # directory on the Kubernetes node
+  persistentVolumeReclaimPolicy: Retain

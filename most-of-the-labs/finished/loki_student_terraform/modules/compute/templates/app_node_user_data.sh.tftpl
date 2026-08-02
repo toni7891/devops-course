@@ -1,0 +1,38 @@
+#!/bin/bash
+set -euo pipefail
+
+apt-get update -y
+apt-get install -y nodejs npm curl unzip
+
+mkdir -p /home/ubuntu/app
+
+cat <<'APP_INDEX_JS' > /home/ubuntu/app/index.js
+${index_js}
+APP_INDEX_JS
+
+cat <<'APP_PACKAGE_JSON' > /home/ubuntu/app/package.json
+${package_json}
+APP_PACKAGE_JSON
+
+chown -R ubuntu:ubuntu /home/ubuntu/app
+
+cat <<'APP_SERVICE' > /etc/systemd/system/demo-app.service
+[Unit]
+Description=Loki demo Node.js app
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/app
+ExecStart=/usr/bin/node index.js
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
+APP_SERVICE
+
+systemctl daemon-reload
+systemctl enable demo-app.service
+systemctl start demo-app.service

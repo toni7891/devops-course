@@ -1,0 +1,106 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 1
+            "Lock It Down" - Ownership and Permissions
+================================================================================
+
+STORY:
+------
+The team lead sends an urgent message:
+
+    "Right now /opt/project is owned by root and anyone can read it.
+     We need to fix this ASAP. Only devteam members should have
+     full access. Others should not be able to get in at all."
+
+================================================================================
+    PART 7 - Change Ownership of the Project Directory
+================================================================================
+
+The /opt/project directory needs to belong to the devteam group.
+
+HINTS:
+- There is a command that changes file/directory ownership
+- You can set just the group ownership, or both owner and group
+- A good approach: keep the owner as root, but change the group to devteam
+- Think about whether you need to apply this to just the directory
+  or to everything inside it as well (recursively)
+- You need elevated privileges for this
+
+COMMANDS THAT CAN HELP:
+- chown        (change owner and/or group of files/directories)
+  Syntax: chown owner:group path
+  Example: chown alice:developers /some/dir
+  The -R flag applies the change recursively
+- chgrp        (change only the group - alternative to chown)
+- ls -l        (verify ownership after the change)
+
+After making the change, verify the result:
+- Use ls -l to check both /opt/project itself and its contents
+- The group column should now show "devteam"
+
+================================================================================
+    PART 8 - Set Directory Permissions
+================================================================================
+
+Configure permissions so that:
+- Owner (root): full access (read, write, execute)
+- Group (devteam): full access (read, write, execute)
+- Others: NO access at all
+
+HINTS:
+- There is a command that changes file/directory permissions
+- You can use symbolic mode to set permissions for owner (u), group (g),
+  and others (o) separately
+- Apply this to the main project directory
+- Think about whether subdirectories also need these permissions
+- You need elevated privileges
+
+COMMANDS THAT CAN HELP:
+- chmod        (change file/directory permissions)
+  Symbolic mode uses: u (owner), g (group), o (others), a (all)
+  And: r (read), w (write), x (execute)
+  And: + (add), - (remove), = (set exactly)
+
+  Examples:
+    chmod g+rwx file      (give group read+write+execute)
+    chmod o-rwx file      (remove all permissions from others)
+    chmod u=rwx,g=rwx,o= dir   (owner & group get rwx, others get nothing)
+  The -R flag applies the change recursively
+
+After making the change, verify the result:
+- The permission string should show rwx for owner and group, and --- for others
+
+================================================================================
+    PART 9 - Test Access as a Team Member
+================================================================================
+
+Verify that a devteam member can actually access the project.
+
+HINTS:
+- There is a command that lets you switch to another user
+- Switch to dev1 and try to enter the project directory
+- Check who you are after switching (there is a command for that)
+- Try listing the files inside /opt/project
+
+COMMANDS THAT CAN HELP:
+- su - dev1    (switch to user dev1 with a full login shell)
+  The dash (-) is important! It loads the user's environment
+- whoami       (check which user you are currently logged in as)
+- exit         (go back to the previous user)
+
+WHAT TO OBSERVE:
+- Can dev1 enter /opt/project?
+- Can dev1 list files inside?
+- After testing, exit back to your original user
+
+WRITE YOUR ANSWER:
+------------------
+Save to my_answers.txt:
+- What command did you use to change ownership?
+- What permission did you set? (write the chmod command you used)
+- Could dev1 access the project directory?
+
+================================================================================
+
+When you're done, proceed to the next exercise:
+
+    cat clues/level2/clue2.txt

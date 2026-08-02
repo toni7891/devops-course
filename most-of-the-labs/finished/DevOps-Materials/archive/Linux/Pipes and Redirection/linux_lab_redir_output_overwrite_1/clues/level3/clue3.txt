@@ -1,0 +1,110 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 3
+            "Spot the Bug — The Loop Overwrite Problem"
+================================================================================
+
+BACKGROUND:
+-----------
+One of the most common beginner mistakes in shell scripting is using > inside
+a loop. Each iteration of the loop overwrites the file, so only the LAST
+iteration's output survives.
+
+This is a real bug that causes mysterious data loss in production scripts.
+Your job is to identify it, understand it, and fix it.
+
+EXERCISE:
+---------
+Step 1: Look at this "broken" script and predict what it will produce:
+
+  for fruit in apple banana cherry orange grape; do
+      echo "$fruit" > fruits.txt
+  done
+
+Before running it, answer: How many lines do you expect in fruits.txt?
+
+Step 2: Run the script and check:
+
+  for fruit in apple banana cherry orange grape; do
+      echo "$fruit" > fruits.txt
+  done
+
+  cat fruits.txt
+  wc -l fruits.txt
+
+Step 3: Was your prediction correct?
+
+Step 4: Now fix the bug. Change > to >> to make the loop APPEND:
+
+  # First, create a fresh empty file (intentional use of >):
+  > fruits_fixed.txt     # This creates/clears the file (empty overwrite trick!)
+
+  # Now loop and APPEND:
+  for fruit in apple banana cherry orange grape; do
+      echo "$fruit" >> fruits_fixed.txt
+  done
+
+  cat fruits_fixed.txt
+  wc -l fruits_fixed.txt
+
+NOTE: The trick `> filename` (with nothing before it) creates an empty file
+      or clears an existing one. This is a useful pattern!
+
+Step 5: Another version of the same bug — with numbers:
+
+  for i in 1 2 3 4 5; do
+      echo "Processing item $i" > log.txt
+  done
+
+  cat log.txt
+
+What does log.txt contain?
+
+FINAL CHALLENGE:
+----------------
+Fix the numbers loop so that log.txt contains ALL 5 lines.
+Then add a header line at the top using > (before the loop).
+
+Expected final content of log.txt:
+  === Processing Log ===
+  Processing item 1
+  Processing item 2
+  Processing item 3
+  Processing item 4
+  Processing item 5
+
+Write your solution here before running it, then test it:
+
+  echo "=== Processing Log ===" > log.txt
+  for i in 1 2 3 4 5; do
+      echo "Processing item $i" ??   ← What operator goes here?
+  done
+
+QUESTIONS TO ANSWER:
+--------------------
+- What operator fixes the loop overwrite bug?
+- What does `> filename` (with nothing before it) do?
+- In what real scenario would you accidentally make this mistake?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L3C3 COMPLETE: Fixed loop uses >> instead of >" >> ../../my_answers.txt
+
+================================================================================
+    CONGRATULATIONS! You have completed Lab 1 — Output Redirection with >
+================================================================================
+
+KEY TAKEAWAYS:
+--------------
+  ✓ > redirects stdout (normal output) into a file
+  ✓ The file is created automatically if it doesn't exist
+  ✓ > OVERWRITES the file — no warning, no undo
+  ✓ Errors (stderr) still appear on screen — > does not capture them
+  ✓ Using > in a loop? Only the last iteration survives
+  ✓ `> filename` creates/clears a file (useful pattern!)
+
+NEXT LAB:
+---------
+When you are ready to learn how to ADD to files without destroying them,
+proceed to: linux_lab_redir_output_overwrite_2 (or the >> labs)
+
+================================================================================

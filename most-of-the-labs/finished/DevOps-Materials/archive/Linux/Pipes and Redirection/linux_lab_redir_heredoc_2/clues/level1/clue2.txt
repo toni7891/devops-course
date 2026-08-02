@@ -1,0 +1,56 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 2
+                "Replace Multiple Echos with One Heredoc"
+================================================================================
+
+BACKGROUND:
+-----------
+A common beginner pattern is appending multiple echo statements one by one to
+build a multi-line file. This works but is repetitive, hard to read, and
+error-prone. One heredoc replaces all of them cleanly. The output is identical,
+but the code is much more maintainable. This is a small but important style
+improvement you will use throughout your career.
+
+EXERCISE:
+---------
+Step 1: The messy way — multiple echo >> commands:
+
+  echo "--- Server Status ---" >> old_status.txt
+  echo "Host: $(hostname)" >> old_status.txt
+  echo "Date: $(date)" >> old_status.txt
+  echo "User: $(whoami)" >> old_status.txt
+  echo "---" >> old_status.txt
+
+Step 2: The clean way — one heredoc:
+
+  cat << EOF >> clean_status.txt
+  --- Server Status ---
+  Host: $(hostname)
+  Date: $(date)
+  User: $(whoami)
+  ---
+  EOF
+
+Step 3: Compare the two files (they should be identical):
+
+  diff old_status.txt clean_status.txt
+
+Step 4: Count lines in both files:
+
+  wc -l old_status.txt && wc -l clean_status.txt
+
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many lines are in each file?
+- Are they identical (what does diff show)?
+- Which approach is easier to read and maintain?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level1-Ex2: [your answer here]" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level1/clue3.txt
+================================================================================

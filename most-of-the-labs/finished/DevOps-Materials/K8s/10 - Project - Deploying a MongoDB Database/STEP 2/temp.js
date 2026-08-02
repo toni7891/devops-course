@@ -1,0 +1,21 @@
+const dbName = process.env.DB_NAME;
+const dbUser = process.env.DB_USER;
+const dbPassword = process.env.DB_PASSWORD;
+
+const db = db.getSiblingDB(dbName);
+
+console.log("Initializing database:", dbName);
+console.log("Creating user:", dbUser);
+
+db.createUser({
+  user: dbUser,
+  pwd: dbPassword,
+  roles: [
+    {
+      role: "readWrite",
+      db: dbName,
+    },
+  ],
+});
+
+console.log("Initialization successful");

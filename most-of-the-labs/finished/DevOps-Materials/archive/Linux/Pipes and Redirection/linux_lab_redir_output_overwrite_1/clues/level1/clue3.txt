@@ -1,0 +1,70 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 3
+              "Redirecting date and whoami — Saving Identity and Time"
+================================================================================
+
+BACKGROUND:
+-----------
+Two of the most useful pieces of information in a system log are:
+  - WHEN something happened (timestamp)
+  - WHO ran something (username)
+
+Linux gives you these with two simple commands:
+  date    — prints the current date and time
+  whoami  — prints the current user's username
+
+In this exercise, you will capture these into separate files — a pattern used
+everywhere in real system administration.
+
+EXERCISE:
+---------
+Step 1: Run each command and see its output:
+
+  date
+  whoami
+
+Step 2: Redirect date into a file:
+
+  date > today.txt
+
+Step 3: Redirect whoami into a file:
+
+  whoami > me.txt
+
+Step 4: Read both files back:
+
+  cat today.txt
+  cat me.txt
+
+Step 5: Now combine them — redirect hostname too:
+
+  hostname > myhost.txt
+  cat myhost.txt
+
+Step 6: Look at all three files you just created:
+
+  ls -l today.txt me.txt myhost.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- What is inside today.txt?
+- What is inside me.txt?
+- What does `hostname` return?
+- You now have three small files — what would you use them for in a real system?
+
+CHALLENGE — Build a mini identity card:
+----------------------------------------
+Try redirecting a meaningful combination into a file called id_card.txt.
+Hint: you can only redirect one command at a time with >
+      (You will learn how to combine them in a later lab!)
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Exercise 3: date output was: $(cat today.txt)" >> ../../my_answers.txt
+
+================================================================================
+Level 1 complete! Great work.
+Move to Level 2:
+  cd ../level2
+  cat clue1.txt
+================================================================================

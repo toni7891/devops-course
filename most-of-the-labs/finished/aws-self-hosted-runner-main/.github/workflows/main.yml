@@ -1,0 +1,40 @@
+name: Self-Hosted Runner CI
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  runner-test:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Print machine information
+        run: |
+          echo "Hostname: $(hostname)"
+          echo "User: $(whoami)"
+          echo "Uptime:"
+          uptime
+
+      - name: Print custom message
+        run: echo "Hello from AWS self-hosted runner!"
+
+      - name: Print Node.js versions
+        run: |
+          node --version
+          npm --version
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run build
+        run: npm run build
+
+      - name: Prove runner persistence
+        run: touch proof.txt

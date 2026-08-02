@@ -1,0 +1,108 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 9
+              "Final Challenge: Rolling Log with Timestamps"
+================================================================================
+
+BACKGROUND:
+-----------
+A rolling log resets at the start of each session rather than accumulating
+forever. This pattern is used for session logs, test run logs, and deployment
+logs where you want a clean record of the current run without losing the
+structure or format. The trick is a deliberate > at the start of each session,
+followed by >> for every entry within that session. Each log entry follows a
+structured format: timestamp, user, host, severity, and message — separated by
+pipes. This is the same format used by many real-world log aggregators. When
+you run the sequence a second time, the > resets the file and new timestamps
+appear, but the structure remains identical. This is NOT a cumulative audit log
+— it is a current-session log, and the design choice between rolling and
+cumulative is always intentional.
+
+EXERCISE:
+---------
+Run these commands from inside the clues/level3/ directory.
+
+Step 1: > rolling.log
+          (start fresh — initialize empty file)
+
+Step 2: echo "$(date '+%Y-%m-%d %H:%M:%S') | $(whoami) | $(hostname) | INFO | Session started" >> rolling.log
+
+Step 3: echo "$(date '+%Y-%m-%d %H:%M:%S') | $(whoami) | $(hostname) | INFO | Reading configuration" >> rolling.log
+
+Step 4: echo "$(date '+%Y-%m-%d %H:%M:%S') | $(whoami) | $(hostname) | WARN | Config missing, using defaults" >> rolling.log
+
+Step 5: echo "$(date '+%Y-%m-%d %H:%M:%S') | $(whoami) | $(hostname) | INFO | Service started on port 8080" >> rolling.log
+
+Step 6: echo "$(date '+%Y-%m-%d %H:%M:%S') | $(whoami) | $(hostname) | INFO | Session complete" >> rolling.log
+
+Step 7: cat rolling.log && wc -l rolling.log
+          (view session 1 log — expect: 5 lines with timestamps)
+
+Step 8: grep "WARN" rolling.log
+          (expect: 1 line — the config warning)
+
+Step 9: Simulate a second session — reset and log again:
+          > rolling.log
+          echo "$(date '+%Y-%m-%d %H:%M:%S') | $(whoami) | $(hostname) | INFO | Session started" >> rolling.log
+          echo "$(date '+%Y-%m-%d %H:%M:%S') | $(whoami) | $(hostname) | INFO | Reading configuration" >> rolling.log
+          echo "$(date '+%Y-%m-%d %H:%M:%S') | $(whoami) | $(hostname) | WARN | Config missing, using defaults" >> rolling.log
+          echo "$(date '+%Y-%m-%d %H:%M:%S') | $(whoami) | $(hostname) | INFO | Service started on port 8080" >> rolling.log
+          echo "$(date '+%Y-%m-%d %H:%M:%S') | $(whoami) | $(hostname) | INFO | Session complete" >> rolling.log
+
+Step 10: cat rolling.log
+           (same 5 lines but with new timestamps — file was reset by > before session 2)
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many lines does rolling.log have after Step 7?
+- After Step 10, does rolling.log contain 10 lines (both sessions) or 5 lines (session 2 only)?
+- What is the difference between a rolling log and a cumulative audit log?
+- When would you choose >> without a leading > (cumulative) over > then >> (rolling)?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L3E9: 5 lines after step 7; still 5 after step 10 (rolling, not cumulative); rolling resets each run, audit keeps all history" >> ../../my_answers.txt
+
+================================================================================
+  ____                            _         _       _   _                 _
+ / ___|___  _ __   __ _ _ __ __ _| |_ _   _| | __ _| |_(_) ___  _ __  ___| |
+| |   / _ \| '_ \ / _` | '__/ _` | __| | | | |/ _` | __| |/ _ \| '_ \/ __| |
+| |__| (_) | | | | (_| | | | (_| | |_| |_| | | (_| | |_| | (_) | | | \__ \_|
+ \____\___/|_| |_|\__, |_|  \__,_|\__|\__,_|_|\__,_|\__|_|\___/|_| |_|___(_)
+                  |___/
+
+         You have completed: Linux Lab - Output Redirection with >> (Part 2)
+                    Append in Practice — Real-World Scenarios
+================================================================================
+
+KEY TAKEAWAYS:
+--------------
+
+1. >> APPENDS without overwriting.
+   Every time you use >>, the file grows. Existing content is always preserved.
+
+2. > INITIALIZES or RESETS.
+   Use > intentionally at the start of a script or session to begin with a
+   clean slate. Never use it accidentally where >> was needed.
+
+3. >> IN LOOPS AND SCRIPTS saves every iteration.
+   When a script runs multiple times (loop, cron, repeated call), >> ensures
+   all runs are recorded. Using > would keep only the last run.
+
+4. REAL CRON JOBS use >> for logs.
+   A cron job that overwrites its own log with > effectively has no history.
+   Always use >> in scheduled log-writing scripts unless you explicitly want
+   a rolling log.
+
+5. BE CAREFUL with >> in automated scripts — duplicates can accumulate.
+   If the same grep or extract command runs repeatedly with >>, the results
+   stack up. Decide intentionally: do you want a history of each run, or a
+   current clean extract? Use > at the start of each run for the latter.
+
+6. COMBINE > AND >> INTENTIONALLY.
+   The professional pattern is: one > to start fresh, then >> for everything
+   that follows. This gives you a clean file with complete content every time.
+
+================================================================================
+           Review your answers: cat ../../my_answers.txt
+           Check the solutions: cat ../../.answers/solutions.txt
+================================================================================

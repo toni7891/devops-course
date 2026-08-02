@@ -1,0 +1,56 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 2
+                "Paginate Long Output: Pipe to less"
+================================================================================
+
+BACKGROUND:
+-----------
+Many commands produce more output than fits on one screen. Before pipes,
+you had no choice but to let text scroll past. With pipes, you can send
+long output to a pager like "less" which lets you scroll up and down at
+your own pace.
+
+"less" is a pager program: it reads text from stdin and lets you navigate
+it interactively. Press SPACE to scroll down, arrow keys to move line by
+line, and q to quit.
+
+This is one of the most practical everyday uses of the pipe operator.
+
+EXERCISE:
+---------
+Step 1: View /etc/passwd without a pager — it will scroll off the screen
+  cat /etc/passwd
+
+Step 2: Pipe it through less so you can scroll
+  cat /etc/passwd | less
+
+  Controls inside less:
+    SPACE or Page Down  -> scroll one screen forward
+    b or Page Up        -> scroll one screen back
+    Arrow keys          -> scroll line by line
+    q                   -> quit and return to shell
+
+Step 3: Count how many lines are in /etc/passwd
+  cat /etc/passwd | wc -l
+
+Step 4: Browse the contents of /etc using less
+  ls -la /etc | less
+
+Step 5: Count how many items are in /etc
+  ls /etc | wc -l
+
+NOTE: Always press q to exit less. If you get stuck, press q.
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many lines are in /etc/passwd on your system?
+- How many items (files and directories) are in /etc?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L1C2: /etc/passwd lines=<your count>; /etc items=<your count>" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level1/clue3.txt
+================================================================================

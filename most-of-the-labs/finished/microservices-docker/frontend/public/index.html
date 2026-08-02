@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Microservices Demo</title>
+  <style>
+    :root {
+      --bg: #f7f7f8;
+      --surface: #ffffff;
+      --border: #e4e4e7;
+      --text: #18181b;
+      --muted: #71717a;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #f59e0b;
+      --shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.04);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .brand { font-weight: 700; font-size: 1.05rem; }
+    .brand .dot { color: var(--primary); }
+    .services {
+      margin-left: auto;
+      display: flex;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .service-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.6rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+    }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--muted);
+      transition: background 0.2s;
+    }
+    .status-dot.up { background: var(--success); box-shadow: 0 0 0 2px rgba(22,163,74,0.15); }
+    .status-dot.down { background: var(--danger); box-shadow: 0 0 0 2px rgba(220,38,38,0.15); }
+
+    /* ---- Main ---- */
+    main {
+      max-width: 880px;
+      width: 100%;
+      margin: 1.5rem auto;
+      padding: 0 1.5rem;
+      flex: 1;
+    }
+
+    /* ---- Tabs ---- */
+    .tabs {
+      display: flex;
+      gap: 0.25rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.25rem;
+    }
+    .tab {
+      padding: 0.6rem 1rem;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: var(--muted);
+      font-weight: 500;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ---- Cards & forms ---- */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow);
+    }
+    .card h2 {
+      margin: 0 0 0.25rem 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .card .subtitle {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin: 0 0 1rem 0;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 0.6rem;
+      align-items: end;
+    }
+    .form-row.products-row { grid-template-columns: 2fr 1fr 1fr auto; }
+    .field { display: flex; flex-direction: column; gap: 0.3rem; }
+    .field label { font-size: 0.75rem; color: var(--muted); font-weight: 500; }
+    input {
+      padding: 0.5rem 0.6rem;
+      font-size: 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: var(--surface);
+      color: var(--text);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+
+    /* ---- Buttons ---- */
+    button {
+      padding: 0.5rem 0.9rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+    }
+    button:hover:not(:disabled) { background: #f4f4f5; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); border-color: var(--primary-hover); }
+    .btn-danger { color: var(--danger); border-color: transparent; padding: 0.25rem 0.5rem; }
+    .btn-danger:hover:not(:disabled) { background: #fef2f2; }
+    .btn-buy { color: var(--success); border-color: transparent; padding: 0.25rem 0.5rem; }
+    .btn-buy:hover:not(:disabled) { background: #f0fdf4; }
+
+    /* ---- Lists ---- */
+    .list { display: flex; flex-direction: column; }
+    .list-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-top: 1px solid var(--border);
+      gap: 0.75rem;
+    }
+    .list-item:first-child { border-top: none; }
+    .item-main { flex: 1; min-width: 0; }
+    .item-title { font-weight: 500; }
+    .item-meta { color: var(--muted); font-size: 0.8rem; margin-top: 0.15rem; }
+    .item-actions { display: flex; gap: 0.25rem; }
+    .badge {
+      display: inline-block;
+      padding: 0.1rem 0.45rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: #f4f4f5;
+      color: var(--muted);
+      margin-right: 0.4rem;
+    }
+    .badge.stock-low { background: #fef3c7; color: #92400e; }
+    .badge.stock-out { background: #fee2e2; color: #991b1b; }
+    .empty {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .empty-icon { font-size: 1.5rem; opacity: 0.5; margin-bottom: 0.5rem; }
+
+    /* ---- Toasts ---- */
+    .toasts {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 100;
+      max-width: 360px;
+    }
+    .toast {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
+      padding: 0.7rem 0.9rem;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      font-size: 0.85rem;
+      animation: slide-in 0.2s ease-out;
+    }
+    .toast.success { border-left-color: var(--success); }
+    .toast.error { border-left-color: var(--danger); }
+    .toast.fade { opacity: 0; transition: opacity 0.3s; }
+    @keyframes slide-in {
+      from { transform: translateX(20px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* ---- Modal ---- */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+    .modal-backdrop.show { display: flex; }
+    .modal {
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 1.25rem;
+      max-width: 380px;
+      width: calc(100% - 2rem);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    .modal h3 { margin: 0 0 0.5rem; font-size: 1rem; }
+    .modal p { margin: 0 0 1.25rem; color: var(--muted); font-size: 0.9rem; }
+    .modal-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+
+    /* ---- Network log (collapsible) ---- */
+    .net-log {
+      max-width: 880px;
+      margin: 0 auto 1.5rem;
+      padding: 0 1.5rem;
+    }
+    .net-log details {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .net-log summary {
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--muted);
+      user-select: none;
+    }
+    .net-log summary:hover { color: var(--text); }
+    .net-log .log-body {
+      max-height: 200px;
+      overflow-y: auto;
+      padding: 0.5rem 1rem 0.75rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+    .log-line { padding: 0.15rem 0; }
+    .log-line.ok { color: var(--success); }
+    .log-line.err { color: var(--danger); }
+    .log-line .ts { color: var(--muted); margin-right: 0.5rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><span class="dot">●</span> Microservices Demo</div>
+    <div class="services">
+      <span class="service-pill"><span class="status-dot" id="status-users"></span>users-service</span>
+      <span class="service-pill"><span class="status-dot" id="status-products"></span>products-service</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="tabs" role="tablist">
+      <button type="button" class="tab active" data-tab="users" role="tab">Users</button>
+      <button type="button" class="tab" data-tab="products" role="tab">Products</button>
+    </div>
+
+    <section class="tab-panel active" id="panel-users" role="tabpanel">
+      <div class="card">
+        <h2>Add a user</h2>
+        <p class="subtitle">POST /api/users → users-service → users-db</p>
+        <div class="form-row">
+          <div class="field">
+            <label for="user-name">Name</label>
+            <input id="user-name" placeholder="Ada Lovelace" />
+          </div>
+          <div class="field">
+            <label for="user-email">Email</label>
+            <input id="user-email" type="email" placeholder="ada@example.com" />
+          </div>
+          <button type="button" id="user-add" class="btn-primary">Add user</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Users <span id="users-count" class="badge"></span></h2>
+        <p class="subtitle">GET /api/users</p>
+        <div id="users-list" class="list"></div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="panel-products" role="tabpanel">
+      <div class="card">
+        <h2>Add a product</h2>
+        <p class="subtitle">POST /api/products → products-service → products-db</p>
+        <div class="form-row products-row">
+          <div class="field">
+            <label for="product-name">Name</label>
+            <input id="product-name" placeholder="Widget" />
+          </div>
+          <div class="field">
+            <label for="product-price">Price</label>
+            <input id="product-price" type="number" step="0.01" placeholder="9.99" />
+          </div>
+          <div class="field">
+            <label for="product-stock">Stock</label>
+            <input id="product-stock" type="number" placeholder="5" />
+          </div>
+          <button type="button" id="product-add" class="btn-primary">Add product</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Products <span id="products-count" class="badge"></span></h2>
+        <p class="subtitle">GET /api/products · click "buy" to atomically decrement stock</p>
+        <div id="products-list" class="list"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="net-log">
+    <details>
+      <summary>Network log</summary>
+      <div id="log" class="log-body"></div>
+    </details>
+  </div>
+
+  <div class="toasts" id="toasts"></div>
+
+  <div class="modal-backdrop" id="modal-backdrop">
+    <div class="modal">
+      <h3 id="modal-title">Confirm</h3>
+      <p id="modal-message">Are you sure?</p>
+      <div class="modal-actions">
+        <button type="button" id="modal-cancel">Cancel</button>
+        <button type="button" id="modal-confirm" class="btn-primary">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---- utilities ----
+    function el(tag, attrs = {}, children = []) {
+      const node = document.createElement(tag);
+      for (const [k, v] of Object.entries(attrs)) {
+        if (k === 'class') node.className = v;
+        else if (k.startsWith('data-')) node.setAttribute(k, v);
+        else if (k === 'onClick') node.addEventListener('click', v);
+        else node[k] = v;
+      }
+      for (const child of children) {
+        if (child == null) continue;
+        node.appendChild(typeof child === 'string' ? document.createTextNode(child) : child);
+      }
+      return node;
+    }
+
+    const logEl = document.getElementById('log');
+    function log(msg, kind) {
+      const line = el('div', { class: `log-line ${kind || ''}` }, [
+        el('span', { class: 'ts' }, [new Date().toLocaleTimeString()]),
+        msg,
+      ]);
+      logEl.prepend(line);
+    }
+
+    // ---- toasts ----
+    const toastsEl = document.getElementById('toasts');
+    function toast(msg, kind = 'info', ms = 3000) {
+      const t = el('div', { class: `toast ${kind}` }, [msg]);
+      toastsEl.appendChild(t);
+      setTimeout(() => t.classList.add('fade'), ms - 300);
+      setTimeout(() => t.remove(), ms);
+    }
+
+    // ---- modal ----
+    const modal = document.getElementById('modal-backdrop');
+    let modalResolve = null;
+    function confirmModal(title, message) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-message').textContent = message;
+      modal.classList.add('show');
+      return new Promise((resolve) => { modalResolve = resolve; });
+    }
+    document.getElementById('modal-cancel').addEventListener('click', () => {
+      modal.classList.remove('show');
+      modalResolve?.(false);
+    });
+    document.getElementById('modal-confirm').addEventListener('click', () => {
+      modal.classList.remove('show');
+      modalResolve?.(true);
+    });
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('show');
+        modalResolve?.(false);
+      }
+    });
+
+    // ---- API ----
+    async function call(method, path, body) {
+      const opts = { method, headers: {} };
+      if (body) {
+        opts.headers['Content-Type'] = 'application/json';
+        opts.body = JSON.stringify(body);
+      }
+      const res = await fetch(`/api${path}`, opts);
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch { data = text; }
+      if (!res.ok) {
+        const msg = (data && typeof data === 'object' && data.error) || res.statusText;
+        log(`${method} ${path} → ${res.status} ${msg}`, 'err');
+        const err = new Error(msg);
+        err.status = res.status;
+        throw err;
+      }
+      const service = (data && typeof data === 'object' && data.service) || '?';
+      log(`${method} ${path} → ${res.status} (${service})`, 'ok');
+      return data;
+    }
+
+    async function withButton(btn, label, fn) {
+      const original = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = label;
+      try { return await fn(); }
+      finally { btn.disabled = false; btn.textContent = original; }
+    }
+
+    // ---- tabs ----
+    document.querySelectorAll('.tab').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach((t) => t.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach((p) => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(`panel-${tab.dataset.tab}`).classList.add('active');
+      });
+    });
+
+    // ---- users ----
+    async function refreshUsers() {
+      let data;
+      try { data = await call('GET', '/users'); }
+      catch { return; }
+      const list = document.getElementById('users-list');
+      const count = document.getElementById('users-count');
+      list.innerHTML = '';
+      count.textContent = data.count;
+      if (data.users.length === 0) {
+        list.appendChild(el('div', { class: 'empty' }, [
+          el('div', { class: 'empty-icon' }, ['👤']),
+          'No users yet. Add your first user above.',
+        ]));
+        return;
+      }
+      for (const u of data.users) {
+        const deleteBtn = el('button', {
+          type: 'button',
+          class: 'btn-danger',
+          onClick: async () => {
+            const ok = await confirmModal('Delete user', `Delete ${u.name}? This can't be undone.`);
+            if (!ok) return;
+            try {
+              await call('DELETE', `/users/${u._id}`);
+              toast(`Deleted ${u.name}`, 'success');
+              refreshUsers();
+            } catch (err) {
+              toast(`Delete failed: ${err.message}`, 'error');
+            }
+          },
+        }, ['Delete']);
+        list.appendChild(el('div', { class: 'list-item' }, [
+          el('div', { class: 'item-main' }, [
+            el('div', { class: 'item-title' }, [u.name]),
+            el('div', { class: 'item-meta' }, [u.email]),
+          ]),
+          el('div', { class: 'item-actions' }, [deleteBtn]),
+        ]));
+      }
+    }
+
+    document.getElementById('user-add').addEventListener('click', async (e) => {
+      const name = document.getElementById('user-name').value.trim();
+      const email = document.getElementById('user-email').value.trim();
+      if (!name || !email) return toast('Name and email are required', 'error');
+      try {
+        await withButton(e.target, 'Adding…', () => call('POST', '/users', { name, email }));
+        toast(`Added user ${name}`, 'success');
+        document.getElementById('user-name').value = '';
+        document.getElementById('user-email').value = '';
+        refreshUsers();
+      } catch (err) {
+        toast(`Add failed: ${err.message}`, 'error');
+      }
+    });
+
+    // ---- products ----
+    function stockBadge(stock) {
+      if (stock === 0) return el('span', { class: 'badge stock-out' }, ['out of stock']);
+      if (stock <= 3) return el('span', { class: 'badge stock-low' }, [`stock: ${stock}`]);
+      return el('span', { class: 'badge' }, [`stock: ${stock}`]);
+    }
+
+    async function refreshProducts() {
+      let data;
+      try { data = await call('GET', '/products'); }
+      catch { return; }
+      const list = document.getElementById('products-list');
+      const count = document.getElementById('products-count');
+      list.innerHTML = '';
+      count.textContent = data.count;
+      if (data.products.length === 0) {
+        list.appendChild(el('div', { class: 'empty' }, [
+          el('div', { class: 'empty-icon' }, ['📦']),
+          'No products yet. Add your first product above.',
+        ]));
+        return;
+      }
+      for (const p of data.products) {
+        const buyBtn = el('button', {
+          type: 'button',
+          class: 'btn-buy',
+          disabled: p.stock === 0,
+          onClick: async (e) => {
+            try {
+              await withButton(e.target, 'Buying…', () => call('POST', `/products/${p._id}/buy`));
+              toast(`Bought ${p.name}`, 'success');
+            } catch (err) {
+              if (err.status === 409) toast(`${p.name} is out of stock`, 'error');
+              else toast(`Buy failed: ${err.message}`, 'error');
+            }
+            refreshProducts();
+          },
+        }, ['Buy']);
+        const deleteBtn = el('button', {
+          type: 'button',
+          class: 'btn-danger',
+          onClick: async () => {
+            const ok = await confirmModal('Delete product', `Delete ${p.name}?`);
+            if (!ok) return;
+            try {
+              await call('DELETE', `/products/${p._id}`);
+              toast(`Deleted ${p.name}`, 'success');
+              refreshProducts();
+            } catch (err) {
+              toast(`Delete failed: ${err.message}`, 'error');
+            }
+          },
+        }, ['Delete']);
+        list.appendChild(el('div', { class: 'list-item' }, [
+          el('div', { class: 'item-main' }, [
+            el('div', { class: 'item-title' }, [p.name]),
+            el('div', { class: 'item-meta' }, [
+              stockBadge(p.stock),
+              `$${p.price.toFixed(2)}`,
+            ]),
+          ]),
+          el('div', { class: 'item-actions' }, [buyBtn, deleteBtn]),
+        ]));
+      }
+    }
+
+    document.getElementById('product-add').addEventListener('click', async (e) => {
+      const name = document.getElementById('product-name').value.trim();
+      const price = parseFloat(document.getElementById('product-price').value);
+      const stock = parseInt(document.getElementById('product-stock').value, 10) || 0;
+      if (!name || isNaN(price)) return toast('Name and numeric price are required', 'error');
+      try {
+        await withButton(e.target, 'Adding…', () => call('POST', '/products', { name, price, stock }));
+        toast(`Added ${name}`, 'success');
+        document.getElementById('product-name').value = '';
+        document.getElementById('product-price').value = '';
+        document.getElementById('product-stock').value = '';
+        refreshProducts();
+      } catch (err) {
+        toast(`Add failed: ${err.message}`, 'error');
+      }
+    });
+
+    // ---- service status pings ----
+    async function pingService(path, dotId) {
+      const dot = document.getElementById(dotId);
+      try {
+        const res = await fetch(`/api${path}`);
+        dot.classList.toggle('up', res.ok);
+        dot.classList.toggle('down', !res.ok);
+      } catch {
+        dot.classList.remove('up');
+        dot.classList.add('down');
+      }
+    }
+    function pingAll() {
+      pingService('/users', 'status-users');
+      pingService('/products', 'status-products');
+    }
+    pingAll();
+    setInterval(pingAll, 5000);
+
+    // ---- initial load ----
+    refreshUsers();
+    refreshProducts();
+  </script>
+</body>
+</html>

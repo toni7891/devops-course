@@ -1,0 +1,58 @@
+================================================================================
+                            LEVEL 1 - EXERCISE 2
+                    "Understanding ls -l" - The Format of Each Column
+================================================================================
+
+Welcome to Exercise 2!
+
+Now that you've seen "Permission denied", let's learn how to READ the output
+of `ls -l` so you know where to find permissions, owner, and group. This is
+the key skill: READ BEFORE ACTING.
+
+EXERCISE:
+---------
+Learn what each COLUMN in `ls -l` means (permissions, owner, group, etc.),
+then look up three specific values.
+
+INSTRUCTIONS:
+-------------
+1. Navigate to the data/files directory and list with details:
+   cd ../../data/files
+   ls -l
+
+2. Use this diagram to match each column in your output. Each line of ls -l
+   has: file type + permissions, links, owner, group, size, date, name.
+
+COLUMN REFERENCE (what each part of ls -l means):
+-------------------------------------------------
+-rw-r--r-- 1 alice developers 1024 Jan 27 10:00 public_data.txt
+│ │  │  │  │ │    │         │     │           │
+│ │  │  │  │ │    │         │     │           └─ File name
+│ │  │  │  │ │    │         │     └───────────── Size (bytes), date, time
+│ │  │  │  │ │    │         └─────────────────── GROUP (fourth column)
+│ │  │  │  │ │    └────────────────────────────── OWNER (third column)
+│ │  │  │  │ └─────────────────────────────────── Number of links
+│ │  │  │  └──────────────────────────────────── Permissions for "others"
+│ │  │  └─────────────────────────────────────── Permissions for "group"
+│ │  └─────────────────────────────────────────── Permissions for "owner"
+│ └────────────────────────────────────────────── File type (- = file, d = dir)
+└───────────────────────────────────────────────── (first character)
+
+3. In YOUR ls -l output, find and write down:
+   - The owner of public_data.txt (third column of that line)
+   - The owner of private_notes.txt (third column)
+   - The group of report.sh (fourth column)
+
+COMMANDS TO USE:
+----------------
+- cd ../../data/files
+- ls -l
+
+WRITE YOUR ANSWER:
+------------------
+In my_answers.txt (main lab directory), write:
+- What is the owner of public_data.txt?
+- What is the owner of private_notes.txt?
+- What is the group of report.sh?
+
+Next: clue3.txt (you'll use the same listing to compare owners and groups.)

@@ -1,0 +1,546 @@
+================================================================================
+                    LAB SOLUTIONS - INSTRUCTOR COPY
+================================================================================
+
+This file contains all answers to the Managing a Shared Project Server lab.
+Keep this file secure and do not share with students.
+
+================================================================================
+                        LEVEL 1 SOLUTIONS
+                    "Building the Team"
+================================================================================
+
+EXERCISE 1 - Parts 1-2: Creating and Verifying Users
+------------------------------------------------------
+
+Part 1 - Create Users:
+
+    sudo adduser dev1
+    sudo adduser dev2
+    sudo adduser ops1
+
+    (Each command will prompt for a password and optional user info)
+
+    Alternative (non-interactive):
+    sudo useradd -m -s /bin/bash dev1
+    sudo passwd dev1
+    (repeat for dev2 and ops1)
+
+Part 2 - Verify Users:
+
+    cat /etc/passwd | grep dev1
+    cat /etc/passwd | grep dev2
+    cat /etc/passwd | grep ops1
+
+    OR:
+    grep "dev1\|dev2\|ops1" /etc/passwd
+
+    OR:
+    id dev1
+    id dev2
+    id ops1
+
+Expected Output (id dev1):
+    uid=1001(dev1) gid=1001(dev1) groups=1001(dev1)
+
+Key Learning: Users are stored in /etc/passwd. The id command shows
+UID, GID, and group memberships.
+
+------------------------------------------------------
+
+EXERCISE 2 - Parts 3-5: Groups and Membership
+------------------------------------------------------
+
+Part 3 - Create Group:
+
+    sudo groupadd devteam
+
+Verify:
+    grep devteam /etc/group
+    OR: cat /etc/group | grep devteam
+
+Expected Output:
+    devteam:x:1004:
+
+Part 4 - Add Users to Group:
+
+    sudo usermod -aG devteam dev1
+    sudo usermod -aG devteam dev2
+
+IMPORTANT: The -a flag means APPEND. Without -a, usermod would
+REMOVE the user from all other groups!
+
+Part 5 - Verify Membership:
+
+    groups dev1
+    Expected: dev1 : dev1 devteam
+
+    groups dev2
+    Expected: dev2 : dev2 devteam
+
+    id dev1
+    Expected: uid=1001(dev1) gid=1001(dev1) groups=1001(dev1),1004(devteam)
+
+    groups ops1
+    Expected: ops1 : ops1    (NOT in devteam)
+
+Key Learning: usermod -aG adds to a group. Always use -a to append.
+The groups and id commands verify membership.
+
+------------------------------------------------------
+
+EXERCISE 3 - Part 6: Exploring the Project
+------------------------------------------------------
+
+Navigate:
+    cd /opt/project
+
+Explore:
+    ls -la
+    ls -lR
+    OR: ls -laR
+
+Expected subdirectories: src, logs, config, backups, docs, scripts (6 total)
+
+Current owner: root:root (everything)
+
+Log files:
+    logs/app.log     (65 lines)
+    logs/access.log  (45 lines)
+    logs/deploy.log  (16 lines)
+
+Scripts:
+    scripts/deploy.sh
+    scripts/backup.sh
+    scripts/health_check.sh
+
+Key Learning: Always explore before changing. ls -lR shows recursive
+directory contents with permissions and ownership.
+
+================================================================================
+                        LEVEL 2 SOLUTIONS
+                    "Securing the Server"
+================================================================================
+
+EXERCISE 1 - Parts 7-9: Ownership and Permissions
+------------------------------------------------------
+
+Part 7 - Change Ownership:
+
+    sudo chown -R root:devteam /opt/project
+
+    OR (change only group):
+    sudo chgrp -R devteam /opt/project
+
+Verify:
+    ls -la /opt/project
+    Expected: drwxr-xr-x root devteam ... (for each entry)
+
+Part 8 - Set Permissions (symbolic mode):
+
+    sudo chmod -R u=rwx,g=rwx,o= /opt/project
+
+    This means: owner=rwx, group=rwx, others=nothing
+
+    Alternative approaches (also valid):
+    sudo chmod -R u+rwx,g+rwx,o-rwx /opt/project
+
+    For more granular control:
+    sudo chmod u=rwx,g=rwx,o= /opt/project
+    sudo find /opt/project -type d -exec chmod u=rwx,g=rwx,o= {} \;
+    sudo find /opt/project -type f -exec chmod u=rw,g=rw,o= {} \;
+    sudo chmod +x /opt/project/scripts/*.sh
+    sudo chmod +x /opt/project/src/*.py
+
+Verify:
+    ls -la /opt/project
+    Expected: drwxrwx--- root devteam ...
+
+Part 9 - Test Access:
+
+    su - dev1
+    (enter dev1's password)
+
+    whoami
+    Expected: dev1
+
+    cd /opt/project
+    ls -la
+    (Should work - dev1 is in devteam)
+
+    exit   (return to original user)
+
+Key Learning: chown changes ownership, chmod changes permissions.
+Symbolic mode: u=rwx,g=rwx,o= gives owner and group full access,
+others get none.
+
+------------------------------------------------------
+
+EXERCISE 2 - Parts 10-12: Log Analysis
+------------------------------------------------------
+
+Part 10 - Explore the Log:
+
+    cat /opt/project/logs/app.log
+    head -10 /opt/project/logs/app.log
+    tail -10 /opt/project/logs/app.log
+
+    Count lines:
+    wc -l /opt/project/logs/app.log
+    Expected: 65 lines
+
+    OR with pipe:
+    cat /opt/project/logs/app.log | wc -l
+
+Part 11 - Find Problems:
+
+    Find ERRORs:
+    grep ERROR /opt/project/logs/app.log
+    Expected: 12 ERROR lines
+
+    Count ERRORs:
+    grep -c ERROR /opt/project/logs/app.log
+    Expected: 12
+
+    OR:
+    grep ERROR /opt/project/logs/app.log | wc -l
+
+    Find WARNs:
+    grep WARN /opt/project/logs/app.log
+    Expected: 15 WARN lines
+
+    Count WARNs:
+    grep -c WARN /opt/project/logs/app.log
+    Expected: 15
+
+Part 12 - Deeper Analysis:
+
+    Search for "Server":
+    grep Server /opt/project/logs/app.log
+    (Matches lines about server startup, restart, shutdown)
+
+    Find login events:
+    grep "logged in" /opt/project/logs/app.log
+    Expected: Lines showing dev1, dev2, and ops1 logging in
+
+    Suspicious activity:
+    grep "203.0.113" /opt/project/logs/app.log
+    Expected: Multiple failed authentication attempts from
+    external IP 203.0.113.42 - this is a brute force attempt!
+
+Key Learning: grep searches for patterns. grep -c counts matches.
+Pipes connect commands: grep ERROR file | wc -l
+
+------------------------------------------------------
+
+EXERCISE 3 - Parts 13-14: Redirection and File Search
+------------------------------------------------------
+
+Part 13 - Save Results:
+
+    Create report with ERRORs (overwrite):
+    grep ERROR /opt/project/logs/app.log > /opt/project/server_report.txt
+
+    Append WARNs:
+    grep WARN /opt/project/logs/app.log >> /opt/project/server_report.txt
+
+    Verify:
+    cat /opt/project/server_report.txt
+    wc -l /opt/project/server_report.txt
+    Expected: 27 lines (12 ERROR + 15 WARN)
+
+Part 14 - Find Log Files:
+
+    find /opt/project -name "*.log"
+    Expected output:
+    /opt/project/logs/app.log
+    /opt/project/logs/access.log
+    /opt/project/logs/deploy.log
+
+    (3 .log files total)
+
+    Note: server_report.txt does NOT show up because it has a .txt
+    extension, not .log
+
+Key Learning: > creates/overwrites a file, >> appends to a file.
+find searches for files by name, extension, or other criteria.
+
+================================================================================
+                        LEVEL 3 SOLUTIONS
+                    "Operations & Debugging"
+================================================================================
+
+EXERCISE 1 - Parts 15-16: Admin Access
+------------------------------------------------------
+
+Part 15 - Grant Sudo:
+
+    sudo usermod -aG sudo ops1
+
+    Verify:
+    groups ops1
+    Expected: ops1 : ops1 sudo
+
+    id ops1
+    Expected: uid=...(ops1) gid=...(ops1) groups=...(ops1),...(sudo)
+
+Part 16 - Test Sudo:
+
+    su - ops1
+    (enter ops1's password)
+
+    whoami
+    Expected: ops1
+
+    sudo cat /etc/shadow
+    (Should work - ops1 is now in the sudo group)
+
+    OR:
+    sudo apt update
+    (Should work)
+
+    exit   (return to original user)
+
+Key Learning: On Ubuntu, the "sudo" group grants admin privileges.
+Adding a user to this group allows them to run commands as root.
+
+------------------------------------------------------
+
+EXERCISE 2 - Challenge: Permission Mystery
+------------------------------------------------------
+
+Investigation:
+
+Step 1 - Check directory permissions:
+    ls -la /opt/project
+    Expected: drwxrwx--- root devteam
+
+Step 2 - Check dev2's groups:
+    groups dev2
+    Expected: dev2 : dev2    (NOT in devteam!)
+
+    OR: id dev2
+
+Step 3 - Compare with dev1:
+    groups dev1
+    Expected: dev1 : dev1 devteam
+
+Step 4 - Root cause:
+    dev2 is NOT a member of the devteam group.
+    The /opt/project directory has permissions rwxrwx--- with group devteam.
+    Since dev2 is not in devteam, the "others" permissions apply (---),
+    which means no access at all.
+
+    This could happen because:
+    - The student forgot to add dev2 to devteam in Part 4
+    - OR there was a typo in the usermod command
+
+Step 5 - Fix:
+    sudo usermod -aG devteam dev2
+
+Step 6 - Verify:
+    groups dev2
+    Expected: dev2 : dev2 devteam
+
+    su - dev2
+    cd /opt/project
+    touch test_file.txt
+    (Should work now)
+    rm test_file.txt
+    exit
+
+IMPORTANT NOTE FOR INSTRUCTOR:
+The challenge assumes dev2 was NOT added to devteam. If students
+correctly added dev2 in Part 4, you can simulate the bug by running:
+
+    sudo gpasswd -d dev2 devteam
+
+before the challenge. This removes dev2 from devteam.
+
+Alternative: If dev2 was added but still can't access, the issue might
+be that dev2 needs to log out and back in for group changes to take
+effect. Using "su - dev2" (with the dash) starts a fresh login session
+which loads the new groups.
+
+Key Learning: Permissions debugging follows a systematic approach:
+1. Check the directory/file permissions and ownership
+2. Check the user's group memberships
+3. Determine which permission set applies (owner/group/others)
+4. Fix the mismatch
+
+------------------------------------------------------
+
+EXERCISE 3 - Summary & Bonus
+------------------------------------------------------
+
+Bonus 1 - Access Log Analysis:
+
+    Find 404 errors:
+    grep 404 /opt/project/logs/access.log
+    Expected: 7 lines with 404 status
+
+    Find suspicious IP:
+    grep "203.0.113" /opt/project/logs/access.log
+    Expected: Lines from 203.0.113.42 (failed logins, admin/wp-admin probing)
+              and 203.0.113.99 (robots.txt, sitemap.xml)
+
+    Count requests per IP:
+    cat /opt/project/logs/access.log | cut -d' ' -f1 | sort | uniq -c | sort -rn
+    Expected output (approximate):
+    19 192.168.1.10
+     7 192.168.1.11
+     5 192.168.1.50
+     5 192.168.1.30
+     4 192.168.1.40
+     3 203.0.113.42
+     2 10.0.0.5
+     2 203.0.113.99
+     (numbers may vary slightly based on cut delimiter)
+
+Bonus 2 - Deploy Log Analysis:
+
+    Find FAILED deploys:
+    grep FAILED /opt/project/logs/deploy.log
+    Expected: 4 FAILED lines
+
+    Who had most failures:
+    grep FAILED /opt/project/logs/deploy.log | grep -o "dev[12]\|ops1" | sort | uniq -c
+    OR: manually count from grep output
+    Expected: dev1: 2 failures, dev2: 2 failures (roughly equal)
+
+    Latest version:
+    tail -1 /opt/project/logs/deploy.log
+    Expected: v1.2.2 (last successful deploy)
+
+Bonus 3 - Comprehensive Report:
+
+    echo "=== Server Report - $(date) ===" > /opt/project/full_report.txt
+    echo "ERROR count: $(grep -c ERROR /opt/project/logs/app.log)" >> /opt/project/full_report.txt
+    echo "WARN count: $(grep -c WARN /opt/project/logs/app.log)" >> /opt/project/full_report.txt
+    echo "" >> /opt/project/full_report.txt
+    echo "=== Failed Deployments ===" >> /opt/project/full_report.txt
+    grep FAILED /opt/project/logs/deploy.log >> /opt/project/full_report.txt
+    echo "" >> /opt/project/full_report.txt
+    echo "404 errors: $(grep -c 404 /opt/project/logs/access.log)" >> /opt/project/full_report.txt
+
+Bonus 4 - Extract Versions:
+
+    cut -d'|' -f2 /opt/project/logs/deploy.log
+    (Shows just the version column)
+
+    OR for clean output:
+    cut -d'|' -f2 /opt/project/logs/deploy.log | tr -d ' '
+
+================================================================================
+                        LOG FILE STATISTICS
+================================================================================
+
+app.log (65 lines):
+- INFO:     35 lines
+- WARN:     15 lines
+- ERROR:    12 lines
+- CRITICAL:  0 lines (all errors logged as ERROR in this lab)
+- Lines mentioning "Server":  ~5 lines
+- Lines with "logged in":     6 lines (dev1 x2, dev2 x2, ops1 x2)
+- Suspicious activity:        4 lines from 203.0.113.42
+
+access.log (45 lines):
+- 200 status: 31 lines
+- 201 status: 1 line
+- 301 status: 3 lines
+- 401 status: 3 lines
+- 404 status: 7 lines
+- 500 status: 1 line (1 failed deploy attempt)
+
+deploy.log (16 lines):
+- SUCCESS: 12 lines
+- FAILED:   4 lines
+- Deployers: dev1 (5), dev2 (5), ops1 (6)
+
+================================================================================
+                        GRADING RUBRIC
+================================================================================
+
+Level 1 - Building the Team (30 points)
+-----------------------------------------
+- Exercise 1 (Parts 1-2): Created users and verified    (10 points)
+  - Created all 3 users correctly                        (5 points)
+  - Verified using /etc/passwd or id                     (5 points)
+
+- Exercise 2 (Parts 3-5): Group and membership           (10 points)
+  - Created devteam group                                (3 points)
+  - Added dev1 and dev2 using -aG                        (4 points)
+  - Verified with groups or id                           (3 points)
+
+- Exercise 3 (Part 6): Explored project structure        (10 points)
+  - Navigated to /opt/project                            (3 points)
+  - Used ls -lR or similar recursive listing             (4 points)
+  - Identified subdirectories, owner, and log files      (3 points)
+
+Level 2 - Securing the Server (35 points)
+-----------------------------------------
+- Exercise 1 (Parts 7-9): Ownership and permissions      (15 points)
+  - Changed ownership with chown -R                      (5 points)
+  - Set permissions to 770                               (5 points)
+  - Tested access as dev1                                (5 points)
+
+- Exercise 2 (Parts 10-12): Log analysis                 (10 points)
+  - Counted total lines and ERRORs                       (4 points)
+  - Found WARNs and suspicious activity                  (3 points)
+  - Used pipes correctly (grep | wc -l)                  (3 points)
+
+- Exercise 3 (Parts 13-14): Redirection and find         (10 points)
+  - Created server_report.txt with > and >>              (5 points)
+  - Found .log files with find command                   (5 points)
+
+Level 3 - Operations & Debugging (25 points)
+-----------------------------------------
+- Exercise 1 (Parts 15-16): Admin access                 (10 points)
+  - Added ops1 to sudo group                             (5 points)
+  - Tested sudo access successfully                      (5 points)
+
+- Exercise 2 (Challenge): Permission mystery             (15 points)
+  - Identified that dev2 is not in devteam               (5 points)
+  - Fixed by adding dev2 to devteam                      (5 points)
+  - Verified fix by testing write access                 (5 points)
+
+Bonus (10 points extra credit)
+-----------------------------------------
+- Access log analysis                                    (3 points)
+- Deploy log analysis                                    (3 points)
+- Comprehensive report                                   (2 points)
+- Version extraction with cut                            (2 points)
+
+TOTAL: 90 points + 10 bonus = 100 points maximum
+
+================================================================================
+                        NOTES FOR INSTRUCTOR
+================================================================================
+
+Common Student Mistakes:
+1. Using useradd instead of adduser (useradd doesn't create home dir by default)
+2. Forgetting -a in usermod -aG (removes user from all other groups!)
+3. Not using -R with chown/chmod (only changes the directory, not contents)
+4. Using > instead of >> when appending to server_report.txt
+5. Not using sudo for user/group/permission commands
+6. Forgetting to use su - (with dash) to get a proper login shell
+
+Setup Tips:
+- Run setup_environment.sh BEFORE students start
+- If the challenge needs to be forced (students added dev2 correctly),
+  run: sudo gpasswd -d dev2 devteam
+- The cleanup script removes everything: sudo ./cleanup_lab.sh
+
+Typical Completion Time:
+- Fast students: 60-90 minutes
+- Average students: 90-120 minutes
+- With bonus: add 30-45 minutes
+
+Key Concepts Students Should Understand After This Lab:
+1. The relationship between users, groups, and file permissions
+2. How to use pipes to chain commands for data analysis
+3. The difference between > (overwrite) and >> (append)
+4. Systematic debugging of permission issues
+5. The importance of verifying each step before proceeding
+
+================================================================================

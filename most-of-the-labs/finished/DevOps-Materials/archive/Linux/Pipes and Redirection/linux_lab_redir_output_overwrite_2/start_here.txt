@@ -1,0 +1,51 @@
+================================================================================
+    WELCOME TO: OUTPUT REDIRECTION WITH > (Part 2)
+    "Redirecting in Context — Practical Scenarios"
+================================================================================
+
+Welcome back, Linux Explorer!
+
+You already know the basics of >. In this lab, you will use it in more
+realistic scenarios that you will encounter in real system administration:
+
+  - Writing config files from the command line
+  - Copying and transforming file contents
+  - Filtering logs and saving the results
+  - Building system snapshots and reports
+
+================================================================================
+    HOW TO START
+================================================================================
+
+1. Check where you are:
+   pwd
+
+2. List the lab contents:
+   ls -la
+
+3. Navigate to Level 1:
+   cd clues/level1
+
+4. Read your first exercise:
+   cat clue1.txt
+
+================================================================================
+    PREREQUISITE
+================================================================================
+
+This is Part 2 of the > lab. If you haven't completed Part 1
+(linux_lab_redir_output_overwrite_1), go back and do that first!
+
+================================================================================
+    DATA FILES AVAILABLE
+================================================================================
+
+  data/app.log      — Application log with INFO, WARN, ERROR entries
+  data/names.txt    — A list of names
+  data/broken_log_script.sh — A script with a bug to fix in Level 3
+
+================================================================================
+
+Ready? Let's go!   cd clues/level1 && cat clue1.txt
+
+================================================================================

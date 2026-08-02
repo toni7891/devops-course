@@ -1,0 +1,54 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 1
+                "Review: Basic Heredoc — Quick Practice"
+================================================================================
+
+BACKGROUND:
+-----------
+Before diving into advanced scenarios, let's do a quick warm-up to confirm your
+heredoc fundamentals are solid. This exercise is intentionally short. If it
+feels easy, good — that means Part 1 stuck. The key reminder: heredoc provides
+multi-line input inline; it ends when the delimiter appears alone on its own
+line at column zero.
+
+EXERCISE:
+---------
+Step 1: Print a 3-line greeting with a basic heredoc:
+
+  cat << EOF
+  Good morning!
+  Welcome to Heredoc Lab Part 2.
+  Let's get started.
+  EOF
+
+Step 2: Redirect a 4-line message to a file:
+
+  cat << EOF > welcome.txt
+  ================================
+  Linux Heredoc Lab - Part 2
+  Advanced Scenarios
+  ================================
+  EOF
+
+Step 3: Read the file:
+
+  cat welcome.txt
+
+Step 4: Count its lines:
+
+  wc -l welcome.txt
+
+
+QUESTIONS TO ANSWER:
+--------------------
+- What does << do? (In one sentence.)
+- What ends a heredoc?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level1-Ex1: [your answer here]" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level1/clue2.txt
+================================================================================

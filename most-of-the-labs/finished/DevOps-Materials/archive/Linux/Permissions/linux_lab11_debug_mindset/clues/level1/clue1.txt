@@ -1,0 +1,38 @@
+================================================================================
+                    LEVEL 1 - EXERCISE 1
+                    Permission Denied on File Read
+================================================================================
+
+EXERCISE:
+---------
+You need to read a file but get "Permission denied". Use the 4 steps to fix it.
+
+INSTRUCTIONS:
+-------------
+1. Go to the scenario:
+   cd ../../broken_scenarios/scenario1_read_failure
+
+2. Try to read the file:
+   cat secret.txt
+   (You'll get an error.)
+
+3. Use the 4 steps:
+   OBSERVE: What is the exact error?
+   INSPECT: pwd, ls -l secret.txt, whoami
+   DIAGNOSE: What is preventing you from reading? (permissions? ownership?)
+   RESOLVE: Fix it (e.g. chmod), then verify: cat secret.txt
+
+COMMANDS TO USE:
+----------------
+cd ../../broken_scenarios/scenario1_read_failure
+cat secret.txt
+ls -l secret.txt
+whoami
+chmod 400 secret.txt   (or chmod u+r secret.txt)
+cat secret.txt         (verify)
+
+NEXT STEP:
+----------
+Proceed to clue2.txt (same folder: clues/level1).
+
+================================================================================

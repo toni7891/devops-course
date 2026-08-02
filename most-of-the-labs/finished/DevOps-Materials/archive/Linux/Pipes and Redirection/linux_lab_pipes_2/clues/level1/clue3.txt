@@ -1,0 +1,67 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 3
+                "Column Extraction: pipe with cut"
+================================================================================
+
+BACKGROUND:
+-----------
+"cut" extracts specific fields (columns) from delimited text. It is ideal
+for processing CSV files or any text with consistent separators.
+
+Key flags:
+  -d','   set the delimiter to comma (use any character)
+  -f1     extract field (column) number 1
+  -f2     extract field (column) number 2
+  -f1,3   extract fields 1 and 3
+
+The employees.csv file in this lab has the format:
+  name,department,salary
+
+So:
+  cut -d',' -f1   extracts the name column
+  cut -d',' -f2   extracts the department column
+  cut -d',' -f3   extracts the salary column
+
+To skip the header line, use: tail -n +2
+  tail -n +2   means "start output from line 2 onwards" (skip line 1)
+
+EXERCISE:
+---------
+Step 1: View the full CSV file
+  cat ../../data/employees.csv
+
+Step 2: Extract only the names column
+  cat ../../data/employees.csv | cut -d',' -f1
+
+Step 3: Extract only the departments column
+  cat ../../data/employees.csv | cut -d',' -f2
+
+Step 4: Extract only the salaries column
+  cat ../../data/employees.csv | cut -d',' -f3
+
+Step 5: Sort salaries numerically (skip header line first)
+  cat ../../data/employees.csv | tail -n +2 | cut -d',' -f3 | sort -n
+
+  This shows salaries from lowest to highest.
+
+Step 6: Find the highest-paid employee (sort by salary column, largest first)
+  cat ../../data/employees.csv | tail -n +2 | sort -t',' -k3 -rn | head -1
+
+  sort -t','   uses comma as the sort delimiter
+  -k3          sorts by the 3rd field (salary)
+  -rn          numerically, largest first
+  head -1      keeps only the top result
+
+QUESTIONS TO ANSWER:
+--------------------
+- What is the highest salary in employees.csv?
+- Who is the first employee listed in the file (first data row)?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L1C3: highest salary=102000 (Eve Martinez, Engineering); first employee=Alice Johnson" >> ../../my_answers.txt
+
+================================================================================
+Move to the next level:
+  cat clues/level2/clue1.txt
+================================================================================

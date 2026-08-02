@@ -1,0 +1,62 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 1
+                "What is stdout? — Your First Redirection"
+================================================================================
+
+BACKGROUND:
+-----------
+Every command in Linux has three standard "channels" for data:
+
+  stdin  (0) — where the command reads INPUT from (keyboard by default)
+  stdout (1) — where the command sends its normal OUTPUT (screen by default)
+  stderr (2) — where the command sends ERROR messages (screen by default)
+
+When you run:
+  echo "hello"
+
+The text "hello" is written to stdout — which flows to your terminal screen.
+The > operator lets you REDIRECT stdout somewhere else: into a file.
+
+EXERCISE:
+---------
+Step 1: Run this command and observe the output on your screen:
+
+  echo "Hello, Linux!"
+
+Step 2: Now run the same command, but redirect the output to a file:
+
+  echo "Hello, Linux!" > hello.txt
+
+Step 3: Check if the file was created:
+
+  ls -l hello.txt
+
+Step 4: Read the file's contents:
+
+  cat hello.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- When you ran step 1, where did "Hello, Linux!" appear?
+- When you ran step 2, did you see any output on screen? Why or why not?
+- What does the file hello.txt contain?
+- What did > do to the output?
+
+WRITE YOUR ANSWER:
+------------------
+In your own words, complete this sentence:
+"The > operator takes the output that would normally appear on screen and..."
+
+Save your answer:
+  echo "My answer: ..." >> ../../my_answers.txt
+
+WHAT TO OBSERVE:
+----------------
+When you use >, the output DISAPPEARS from the screen.
+It has been redirected INTO the file instead.
+The file is created automatically — you don't need to create it first!
+
+================================================================================
+When you are done, move to the next exercise:
+  cat clue2.txt
+================================================================================

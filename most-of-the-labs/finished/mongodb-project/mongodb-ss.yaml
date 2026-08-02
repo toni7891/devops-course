@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb-ss
+  labels:
+    app: mongodb
+spec:
+  serviceName: mongodb-svc
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: mongodb
+
+  template:
+    metadata:
+      labels:
+        app: mongodb
+
+    spec:
+      volumes:
+        - name: mongodb-init-config
+          configMap:
+            name: mongodb-init-color-db
+
+      containers:
+        - name: mongo
+          image: mongo:8.0.0
+
+          ports:
+            - containerPort: 27017
+
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-root-creds
+                  key: root_user
+
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-root-creds
+                  key: root_password
+
+            - name: DB_NAME
+              value: color-db
+
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-color-db-creds
+                  key: color_db_user
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-color-db-creds
+                  key: color_db_password
+
+          volumeMounts:
+            - name: mongodb-data
+              mountPath: /data/db
+            - name: mongodb-init-config
+              mountPath: /docker-entrypoint-initdb.d
+
+  volumeClaimTemplates:
+    - metadata:
+        name: mongodb-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+
+        storageClassName: standard
+
+        resources:
+          requests:
+            storage: 10Gi

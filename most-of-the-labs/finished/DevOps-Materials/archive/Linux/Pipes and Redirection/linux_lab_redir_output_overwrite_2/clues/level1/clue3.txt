@@ -1,0 +1,53 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 3
+                "Redirect cat — Copying File Contents with >"
+================================================================================
+
+BACKGROUND:
+-----------
+Output redirection does not only work with echo. Any command that produces
+output can have that output redirected into a file. In this exercise you will
+use cat as the source command: cat file.txt > other.txt. This is a simple
+way to copy a file's contents.
+
+More importantly, this exercise reinforces a critical safety rule: redirecting
+the OUTPUT of a command does not touch the INPUT file. The source file is
+always left unchanged. Only the destination file (the one named after >) is
+affected.
+
+EXERCISE:
+---------
+Step 1: View the names data file to see what is in it:
+  cat ../../data/names.txt
+
+Step 2: Copy it to a new file using redirection and display the copy:
+  cat ../../data/names.txt > names_backup.txt && cat names_backup.txt
+
+Step 3: Verify both files have the same line count:
+  wc -l ../../data/names.txt && wc -l names_backup.txt
+
+Step 4: Create another copy with a different name:
+  cat ../../data/names.txt > team_members.txt
+
+Step 5: Now overwrite team_members.txt with just one name:
+  echo "Alice" > team_members.txt && cat team_members.txt
+
+Challenge: Confirm that data/names.txt is still completely intact — it should
+still have all 20 names, untouched by anything you did above.
+  cat ../../data/names.txt
+  wc -l ../../data/names.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- Does redirecting with cat change the original file (data/names.txt)?
+- What does > do to team_members.txt when you run: echo "Alice" > team_members.txt?
+- After step 5, how many lines does team_members.txt have?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level1-Ex3: Original changed=___. team_members.txt has ___ line(s) after echo. > effect: ___" >> ../../my_answers.txt
+
+================================================================================
+Move to the next level:
+  cat ../level2/clue1.txt
+================================================================================

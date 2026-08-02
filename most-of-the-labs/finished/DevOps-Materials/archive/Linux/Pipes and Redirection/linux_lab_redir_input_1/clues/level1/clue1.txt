@@ -1,0 +1,60 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 1
+                "What is stdin? Two Ways to Feed a Command"
+================================================================================
+
+BACKGROUND:
+-----------
+Every command in Linux reads its input from stdin (standard input, stream 0).
+By default stdin is connected to your keyboard — the command waits for you to
+type. But you can redirect stdin to come from a file instead, using the `<`
+operator. The command never knows the difference: it simply reads data from
+stdin, whether that data came from a keyboard, a file, or a pipe.
+
+The `<` operator is handled entirely by the shell. Before the command even
+starts running, the shell opens the file and wires it up to the command's
+stdin file descriptor. This means the command itself sees no filename —
+it only sees a stream of data arriving on stdin.
+
+An important distinction: `cat data/words.txt` passes the filename as an
+argument to cat, and cat opens the file itself. With `cat < data/words.txt`,
+cat receives no filename argument — the shell feeds the file content directly
+into cat's stdin. Both produce the same output, but the mechanism is different.
+
+EXERCISE:
+---------
+Step 1: Run cat with a filename argument (cat opens the file itself):
+  cat ../../data/words.txt
+
+Step 2: Run cat using input redirection (the shell feeds the file to stdin):
+  cat < ../../data/words.txt
+
+Step 3: Observe that both commands produce identical output.
+  The content of words.txt appears in both cases.
+
+Step 4: Run wc -l both ways and compare:
+  wc -l ../../data/words.txt
+  wc -l < ../../data/words.txt
+
+  Notice: with the filename argument, wc prints the filename next to the count.
+  With <, wc only prints the count — it has no filename to display.
+
+Step 5: Try a command that ONLY works with <:
+  tr 'a-z' 'A-Z' < ../../data/words.txt
+  (tr translates characters — it has no filename argument option)
+
+QUESTIONS TO ANSWER:
+--------------------
+- What output did you get from Step 1 and Step 2? Are they the same?
+- In Step 4, what is the format difference between the two wc -l outputs?
+- What does the < operator actually do to stdin?
+- In Step 5, why does tr require < instead of accepting a filename?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L1E1: Both cat commands produce identical output. wc -l with filename shows the filename; wc -l with < shows only the number. < redirects stdin from a file. tr requires < because it has no filename argument." >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level1/clue2.txt
+================================================================================

@@ -1,0 +1,27 @@
+{
+  "name": "aws-self-hosted-runner",
+  "version": "1.0.0",
+  "description": "Node.js CI pipeline for AWS self-hosted GitHub Actions runner lab",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "jest --forceExit",
+    "build": "node scripts/build.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/tests/**/*.test.js"]
+  },
+  "keywords": ["github-actions", "self-hosted-runner", "aws", "ci"],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "jest": "^30.4.2",
+    "supertest": "^7.2.2"
+  }
+}

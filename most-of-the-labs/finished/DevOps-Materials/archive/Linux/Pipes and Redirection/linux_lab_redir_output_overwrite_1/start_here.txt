@@ -1,0 +1,69 @@
+================================================================================
+    WELCOME TO: OUTPUT REDIRECTION WITH > (Part 1)
+    "Your First Redirected Output"
+================================================================================
+
+Hello, Linux Explorer!
+
+Every command you run produces output. Normally that output goes straight to
+your terminal screen — it appears, you read it, and it's gone.
+
+But what if you want to SAVE that output? What if you want to write a file
+without opening a text editor? That's exactly what the > operator does.
+
+In this lab you will:
+  - Discover what "stdout" means and where it goes by default
+  - Use > to send command output into a file
+  - Learn the most important rule about >: it OVERWRITES existing files
+  - Understand why errors (stderr) behave differently from normal output
+
+================================================================================
+    HOW TO START
+================================================================================
+
+1. Check where you are:
+   pwd
+
+2. List the lab contents:
+   ls -la
+
+3. Navigate to Level 1:
+   cd clues/level1
+
+4. Read your first exercise:
+   cat clue1.txt
+
+================================================================================
+    LAB RULES
+================================================================================
+
+- Work through the clues IN ORDER: level1 → level2 → level3
+- After each exercise, verify your work with: cat <filename>
+- Write your observations in a file called my_answers.txt at the lab root
+- Do NOT skip ahead — each level builds on the previous one
+
+================================================================================
+    QUICK REFERENCE: > OPERATOR
+================================================================================
+
+  command > file.txt     Redirect stdout of command into file.txt
+                         WARNING: Creates the file if it doesn't exist
+                         WARNING: OVERWRITES the file if it already exists
+
+  echo "text" > file.txt    Write text into a file
+  ls > listing.txt          Save a directory listing to a file
+  date > today.txt          Save today's date to a file
+
+================================================================================
+    YOUR ANSWER FILE
+================================================================================
+
+To save your observations, run:
+  echo "My answer here" > my_answers.txt
+    (or use >> to append without overwriting!)
+
+================================================================================
+
+Ready? Let's go! Run:   cd clues/level1 && cat clue1.txt
+
+================================================================================

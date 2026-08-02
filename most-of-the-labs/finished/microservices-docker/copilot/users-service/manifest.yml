@@ -1,0 +1,16 @@
+name: users-service
+type: Backend Service
+
+image:
+  build:
+    dockerfile: services/users-service/Dockerfile
+    context: services/users-service
+  port: 3000
+
+variables:
+  MONGO_URI: mongodb://users-db.dev.lab.local:27017/users-db
+
+cpu: 256
+memory: 512
+count: 1
+exec: true

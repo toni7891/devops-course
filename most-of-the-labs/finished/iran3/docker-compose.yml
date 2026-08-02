@@ -1,0 +1,54 @@
+version: "3.9"
+
+networks:
+  backend-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+
+
+services:
+  postgres:
+    image: postgres:17
+    container_name: shopflow-postgres
+    networks: [backend-net]
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: company
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U admin -d company"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      target: production
+    container_name: shopflow-backend    
+    networks: [backend-net]
+    ports:
+      - 3001:3001
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./.env
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      target: production
+    container_name: shopflow-frontend
+    networks: [backend-net]
+    ports:
+      - 80:80
+    depends_on:
+      - backend
+    restart: unless-stopped

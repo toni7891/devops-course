@@ -1,0 +1,82 @@
+
+# CREATE 3 PV's FOR FUTURE STATEFUL DATA_PODS
+
+apiVersion: v1
+# PV 0
+kind: PersistentVolume
+
+metadata:
+  name: statefulset-0
+
+spec:
+  capacity:
+    storage: 128Mi
+
+  accessModes:
+    - ReadWriteOnce
+
+  storageClassName: local-storage
+
+  local:
+    path: /mnt/disks/ss0
+
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - minikube
+---
+apiVersion: v1
+kind: PersistentVolume
+# PV 1
+metadata:
+  name: statefulset-1
+
+spec:
+  capacity:
+    storage: 128Mi
+
+  accessModes:
+    - ReadWriteOnce
+
+  storageClassName: local-storage
+  local:
+    path: /mnt/disks/ss1
+
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - minikube
+---
+apiVersion: v1
+kind: PersistentVolume
+# PV 2
+metadata:
+  name: statefulset-2
+
+spec:
+  capacity:
+    storage: 128Mi
+
+  accessModes:
+    - ReadWriteOnce
+
+  storageClassName: local-storage
+  local:
+    path: /mnt/disks/ss2
+
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - minikube

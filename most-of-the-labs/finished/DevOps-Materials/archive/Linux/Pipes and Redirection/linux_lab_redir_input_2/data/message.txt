@@ -1,0 +1,13 @@
+To: All Staff
+From: Operations Team
+Subject: System Maintenance Notice
+
+This is an important notice regarding scheduled maintenance.
+The system will be offline on Saturday from 2am to 6am.
+
+It is important that you save all your work before Friday at midnight.
+Please ensure that important files are backed up before this time.
+
+If you have any questions, contact operations@company.com.
+
+Thank you for your cooperation.

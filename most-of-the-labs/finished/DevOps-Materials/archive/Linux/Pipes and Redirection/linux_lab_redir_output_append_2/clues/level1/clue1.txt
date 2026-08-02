@@ -1,0 +1,50 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 1
+                "Append Multiple Commands to One File"
+================================================================================
+
+BACKGROUND:
+-----------
+Every command that produces output sends it to stdout. Using >> you can redirect
+that stdout and accumulate it into a single file, one command at a time. This is
+the foundation of how log files, reports, and history files are built in Linux.
+Each >> call does not know or care what is already in the file — it simply adds
+its output at the end. After four different commands each append one line, your
+file will contain four lines. This technique is used in setup scripts, system
+audits, and any situation where you want a single consolidated record from
+multiple sources.
+
+EXERCISE:
+---------
+Run these commands from inside the clues/level1/ directory.
+
+Step 1: whoami >> session_info.txt && cat session_info.txt
+          (appends your username; file now has 1 line)
+
+Step 2: date >> session_info.txt && cat session_info.txt
+          (appends the current date/time; file now has 2 lines)
+
+Step 3: pwd >> session_info.txt && cat session_info.txt
+          (appends your current directory; file now has 3 lines)
+
+Step 4: hostname >> session_info.txt && cat session_info.txt
+          (appends your machine name; file now has 4 lines)
+
+Step 5: wc -l session_info.txt
+          (confirm total line count — expect: 4)
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many lines does session_info.txt contain after Step 5?
+- What would the file contain if you had used > instead of >> in each step?
+- Which command gave you the most "interesting" output — why?
+- If you ran Step 1 again with >>, what would happen to session_info.txt?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L1E1: session_info.txt has 4 lines; > would keep only the last line each time" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue2.txt
+================================================================================

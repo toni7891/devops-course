@@ -1,0 +1,267 @@
+================================================================================
+                    PROCESS HUNT LAB – INSTRUCTOR SOLUTIONS
+================================================================================
+
+These are example/reference answers. Student answers may vary slightly
+depending on system state and exact process names.
+
+================================================================================
+STEP 1: List all processes
+================================================================================
+Expected: Student uses ps and ps aux to list processes, counts approximately
+          100–500+ depending on system.
+
+Example Answer:
+  "Step 1: I saw approximately 150 processes running on this system."
+
+Key Learning:
+  - ps shows basic process list
+  - ps aux shows detailed info (user, PID, command)
+  - Most systems run many background processes
+
+
+================================================================================
+STEP 2: Filter processes by name
+================================================================================
+Expected: Student uses grep to filter, finds bash process(es).
+
+Example Answer:
+  "Step 2: I found 2 bash process(es) by filtering with grep."
+
+Command sequence:
+  $ ps aux | grep bash
+  liron    12345  0.0  0.1 ...bash
+  liron    12346  0.0  0.0 ...grep bash
+
+Key Learning:
+  - grep filters output
+  - Second column is PID
+  - grep command itself appears in the output
+
+
+================================================================================
+STEP 3: Parent and child processes
+================================================================================
+Expected: Student identifies PPID, parent process name.
+
+Example Answer:
+  "Step 3: systemd is the parent of bash, with PPID 1."
+
+Or (for interactive shell):
+  "Step 3: sshd is the parent of bash, with PPID 456."
+
+Commands:
+  $ ps auxf
+  $ ps aux | grep bash
+  $ pstree -p
+
+Key Learning:
+  - Every process has a parent (PPID)
+  - Parent/child relationships form a tree
+  - systemd (PID 1) is usually the ultimate parent
+
+
+================================================================================
+STEP 4: Live monitoring with top
+================================================================================
+Expected: Student identifies resource-heavy process from the SETUP script.
+
+Example Answer:
+  "Step 4: The process 'bash' (or CPU-heavy loop) with PID 12347 used the most CPU."
+
+Key observations:
+  - top shows live CPU/memory usage
+  - Highest %CPU is at the top (usually)
+  - Press 'q' to exit
+  - The setup script's tight loop should show ~90–100% CPU
+
+
+================================================================================
+STEP 5: First kill (graceful)
+================================================================================
+Expected: Student kills a running process with 'kill <PID>' and verifies it's gone.
+
+Example Answer:
+  "Step 5: I sent SIGTERM (kill 12345) and the process stopped cleanly."
+
+Commands executed:
+  $ ps aux | grep sleep
+  liron    12345  0.0  0.0 ... sleep 999
+
+  $ kill 12345
+
+  $ ps aux | grep sleep
+  liron    12346  0.0  0.0 ... grep sleep
+  (sleep 12345 is gone)
+
+Key Learning:
+  - kill sends SIGTERM (signal 15)
+  - Process receives the signal and can respond
+  - Process is no longer in ps output after
+
+
+================================================================================
+STEP 6: Understanding SIGTERM
+================================================================================
+Expected: Student sees process respond cleanly to SIGTERM, possibly prints
+          a cleanup message.
+
+Example Answer:
+  "Step 6: The dummy_normal process responded to SIGTERM and exited cleanly."
+
+Expected output:
+  $ kill <PID>
+  [dummy_normal] Received SIGTERM, exiting cleanly...
+
+Process count before/after:
+  Before: ps aux | wc -l  → 125
+  After:  ps aux | wc -l  → 124  (one less)
+
+Key Learning:
+  - SIGTERM is "civilized" – the process gets a chance to clean up
+  - Well-written processes handle this signal
+  - Clean shutdown saves data, closes files, releases resources
+
+
+================================================================================
+STEP 7: The last resort (kill -9)
+================================================================================
+Expected: Student sees that gentle kill doesn't work, then kill -9 succeeds.
+
+Example Answer:
+  "Step 7: kill (SIGTERM) didn't work, but kill -9 (SIGKILL) forced it to stop."
+
+Command sequence:
+  $ ps aux | grep dummy_stubborn
+  liron    12345  0.0  0.0 ... [dummy_stubborn]
+
+  $ kill 12345
+  (no output – signal sent, but ignored)
+
+  $ ps aux | grep dummy_stubborn
+  liron    12345  0.0  0.0 ... [dummy_stubborn]  (still there!)
+
+  $ kill -9 12345
+
+  $ ps aux | grep dummy_stubborn
+  (nothing except grep line – 12345 is gone)
+
+Key Learning:
+  - Some processes ignore SIGTERM
+  - kill -9 cannot be ignored or caught
+  - kill -9 is immediate, no cleanup (dangerous!)
+
+
+================================================================================
+STEP 8: Multiple processes
+================================================================================
+Expected: Student identifies parent and children, decides how to stop them.
+
+Example Answer:
+  "Step 8: The parent had 3 children. When I killed the parent,
+   the children were reparented to init (orphaned)."
+
+Scenario:
+  $ ps auxf
+  liron  12340  0.0  0.0 [parent process]
+    liron  12341  0.0  0.0 [sleep 999]
+    liron  12342  0.0  0.0 [sleep 999]
+    liron  12343  0.0  0.0 [sleep 999]
+
+After killing parent:
+  $ kill 12340
+
+  $ ps auxf
+  (children now show PPID 1, parent is gone)
+
+Key Learning:
+  - Killing parent doesn't always kill children
+  - Children get reparented to init (PID 1)
+  - You might need to clean up children separately
+
+
+================================================================================
+STEP 9: Real-world hunt
+================================================================================
+Expected: Student identifies the problematic process and stops it.
+
+Example Answer:
+  "Step 9: I found the problem process 'bash' (PID 12347).
+   I tried kill first: it didn't work.
+   I used kill -9 and it stopped."
+
+Process:
+  1. Run 'top' → see CPU hog
+  2. Note PID and command name
+  3. Use 'kill <PID>'
+  4. If still running, use 'kill -9 <PID>'
+  5. Verify with 'ps aux' and 'top'
+
+Key Learning:
+  - Real hunting requires multiple tools (top, ps, grep)
+  - Not all processes respond to gentle kill
+  - Verify success after each action
+
+
+================================================================================
+STEP 10: Synthesis & Challenge (FINAL)
+================================================================================
+Expected: Student analyzes complex scenario, identifies multiple problems,
+          chooses strategy, executes, and verifies.
+
+Example Answer:
+  "Step 10: I identified [CPU-heavy process] (PID [X]) and
+   [stubborn_process] (PID [Y]) as problems.
+   CPU hog: Parent = [parent_name] (PPID [Z]).
+   Strategy: Killed CPU hog first with 'kill', then used 'kill -9' on stubborn.
+   Result: All problem processes removed, system clean."
+
+Process:
+  1. Analyze with ps aux, top, pstree
+  2. Identify culprits (multiple)
+  3. Identify relationships (parent/child)
+  4. Choose order and signals:
+     - Gentle kill for responsive processes
+     - kill -9 for stubborn ones
+     - Consider parent/child impact
+  5. Execute step by step
+  6. Verify each step
+
+Key Learning:
+  - Real-world is messy and complex
+  - Multiple problems may coexist
+  - Careful decision-making is important
+  - Always verify results
+
+
+================================================================================
+GRADING NOTES (For Instructors)
+================================================================================
+
+Acceptable Answers:
+  - Any specific PID or process count is acceptable (system-dependent)
+  - Process names vary (bash, sh, sleep, etc.)
+  - Behavior descriptions are key (processes responded, were killed, etc.)
+
+What to Look For:
+  1. Did student use the right commands?
+  2. Did student understand what happened?
+  3. Did student verify results?
+  4. Did student choose appropriate signals (gentle first, force as last resort)?
+  5. Did student understand parent/child relationships?
+
+Common Mistakes to Address:
+  - Using kill -9 on the first try (should try gentle kill first)
+  - Not verifying success after killing
+  - Confusion about PPID vs PID
+  - Not understanding why SIGTERM might not work on some processes
+  - Not cleaning up orphaned child processes
+
+Extra Credit:
+  - Exploring other signals: kill -l, man 7 signal
+  - Using pkill or killall (more advanced)
+  - Understanding process groups and signals
+  - Exploring /proc/<pid>/ for process info
+
+
+================================================================================

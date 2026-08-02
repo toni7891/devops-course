@@ -1,0 +1,16 @@
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: "1.21"
+
+containerPort: 80
+
+containerPorts:
+  http: 80
+
+service:
+  enabled: false
+  type: ClusterIP
+  port: 80
+

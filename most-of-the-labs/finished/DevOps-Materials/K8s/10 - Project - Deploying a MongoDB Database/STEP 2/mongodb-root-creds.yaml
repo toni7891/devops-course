@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongodb-root-creds
+  labels:
+    app: mongodb
+type: Opaque
+# stringData: // in case you want to use plain text values instead of base64 encoded values
+#   root_user: <ROOT_USER>
+#   root_password: <ROOT_PASSWORD>
+data:
+  username: cm9vdF91c2Vy
+  password: cm9vdF9wYXNzd29yZA==

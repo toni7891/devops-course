@@ -1,0 +1,226 @@
+================================================================================
+          INSTRUCTOR SOLUTIONS — Linux Lab Heredoc Part 1
+                  (All 9 Exercises)
+================================================================================
+
+LEVEL 1 - EXERCISE 1: What is a Heredoc? cat << EOF
+------------------------------------------------------
+EXPECTED OUTPUT for first heredoc:
+  Hello from a heredoc!
+  This is line two.
+  This is line three.
+
+ANSWERS:
+- Everything between << EOF and the closing EOF is printed to stdout.
+- When you type EOF on its own line, it signals end-of-input and the command
+  executes.
+- No — the EOF line itself does NOT appear in the output. It is the delimiter,
+  not content.
+
+KEY POINT: The closing delimiter must appear ALONE at column 0 with no
+spaces before or after it. A single leading space causes the shell to
+keep reading (it never sees the delimiter) and may produce an error.
+
+--------------------------------------------------------------------------------
+
+LEVEL 1 - EXERCISE 2: Heredoc to a File: << with >
+-----------------------------------------------------
+greeting.txt will contain:
+  Dear Team,
+  (blank line)
+  This message was created using a heredoc.
+  It spans multiple lines without needing a text editor.
+  (blank line)
+  Regards,
+  The Linux Lab
+
+  -> wc -l greeting.txt  => 8 lines (including the two blank lines)
+
+myscript.sh output when run:
+  Hello from my script
+  Today is [current date and time — e.g., Mon Mar  3 10:25:00 UTC 2026]
+
+ANSWERS:
+- greeting.txt has 8 lines.
+- myscript.sh prints "Hello from my script" and "Today is <date>".
+- $(date) expands to the current date/time AT THE MOMENT the heredoc was
+  created (when cat << EOF was run), not when the script is later executed.
+
+--------------------------------------------------------------------------------
+
+LEVEL 1 - EXERCISE 3: Variables in Heredocs: Dynamic Content
+--------------------------------------------------------------
+With name="Alice", role="DevOps Engineer", company="TechCorp":
+
+profile.txt will contain:
+  Name: Alice
+  Role: DevOps Engineer
+  Company: TechCorp
+  Generated: [current date and time]
+
+ANSWERS:
+- Yes, variables ARE expanded. $name shows "Alice", not "$name".
+- $(date +%Y-%m-%d) shows the current date in YYYY-MM-DD format,
+  e.g., 2026-03-03
+
+KEY POINT: An unquoted heredoc behaves like a double-quoted string — all
+$variables and $(command) substitutions are processed.
+
+--------------------------------------------------------------------------------
+
+LEVEL 2 - EXERCISE 1: Write a Script Body with Heredoc
+-------------------------------------------------------
+backup_script.sh will contain something like:
+  #!/bin/bash
+  # Auto-generated backup script
+  BACKUP_DIR="/tmp/backup_20260303"
+  SOURCE_DIR="/home/alice"
+
+  echo "Starting backup of /home/alice to /tmp/backup_20260303"
+  mkdir -p "/tmp/backup_20260303"
+  echo "Backup complete: /tmp/backup_20260303"
+
+Note that $HOME expanded to the actual home path (e.g., /home/alice) and
+$(date +%Y%m%d) expanded to today's date — both happened at CREATION TIME.
+
+ANSWERS:
+- $HOME expands to the current user's home directory path (e.g., /home/alice
+  or /root).
+- Variables expand at HEREDOC CREATION TIME (when cat << EOF runs), NOT when
+  the generated script is later executed.
+
+KEY POINT: If you want variables to expand at script runtime, use a quoted
+heredoc: cat << 'EOF' > backup_script.sh
+
+--------------------------------------------------------------------------------
+
+LEVEL 2 - EXERCISE 2: Custom Delimiter: Not Just EOF
+------------------------------------------------------
+ANSWERS:
+- No, the delimiter word (DONE, END, HEREDOC) does NOT appear in the output.
+  It is consumed by the shell as a terminator.
+- You would choose a custom delimiter when:
+  * EOF would naturally appear in your content (e.g., error messages)
+  * You want more descriptive/readable script code
+  * You are writing nested heredocs and need distinct delimiter names
+    (outer and inner must use different delimiters)
+
+--------------------------------------------------------------------------------
+
+LEVEL 2 - EXERCISE 3: Suppress Variable Expansion: Quoted Heredoc
+------------------------------------------------------------------
+Step 1 output (no quotes — EXPANDS):
+  Current version is 1.0
+  PATH is /usr/local/bin:/usr/bin:/bin:...
+
+Step 2 output (quoted 'EOF' — does NOT expand):
+  Current version is $version
+  PATH is $PATH
+  This $variable will NOT expand
+
+deploy_template.sh contents (all variables are literal):
+  #!/bin/bash
+  echo "Deploying version $VERSION"
+  echo "Target: $DEPLOY_HOST"
+  echo "User: $USER"
+
+ANSWERS:
+- Step 1 shows the actual values; Step 2 shows the literal dollar-sign strings.
+- Quoted heredoc is useful when:
+  * Writing script templates that contain variable references meant to expand
+    later when the script runs
+  * Writing scripts inside scripts (script generators)
+  * Storing code that contains $ characters you don't want evaluated now
+
+--------------------------------------------------------------------------------
+
+LEVEL 3 - EXERCISE 1: Write a Config File with Heredoc
+-------------------------------------------------------
+server.conf will look like:
+  # Server Configuration
+  # Generated: Mon Mar  3 10:25:00 UTC 2026
+  # Host: myserver
+  (blank line)
+  server {
+      listen 8080;
+      server_name myserver;
+      root /var/www/html;
+      index index.html;
+  }
+
+app.config will contain:
+  APP_NAME=myapp
+  ENVIRONMENT=production
+  LOG_LEVEL=INFO
+  PORT=3000
+  DEBUG=false
+
+ANSWERS:
+- HOSTNAME contains the output of $(hostname) — the machine's hostname
+  (e.g., myserver, ubuntu, etc.)
+- server.conf has approximately 11 lines (may vary slightly)
+- app.config has 5 lines
+
+--------------------------------------------------------------------------------
+
+LEVEL 3 - EXERCISE 2: Heredoc in a Script: Generate a Report Template
+----------------------------------------------------------------------
+generate_report.sh (as stored — variables are LITERAL because of 'EOF'):
+  #!/bin/bash
+  TODAY=$(date +%Y-%m-%d)
+  HOSTNAME=$(hostname)
+  USER=$(whoami)
+
+  cat << REPORT > "report_${TODAY}.txt"
+  ...
+  REPORT
+
+  echo "Report saved to: report_${TODAY}.txt"
+
+When bash generate_report.sh is run, variables expand and a report file
+like report_2026-03-03.txt is created with real values.
+
+ANSWERS:
+- The outer heredoc uses 'EOF' (quoted) so that the script contents are stored
+  LITERALLY in generate_report.sh — the variables are intended to expand when
+  the script RUNS, not when it is written.
+- The inner heredoc (REPORT, unquoted) is inside the script. When the script
+  runs, REPORT heredoc expands $TODAY, $HOSTNAME, $USER, and $(df -h /),
+  etc., writing real values into the report file.
+- A different delimiter (REPORT vs EOF) is required because you cannot nest
+  two heredocs with the same delimiter name.
+
+--------------------------------------------------------------------------------
+
+LEVEL 3 - EXERCISE 3: Final Challenge: Generate HTML with Variables
+--------------------------------------------------------------------
+lab_results.html will contain something like:
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <title>My Linux Lab Results</title>
+  </head>
+  <body>
+      <h1>My Linux Lab Results</h1>
+      <p>Student: alice</p>
+      <p>Date: 2026-03-03</p>
+      <p>Host: myserver</p>
+      <h2>Summary</h2>
+      <p>Completed the Linux Pipes and Redirection lab successfully.</p>
+  </body>
+  </html>
+
+wc -l lab_results.html => ~18 lines
+grep "<p>" shows 4 paragraph lines
+
+After the append challenge (>>), there will be 5 <p> tags and one extra line.
+
+ANSWERS:
+- All variables expand: $title => "My Linux Lab Results", $student => username,
+  $date_str => date in YYYY-MM-DD format, $(hostname) => machine name.
+- grep "<p>" finds exactly the lines containing paragraph tags.
+- The >> append challenge adds one more line without overwriting the file.
+
+================================================================================
+END OF SOLUTIONS — Part 1
+================================================================================

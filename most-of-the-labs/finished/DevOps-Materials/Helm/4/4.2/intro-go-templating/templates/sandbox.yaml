@@ -1,0 +1,13 @@
+# This is a YAML comment and i will remain unchanged when rendered but the Go comment above will leave a blank line in the output
+{{- /* This is a Go comment and i will NOT remain when rendered */}}
+{{- /* <function name> <arg1> <arg2> ... */}}
+{{- /* test: {{ lower .Values.test }} */}}
+{{- /* test: {{ replace " "  "-" .Values.test }} */}}
+{{- /* test: {{ replace " "  "-" .Values.test  | lower }} */}}
+# test: {{ .Values.test | lower | replace "I" "E" }} #! this will not work because the replace function will be executed before the lower function and the "I" will not be found in the string
+test: {{ .Values.test | lower | replace " " "-" }}
+labels:
+  app: {{ .Release.Name }}
+  {{- /* app label */}}
+  chart: {{ .Chart.Name }}
+  {{- /* chart label */}}

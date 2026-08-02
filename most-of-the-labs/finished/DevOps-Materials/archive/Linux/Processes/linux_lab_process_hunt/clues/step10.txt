@@ -1,0 +1,100 @@
+================================================================================
+                       STEP 10 of 10 (FINAL)
+            "Synthesis & Challenge" - Full Process Hunt
+================================================================================
+
+* SETUP: Run first (from the lab root):  ./scripts/setup_step10.sh
+
+--------------------------------------------------------------------------------
+WHAT YOU'RE DOING
+--------------------------------------------------------------------------------
+Final challenge: a complex scenario with multiple processes, multiple signal
+behaviors, and resource issues. You'll use everything you've learned:
+
+- Finding processes (ps, grep)
+- Monitoring resources (top)
+- Understanding relationships (parent/child, PPID)
+- Choosing the right signal (SIGTERM vs SIGKILL)
+- Cleaning up safely
+
+This is a capstone exercise. Real-world process hunting often looks like this:
+messy, with multiple processes, unclear which is the culprit, and multiple
+possible solutions.
+
+Your job: analyze, diagnose, and fix.
+
+--------------------------------------------------------------------------------
+INSTRUCTIONS
+--------------------------------------------------------------------------------
+1. Run the SETUP script. It starts a realistic scenario with:
+   - Several legitimate background processes
+   - One or more resource hogs
+   - Possibly a process that won't respond to gentle signals
+   - A family of parent/child processes
+
+2. Diagnose the situation. Use:
+   top                       (see resource usage)
+   ps aux | head -20         (get an overview)
+   ps auxf                   (see process tree)
+   ps aux | grep dummy       (find test processes)
+
+3. Answer these questions in my_answers.txt (Step 10 section):
+   a) Which process is using the most CPU/memory?
+   b) What is its PID?
+   c) What is its command name?
+   d) Does it have a parent? What is the parent's name?
+
+4. Decide your strategy:
+   - Will you kill the parent, the child, or both?
+   - Should you use kill (gentle) or kill -9 (force)?
+   - What are the risks of each choice?
+
+5. Execute your plan:
+   kill <PID>        (try gentle first)
+   [wait a moment]
+   ps aux | grep dummy    (verify result)
+   [if still running: kill -9 <PID>]
+
+6. Verify all problematic processes are gone:
+   top               (should show normal system)
+   ps aux            (should not show dummy processes)
+
+7. Write in my_answers.txt (Step 10 section):
+   "I identified [PROCESS_NAME] (PID [PID]) as the problem.
+    Parent: [PARENT_NAME] (PPID [PPID]).
+    I used [kill / kill -9].
+    Result: [description of what happened]."
+
+8. BONUS (optional): If you're curious, explore:
+   - What happens if you kill the parent vs child first?
+   - Can you predict what will happen to orphaned children?
+   - Try to engineer a scenario where kill -9 is necessary.
+
+================================================================================
+CLEANUP (run when done with this step):  ./scripts/cleanup_step10.sh
+================================================================================
+
+                        🎓 LAB COMPLETE! 🎓
+
+Congratulations! You've completed the Process Hunt lab. You now understand:
+
+1. ✓ What a process is and how to list them (ps, ps aux)
+2. ✓ How to find specific processes (grep, top)
+3. ✓ Process relationships (parent, child, PPID)
+4. ✓ How to monitor resources (top, htop)
+5. ✓ How to stop processes gracefully (kill, SIGTERM)
+6. ✓ When to force-kill (kill -9, SIGKILL)
+7. ✓ The risks and trade-offs of each approach
+8. ✓ Real-world troubleshooting strategy
+
+This knowledge is essential for system administration, debugging, and DevOps.
+
+Next steps:
+- Review your my_answers.txt file to see what you learned
+- Practice on your own system (if you find a runaway process, you know how to stop it now!)
+- Explore other signal numbers with: man 7 signal
+- Learn about process groups and signals: man bash (search for "Job Control")
+
+Good hunting! 🔍
+
+================================================================================

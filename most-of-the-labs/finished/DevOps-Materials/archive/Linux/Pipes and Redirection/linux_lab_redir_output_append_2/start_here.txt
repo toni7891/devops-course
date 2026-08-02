@@ -1,0 +1,60 @@
+================================================================================
+         WELCOME TO: Linux Lab - Output Redirection with >> (Part 2)
+              Theme: Append in Practice — Real-World Scenarios
+================================================================================
+
+IMPORTANT: This is Part 2.
+--------------------------
+If you have not yet completed Part 1 (linux_lab_redir_output_append_1), please
+do that first. This lab builds directly on the concepts introduced there.
+
+QUICK RECAP OF >>
+-----------------
+  >   Redirect output and OVERWRITE the file (destroys existing content)
+  >>  Redirect output and APPEND to the file (preserves existing content)
+
+  Example:
+    echo "first"  > file.txt   # file.txt now contains only "first"
+    echo "second" > file.txt   # file.txt now contains only "second" (first is gone!)
+
+    echo "first"  > file.txt   # file.txt: "first"
+    echo "second" >> file.txt  # file.txt: "first" then "second" (both lines kept)
+
+WHAT YOU WILL PRACTICE IN PART 2
+---------------------------------
+This lab moves beyond mechanics and into real-world usage:
+
+  - Appending multiple command outputs to build a file line by line
+  - Using wc -l to watch a file grow with each append
+  - Building a version changelog with a mix of > and >>
+  - Using grep with >> for cumulative log collection (and avoiding duplicates)
+  - Adding formatted section headers to structure reports
+  - Extending a provided CSV inventory file
+  - Identifying and fixing the classic > vs >> overwrite bug in a script
+  - Simulating cron job log entries that accumulate over time
+  - Writing a rolling timestamped log in a real log format
+
+WHERE YOUR ANSWERS GO
+---------------------
+Throughout this lab, questions ask you to record answers. Use:
+
+  echo "your answer here" >> ../../my_answers.txt
+
+This appends all your answers into one file as you progress.
+
+QUICK START
+-----------
+Work from the lab directory:
+
+  cd "c:/DevOps/DevOps-Jan26/Linux/Pipes and Redirection/linux_lab_redir_output_append_2"
+
+Each exercise produces working files in the level directory where you run it.
+The data/ directory contains files provided for you to work with.
+
+Begin with Exercise 1:
+
+  cat clues/level1/clue1.txt
+
+Good luck — and pay close attention to when > is intentional vs when >> is needed!
+
+================================================================================

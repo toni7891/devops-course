@@ -1,0 +1,64 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 2
+                "Redirecting a Command's Output to a File"
+================================================================================
+
+BACKGROUND:
+-----------
+The > operator works with ANY command that produces output — not just echo.
+You can redirect the output of ls, date, whoami, cat, and many more.
+
+The pattern is always:
+  <command> > <filename>
+
+Everything that would have appeared on your terminal is now written to the file.
+
+EXERCISE:
+---------
+Step 1: Run ls and observe the output on your screen:
+
+  ls
+
+Step 2: Now redirect that same output to a file:
+
+  ls > listing.txt
+
+Step 3: Nothing appeared on screen — check that the file was created:
+
+  ls -l listing.txt
+
+Step 4: Read the file and compare it to what ls showed you:
+
+  cat listing.txt
+
+Step 5: Notice something interesting — does listing.txt appear in its own
+        contents? Think about why.
+
+Step 6: Now try redirecting a longer listing:
+
+  ls -la > detailed_listing.txt
+  cat detailed_listing.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- Does listing.txt appear inside its own contents when you cat it? Why?
+- What is the difference between the output of ls and ls -la?
+- What happens if you run `ls > listing.txt` a second time — does the file
+  get larger, or does it stay the same size?
+
+CHALLENGE:
+----------
+Try to figure out the answer to that last question BEFORE running it.
+Then run it and see if you were right:
+
+  ls > listing.txt    (run this a second time)
+  cat listing.txt
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Exercise 2 done. listing.txt contains: ..." >> ../../my_answers.txt
+
+================================================================================
+When you are done, move to the next exercise:
+  cat clue3.txt
+================================================================================

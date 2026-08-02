@@ -1,0 +1,61 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 2
+                  "Filter and Count: Active Users"
+================================================================================
+
+BACKGROUND:
+-----------
+Real-world user management often involves files where each line records a
+user and their status. Using `grep` with input redirection lets you filter
+only the lines that match a pattern — for example, finding all "active" users
+or all "inactive" users from a combined list.
+
+When you pipe the output of grep to `wc -l`, you get a count of matching
+records. When you pipe to `cut`, you can extract just one field from the
+matching lines. Chaining these together — `grep | cut | sort` — gives you
+a clean, sorted list of names that match a specific status.
+
+This pattern of filter-then-extract is fundamental in log analysis, user
+auditing, and automated monitoring scripts. The key insight is that `<`
+feeds the file to the first command in the chain, and `|` passes data
+between subsequent commands — no intermediate files needed unless you
+want to save results.
+
+EXERCISE:
+---------
+Step 1: View the full user list:
+  cat ../../data/users.txt
+
+Step 2: Show only active users:
+  grep "active" < ../../data/users.txt
+
+Step 3: Count the number of active users:
+  grep "active" < ../../data/users.txt | wc -l
+
+Step 4: Save the active count to a file and display it:
+  grep "active" < ../../data/users.txt | wc -l > active_count.txt && cat active_count.txt
+
+Step 5: Count the number of inactive users:
+  grep "inactive" < ../../data/users.txt | wc -l
+
+Step 6: Extract just the names (column 1) of active users:
+  grep "active" < ../../data/users.txt | cut -d',' -f1
+
+Step 7: Show the active user names sorted alphabetically:
+  grep "active" < ../../data/users.txt | cut -d',' -f1 | sort
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many active users are there?
+- How many inactive users are there?
+- What is the total number of users?
+- What does combining `grep` and `cut` in a pipeline achieve?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L3E2 - Active: <n>, Inactive: <n>, Total: <n>" >> ../../my_answers.txt
+
+================================================================================
+Move to the final exercise:
+  cat clue3.txt
+================================================================================

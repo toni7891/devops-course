@@ -1,0 +1,10 @@
+# Ignore student answers
+my_answers.txt
+
+# Ignore macOS
+.DS_Store
+
+# Ignore temporary files
+*.tmp
+*.swp
+*~

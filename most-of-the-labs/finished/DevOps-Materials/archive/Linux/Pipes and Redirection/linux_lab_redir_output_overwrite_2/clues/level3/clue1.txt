@@ -1,0 +1,67 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 1
+                "Fix the Overwrite Bug — Given Broken Script"
+================================================================================
+
+BACKGROUND:
+-----------
+Reading and fixing broken scripts is a core sysadmin skill. In this exercise
+you are given a shell script that has a classic > overwrite bug. The script is
+supposed to log five system events to a file, one event per line. Instead, only
+the last event appears because every echo uses > and each one wipes what came
+before.
+
+Your task is to read the script, understand the bug, and create a corrected
+version where only the first line uses > (to start the file fresh) and all
+subsequent lines use >> (to append without destroying).
+
+EXERCISE:
+---------
+Step 1: Read the broken script to understand its intent and spot the bug:
+  cat ../../data/broken_log_script.sh
+
+Step 2: Run the broken script, then check the output file:
+  bash ../../data/broken_log_script.sh && cat system_events.txt
+
+  You will see only 1 line in system_events.txt — EVENT 5. The other four
+  events were silently overwritten.
+
+Step 3: Identify the bug:
+  Every echo command uses > instead of >>. Each run replaces the entire file,
+  so only the last echo leaves any content behind.
+
+Step 4: Create a fixed version of the script called fixed_log_script.sh.
+  The fix: line 1 keeps > to create/reset the file fresh, lines 2-5 use >>
+  to append each subsequent event.
+
+  You can create it with:
+  cat > fixed_log_script.sh << 'EOF'
+  #!/bin/bash
+  echo "EVENT 1: Script started at $(date)" > system_events.txt
+  echo "EVENT 2: User is $(whoami)" >> system_events.txt
+  echo "EVENT 3: Running on host $(hostname)" >> system_events.txt
+  echo "EVENT 4: Current directory is $(pwd)" >> system_events.txt
+  echo "EVENT 5: Script finished at $(date)" >> system_events.txt
+  echo ""
+  echo "Done! Check system_events.txt"
+  EOF
+
+Step 5: Run the fixed script and verify all five events are present:
+  bash fixed_log_script.sh && cat system_events.txt
+  wc -l system_events.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- What was the bug in the original script?
+- Why is it correct for the FIRST line to use > rather than >>?
+- What is the final line count of system_events.txt after running the fixed
+  script?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level3-Ex1: Bug=___. First line uses > because ___. Final line count=___" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue2.txt
+================================================================================

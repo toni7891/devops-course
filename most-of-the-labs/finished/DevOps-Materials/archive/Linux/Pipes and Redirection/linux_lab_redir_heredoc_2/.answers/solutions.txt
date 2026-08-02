@@ -1,0 +1,292 @@
+================================================================================
+          INSTRUCTOR SOLUTIONS — Linux Lab Heredoc Part 2
+                  (All 9 Exercises)
+================================================================================
+
+LEVEL 1 - EXERCISE 1: Review: Basic Heredoc — Quick Practice
+--------------------------------------------------------------
+welcome.txt will contain:
+  ================================
+  Linux Heredoc Lab - Part 2
+  Advanced Scenarios
+  ================================
+
+  -> wc -l welcome.txt  => 4 lines
+
+ANSWERS:
+- << (here-document) redirects multi-line inline text as stdin to a command,
+  without needing an external file.
+- A heredoc ends when the delimiter word (e.g., EOF) appears alone on its own
+  line at column zero with no surrounding spaces.
+
+--------------------------------------------------------------------------------
+
+LEVEL 1 - EXERCISE 2: Replace Multiple Echos with One Heredoc
+--------------------------------------------------------------
+Both old_status.txt and clean_status.txt will contain:
+  --- Server Status ---
+  Host: [hostname]
+  Date: [current date and time]
+  User: [current username]
+  ---
+
+  -> wc -l  => 5 lines each
+
+ANSWERS:
+- Both files have 5 lines.
+- diff old_status.txt clean_status.txt shows no output (files are identical),
+  except possibly a difference in the exact timestamp if there is a time gap
+  between creating old_status.txt and clean_status.txt.
+- The heredoc approach is easier to read: all lines are visually grouped
+  together without repeating ">> old_status.txt" on every line.
+
+KEY POINT: The content and behavior are identical. The heredoc version is
+preferred for maintainability.
+
+--------------------------------------------------------------------------------
+
+LEVEL 1 - EXERCISE 3: Heredoc to Append: << >> Combination
+-----------------------------------------------------------
+After all steps, combined.log contains:
+  === Log Started ===
+  Event 1: System started at [date]
+  Event 2: User [username] logged in
+  Event 3: Lab environment initialized
+  Event 4: Configuration loaded
+  Event 5: Services started
+
+  -> wc -l combined.log  => 6 lines
+
+ANSWERS:
+- combined.log contains 6 lines total (1 header + 3 from first append + 2 from
+  second append).
+- Yes, the original "=== Log Started ===" line survives all appends because >>
+  appends without overwriting.
+
+KEY POINT: The difference between > (overwrite) and >> (append) is critical.
+With heredoc, << > overwrites; << >> appends.
+
+--------------------------------------------------------------------------------
+
+LEVEL 2 - EXERCISE 1: Pass Heredoc to a Command: sort << EOF
+--------------------------------------------------------------
+Step 1 sorted output (alphabetical):
+  apple
+  banana
+  cherry
+  date
+  elderberry
+
+Step 2 sorted output (numeric):
+  7
+  23
+  42
+  156
+  891
+
+Step 3 (wc -l):
+  3
+
+Step 4 (tr uppercase):
+  HELLO WORLD
+  THIS GETS CONVERTED TO UPPERCASE
+
+ANSWERS:
+- Alphabetical sort: apple, banana, cherry, date, elderberry
+- Numeric sort: 7, 23, 42, 156, 891
+- Yes, you can pass a heredoc to grep:
+    grep "line" << EOF
+    line one
+    something else
+    line two
+    EOF
+  Output: "line one" and "line two" (lines matching "line")
+
+KEY POINT: A heredoc is just stdin. Any command that reads stdin accepts it.
+
+--------------------------------------------------------------------------------
+
+LEVEL 2 - EXERCISE 2: SQL-like Multi-line Commands with Heredoc
+---------------------------------------------------------------
+query.sql contains:
+  -- Report: Top Customers
+  SELECT name, email, total_purchases
+  FROM customers
+  WHERE status = 'active'
+  ORDER BY total_purchases DESC
+  LIMIT 20;
+
+ANSWERS:
+- 'EOF' (quoted) is used because SQL commonly contains single quotes (e.g.,
+  'active'), dollar signs (e.g., $1 in PostgreSQL prepared statements), and
+  other shell metacharacters. Quoting the delimiter prevents the shell from
+  trying to expand these as variable references or special syntax.
+- Without quotes (unquoted EOF), the shell would try to expand $1 as a
+  positional parameter and $USER as an environment variable — producing
+  incorrect SQL or causing errors.
+
+KEY POINT: When content contains shell metacharacters that must be literal,
+always use a quoted delimiter: << 'EOF'
+
+--------------------------------------------------------------------------------
+
+LEVEL 2 - EXERCISE 3: Indented Heredoc: <<- for Cleaner Scripts
+---------------------------------------------------------------
+indented_example.sh output:
+  Hello, World!
+  This heredoc is inside a function
+  And uses tab indentation
+
+(Leading tab characters are stripped from the output by <<-)
+
+ANSWERS:
+- << is a standard heredoc. The content must start at column 0 (no indentation
+  in the source), which looks inconsistent inside indented code blocks.
+- <<- is an indented heredoc. It strips LEADING TAB characters from each line
+  of the heredoc content, allowing you to indent the content with tabs to match
+  the surrounding code structure.
+- <<- strips only the TAB character (ASCII 0x09). Spaces are NOT stripped.
+  If you indent with spaces instead of tabs, <<- will not strip them.
+
+KEY POINT: <<- only strips TABS. If your editor converts tabs to spaces
+(a common setting), <<- will NOT work as expected. Always use real tab
+characters when using <<-.
+
+--------------------------------------------------------------------------------
+
+LEVEL 3 - EXERCISE 1: Generate Deployment Notes with Variables
+--------------------------------------------------------------
+The file deployment_notes_2026-03-03.txt (date will vary) will contain:
+  ======================================
+  DEPLOYMENT NOTES
+  ======================================
+  Version:     2.1.0
+  Environment: production
+  Deployed by: [username]
+  Date:        2026-03-03
+  Time:        [HH:MM:SS]
+  Host:        [hostname]
+  ======================================
+  Changes in this version:
+  - Fixed authentication bug
+  - Improved query performance by 30%
+  - Added dark mode to dashboard
+  - Updated dependencies
+  ======================================
+  Status: SUCCESS
+  ======================================
+
+  -> wc -l  => 22 lines
+
+ANSWERS:
+- Filename: deployment_notes_2026-03-03.txt (date portion will match today)
+- The file contains 22 lines.
+- VERSION is "2.1.0"
+
+KEY POINT: Including the date in the filename (${DEPLOY_DATE}) creates a
+natural audit trail. Each deployment generates a uniquely named file.
+
+--------------------------------------------------------------------------------
+
+LEVEL 3 - EXERCISE 2: Fix the Broken Heredoc
+--------------------------------------------
+THE 3 BUGS IN broken_heredoc.sh:
+
+BUG 1: Space before closing delimiter
+  BROKEN:
+    cat << EOF
+    This is some content
+    Line two of content
+       EOF           <-- leading spaces before EOF
+
+  WHAT HAPPENS: The shell looks for a line that is EXACTLY "EOF" at column 0.
+  "   EOF" does not match, so the shell keeps reading, hits end-of-file, and
+  produces:
+    bash: warning: here-document at line N delimited by end-of-file
+    (wanted 'EOF')
+  Or in strict mode: a "unexpected EOF while looking for matching 'EOF'" error.
+
+  FIX: Remove all spaces before the closing EOF so it starts at column 0.
+
+BUG 2: Undefined variable $SCORE
+  BROKEN:
+    NAME="Alice"
+    cat << EOF
+    Hello, $NAME
+    Your score: $SCORE    <-- $SCORE was never set
+    EOF
+
+  WHAT HAPPENS: $SCORE expands to empty string (no error, just blank output).
+  Output: "Your score: " — unexpected blank.
+
+  FIX: Add  SCORE="100"  (or any value) before the heredoc.
+
+BUG 3: Wrong case for closing delimiter
+  BROKEN:
+    cat << EOF
+    Final message here
+    eof              <-- lowercase, but opening was uppercase EOF
+
+  WHAT HAPPENS: The shell looks for "EOF" but finds "eof". They are different.
+  The shell keeps reading past end-of-file and produces the same warning/error
+  as Bug 1.
+
+  FIX: Change the closing  eof  to  EOF  (matching case exactly).
+
+FIXED SCRIPT OUTPUT:
+  This is some content
+  Line two of content
+  Hello, Alice
+  Your score: 100
+  Final message here
+
+--------------------------------------------------------------------------------
+
+LEVEL 3 - EXERCISE 3: Final: Script Generator — Heredoc Inside a Script
+-----------------------------------------------------------------------
+create_deploy_script.sh (as stored — all variables are LITERAL because of
+the quoted outer heredoc 'OUTER'):
+  #!/bin/bash
+  APP=$1
+  ENV=${2:-staging}
+
+  cat << EOF > "deploy_${APP}_${ENV}.sh"
+  #!/bin/bash
+  echo "Deploying $APP to $ENV"
+  echo "Date: $(date)"
+  echo "Host: $(hostname)"
+  echo "Deploy complete!"
+  EOF
+
+  chmod +x "deploy_${APP}_${ENV}.sh"
+  echo "Created: deploy_${APP}_${ENV}.sh"
+
+After running: bash create_deploy_script.sh myapp production
+
+deploy_myapp_production.sh will contain:
+  #!/bin/bash
+  echo "Deploying myapp to production"
+  echo "Date: [current date at script-run time]"
+  echo "Host: [hostname at script-run time]"
+  echo "Deploy complete!"
+
+After running: bash deploy_myapp_production.sh
+  Deploying myapp to production
+  Date: [current date]
+  Host: [hostname]
+  Deploy complete!
+
+KEY POINTS:
+- The outer heredoc uses 'OUTER' (quoted) so ALL contents are stored literally
+  in create_deploy_script.sh. The inner << EOF and $APP/$ENV are literals.
+- When create_deploy_script.sh RUNS, bash processes the inner << EOF heredoc
+  normally. $APP and $ENV expand to "myapp" and "production" (from the script's
+  $1 and $2 arguments). $(date) and $(hostname) expand at that moment too.
+- This is a templating pattern: outer 'OUTER' = "write as template";
+  inner EOF = "expand when template runs".
+- Nested heredocs MUST use different delimiter names. Using EOF for both would
+  cause the inner EOF to prematurely close the outer heredoc.
+
+================================================================================
+END OF SOLUTIONS — Part 2
+================================================================================

@@ -1,0 +1,12 @@
+users:
+  - username: john
+    roles:
+      - readonly
+      - developer
+  - username: jane
+    roles:
+      - admin
+      - auditor
+  - username: laura
+    roles:
+      - readonly

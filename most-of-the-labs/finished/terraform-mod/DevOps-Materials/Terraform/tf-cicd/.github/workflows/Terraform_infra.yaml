@@ -1,0 +1,76 @@
+name: Terraform Deploy
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    branches: [main]
+    types: [completed]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  TF_WORKING_DIR: terraform
+
+jobs:
+  terraform:
+    name: Terraform Init & Apply
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: eu-west-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.9.0'
+
+      - name: Create state bucket if not exists
+        run: |
+          aws s3api head-bucket --bucket tf-state-toni7891 2>/dev/null || \
+          aws s3api create-bucket \
+            --bucket tf-state-toni7891 \
+            --region eu-west-1 \
+            --create-bucket-configuration LocationConstraint=eu-west-1
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform init
+
+      - name: Import existing resources
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          # continues if exist [ 2>/dev/null || true]
+          terraform import aws_iam_openid_connect_provider.github \
+            arn:aws:iam::${ACCOUNT_ID}:oidc-provider/token.actions.githubusercontent.com 2>/dev/null || true
+
+          terraform import aws_s3_bucket.webapp_bucket webapp-bucket-toni7891 2>/dev/null || true
+
+          terraform import aws_iam_role.github_actions github-actions-role 2>/dev/null || true
+
+          OAC_ID=$(aws cloudfront list-origin-access-controls \
+            --query "OriginAccessControlList.Items[?Name=='webapp_oac'].Id" \
+            --output text)
+          [ -n "$OAC_ID" ] && terraform import aws_cloudfront_origin_access_control.oac $OAC_ID 2>/dev/null || true
+
+      - name: Terraform Validate
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform apply -auto-approve tfplan

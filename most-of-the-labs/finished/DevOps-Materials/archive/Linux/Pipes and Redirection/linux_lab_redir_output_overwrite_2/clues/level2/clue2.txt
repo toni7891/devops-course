@@ -1,0 +1,57 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 2
+                "Multiple Redirects — Only the Last One Survives"
+================================================================================
+
+BACKGROUND:
+-----------
+A very common beginner mistake is trying to build a multi-line file by running
+several separate echo commands, each using >. The programmer expects each line
+to be added to the file. Instead, each > wipes the file and starts fresh, so
+only the final echo survives.
+
+This exercise demonstrates that mistake clearly, then shows two correct
+alternatives: using echo -e with \n escape sequences, and using printf.
+Both approaches write multiple lines in a single command — so there is only
+one > and no data is lost.
+
+EXERCISE:
+---------
+Step 1: Try the WRONG way — three separate echo commands each using >:
+  echo "name=Alice" > settings.txt
+  echo "role=admin" > settings.txt
+  echo "active=true" > settings.txt
+  cat settings.txt
+
+  Notice that only "active=true" is in the file. The other two were overwritten.
+
+Step 2: The CORRECT way using echo -e with newline escape sequences:
+  echo -e "name=Alice\nrole=admin\nactive=true" > settings_correct.txt
+  cat settings_correct.txt
+
+  All three lines are present because this was a single command with one >.
+
+Step 3: Another correct way using printf:
+  printf "name=Alice\nrole=admin\nactive=true\n" > settings_printf.txt
+  cat settings_printf.txt
+
+Challenge: Write a single echo or printf command that creates a 5-line config
+file called myapp.txt with these keys (values can be anything you choose):
+  host, port, user, password, database
+
+Verify with: cat myapp.txt && wc -l myapp.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- After step 1, how many lines does settings.txt have?
+- What are two correct ways to write multiple lines to a file using > in a
+  single command?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level2-Ex2: settings.txt lines=___. Two correct methods: ___ and ___" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue3.txt
+================================================================================

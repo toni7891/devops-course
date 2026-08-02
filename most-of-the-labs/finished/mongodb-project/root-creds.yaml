@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongodb-root-creds
+  labels:
+    app: mongodb
+type: Opaque
+data:
+  root_user: cm9vdF91c2Vy
+  root_password: cm9vdF9wYXNzd29yZA==

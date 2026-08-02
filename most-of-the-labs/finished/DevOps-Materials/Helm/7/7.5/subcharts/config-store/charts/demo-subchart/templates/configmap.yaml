@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "demo-subchart.fullname" . }}
+data:
+  test-value: {{ .Values.customValue }}
+  # This will be empty - fullNameOverride is scoped to postgresql
+  # test-value-two: {{ .Values.fullNameOverride }}
+  test-global-value: {{ .Values.global.defaultStorageClass }}

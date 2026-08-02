@@ -1,0 +1,4 @@
+django==5.2
+
+# Testing (Django has built-in testing - no extra packages needed!)
+# Run with: python manage.py test

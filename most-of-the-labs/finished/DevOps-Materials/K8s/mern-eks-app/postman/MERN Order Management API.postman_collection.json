@@ -1,0 +1,284 @@
+{
+  "info": {
+    "_postman_id": "4e4bbcf0-9f0b-4e4b-b764-42be7f2bfdf0",
+    "name": "MERN Order Management API",
+    "description": "Postman collection for the MERN Order Management API. Set `baseUrl` to your backend URL. The login and register requests save `token`, and create order saves `orderId` for update/delete requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "email",
+      "value": "demo@example.com",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "password123",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Checks that the backend is running."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('register returns 201 or existing-user conflict', function () {",
+                  "  pm.expect([201, 409]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.token) pm.collectionVariables.set('token', json.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Creates a user account and stores the JWT in the `token` collection variable when registration succeeds."
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('login succeeds', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const json = pm.response.json();",
+                  "if (json.token) pm.collectionVariables.set('token', json.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Authenticates an existing user and stores the JWT in the `token` collection variable."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "item": [
+        {
+          "name": "List Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            },
+            "description": "Returns orders belonging to the authenticated user."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('order is created', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "const json = pm.response.json();",
+                  "if (json._id) pm.collectionVariables.set('orderId', json._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Demo order\",\n  \"description\": \"Created from Postman\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            },
+            "description": "Creates an order for the authenticated user and stores `_id` in `orderId`."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated demo order\",\n  \"description\": \"Updated from Postman\",\n  \"status\": \"in-progress\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}"
+              ]
+            },
+            "description": "Updates the order referenced by `orderId`. Valid status values are `pending`, `in-progress`, and `done`."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Order",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}"
+              ]
+            },
+            "description": "Deletes the order referenced by `orderId`."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

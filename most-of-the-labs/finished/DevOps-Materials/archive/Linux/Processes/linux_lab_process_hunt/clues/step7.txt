@@ -1,0 +1,61 @@
+================================================================================
+                       STEP 7 of 10
+            "The Last Resort" - Introducing kill -9
+================================================================================
+
+* SETUP: Run first (from the lab root):  ./scripts/setup_step7.sh
+
+--------------------------------------------------------------------------------
+WHAT YOU'RE DOING
+--------------------------------------------------------------------------------
+Some processes don't respond to SIGTERM. They might be:
+- Broken or hung
+- Stuck in a tight loop
+- Deliberately ignoring signals
+
+For these cases, there's `kill -9` (SIGKILL). This is "pulling the power plug" –
+it doesn't ask permission, it just terminates the process immediately.
+
+WARNING: SIGKILL is dangerous because:
+- The process gets NO chance to clean up
+- Files might be corrupted
+- Data might be lost
+- Use ONLY when gentle kill doesn't work
+
+Your job: understand when and why kill -9 is needed (and why it's dangerous).
+
+--------------------------------------------------------------------------------
+INSTRUCTIONS
+--------------------------------------------------------------------------------
+1. Run the SETUP script. It starts a dummy process that IGNORES SIGTERM
+   (on purpose, to simulate a broken process).
+
+2. Find its PID:
+   ps aux | grep dummy_stubborn
+
+3. Try a gentle kill first:
+   kill <PID>
+
+4. Wait a moment, then check if it's still running:
+   ps aux | grep dummy_stubborn
+
+   It should still be there (ignoring SIGTERM).
+
+5. Now use the nuclear option:
+   kill -9 <PID>
+
+6. Verify it's gone:
+   ps aux | grep dummy_stubborn
+
+   Now it should be gone (only the grep line remains).
+
+7. Write in my_answers.txt:
+   "Step 7: kill (SIGTERM) didn't work, but kill -9 (SIGKILL) forced it to stop."
+
+8. Key insight: kill -9 ALWAYS works, but it's the last resort. Always try
+   gentle kill first.
+
+================================================================================
+CLEANUP (run when done with this step):  ./scripts/cleanup_step7.sh
+NEXT STEP:  cat clues/step8.txt
+================================================================================

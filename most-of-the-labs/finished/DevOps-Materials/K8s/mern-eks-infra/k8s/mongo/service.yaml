@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb   # backend connects via: mongodb://mongodb:27017/ordersdb
+  namespace: orders-app
+spec:
+  selector:
+    app: mongodb
+  ports:
+    - port: 27017
+      targetPort: 27017
+  type: ClusterIP   # internal only — never expose MongoDB externally

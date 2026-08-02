@@ -1,0 +1,59 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 1
+              "Pipeline with Input Redirect: Sort, Unique, Count"
+================================================================================
+
+BACKGROUND:
+-----------
+Now that you are comfortable with individual tools, Level 3 focuses on
+chaining them together. The pattern `sort < file | uniq | wc -l` is a
+three-stage pipeline: input redirection feeds the file into sort, sort
+outputs to uniq via a pipe, and uniq outputs to wc via another pipe.
+
+This pipeline answers the question: "How many distinct values are in this
+file?" — a question that comes up constantly in data analysis, log review,
+and system administration.
+
+Command substitution `$(...)` lets you capture the output of a command as
+a value inside another command. Combining two substitutions with arithmetic
+`$(( ... - ... ))` lets you calculate the number of duplicates without
+manually doing the math. This is a building block for automated reporting.
+
+EXERCISE:
+---------
+Step 1: View the names file (notice some names repeat):
+  cat ../../data/names.txt
+
+Step 2: Count the total number of names (including duplicates):
+  wc -l < ../../data/names.txt
+
+Step 3: Sort the names alphabetically:
+  sort < ../../data/names.txt
+
+Step 4: Sort and remove duplicates:
+  sort < ../../data/names.txt | uniq
+
+Step 5: Count only the unique names:
+  sort < ../../data/names.txt | uniq | wc -l
+
+Step 6: Save the unique count to a file and display it:
+  sort < ../../data/names.txt | uniq | wc -l > unique_name_count.txt && cat unique_name_count.txt
+
+Step 7: Calculate and display the number of duplicate entries:
+  echo "Duplicates: $(($(wc -l < ../../data/names.txt) - $(cat unique_name_count.txt)))"
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many total names are in names.txt?
+- How many unique names are there?
+- How many duplicate entries exist?
+- In the pipeline `sort < file | uniq | wc -l`, what does each stage do?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L3E1 - Total names: <n>, Unique names: <n>, Duplicates: <n>" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue2.txt
+================================================================================

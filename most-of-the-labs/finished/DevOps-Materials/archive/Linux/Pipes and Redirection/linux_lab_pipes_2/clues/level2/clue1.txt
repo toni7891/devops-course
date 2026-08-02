@@ -1,0 +1,58 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 1
+                "Multi-Step Text Processing"
+================================================================================
+
+BACKGROUND:
+-----------
+"tr" (translate) replaces or deletes characters in its input. It reads
+from stdin and writes to stdout, making it a natural pipeline citizen.
+
+Common uses:
+  tr 'A-Z' 'a-z'   convert uppercase to lowercase
+  tr 'a-z' 'A-Z'   convert lowercase to uppercase
+  tr -d '\n'        delete newline characters
+  tr ' ' '_'        replace spaces with underscores
+
+When performing case-insensitive deduplication, the approach is:
+  1. Convert all text to the same case (tr)
+  2. Sort the lines (sort)
+  3. Remove duplicates (uniq)
+
+This multi-step transformation is a great example of composable pipelines.
+Each command does one small job, and together they accomplish something
+more complex.
+
+EXERCISE:
+---------
+Step 1: View the mixed-case words file
+  cat ../../data/mixed.txt
+
+Step 2: Convert all text to lowercase
+  cat ../../data/mixed.txt | tr 'A-Z' 'a-z'
+
+Step 3: Sort the lowercase output
+  cat ../../data/mixed.txt | tr 'A-Z' 'a-z' | sort
+
+Step 4: Remove duplicates (case-insensitive because we already lowercased)
+  cat ../../data/mixed.txt | tr 'A-Z' 'a-z' | sort | uniq
+
+Step 5: Count how many unique words there are (case-insensitive)
+  cat ../../data/mixed.txt | tr 'A-Z' 'a-z' | sort | uniq | wc -l
+
+Step 6: Show unique words in UPPERCASE and sorted
+  cat ../../data/mixed.txt | sort | uniq | tr 'a-z' 'A-Z'
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many unique items are in data/mixed.txt when treated case-insensitively?
+- Describe what the 4-command pipeline in Step 4 does, stage by stage.
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L2C1: unique items case-insensitive=<n>; pipeline: cat reads file, tr lowercases, sort orders, uniq deduplicates" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level2/clue2.txt
+================================================================================

@@ -1,0 +1,21 @@
+name: frontend
+type: Load Balanced Web Service
+
+image:
+  build:
+    dockerfile: frontend/Dockerfile
+    context: frontend
+    args:
+      LB_HOST: lb.dev.lab.local
+  port: 80
+
+http:
+  path: '/'
+  healthcheck:
+    path: /
+    success_codes: '200-399'
+
+cpu: 256
+memory: 512
+count: 1
+exec: true

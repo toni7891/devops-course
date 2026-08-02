@@ -1,0 +1,22 @@
+# Terraform
+terraform/.terraform/*
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/tfplan
+
+# Solution files
+solution/*
+
+# Node
+app/node_modules/
+app/dist/
+
+# macOS
+.DS_Store
+
+# Playwright MCP
+.playwright-mcp/
+
+# Screenshots
+screenshots/*.png
+CLAUDE.md

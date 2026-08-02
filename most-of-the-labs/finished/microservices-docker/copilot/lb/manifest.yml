@@ -1,0 +1,16 @@
+name: lb
+type: Backend Service
+
+image:
+  build:
+    dockerfile: lb/Dockerfile
+    context: lb
+    args:
+      USERS_SVC_HOST: users-service.dev.lab.local:3000
+      PRODUCTS_SVC_HOST: products-service.dev.lab.local:3000
+  port: 80
+
+cpu: 256
+memory: 512
+count: 1
+exec: true

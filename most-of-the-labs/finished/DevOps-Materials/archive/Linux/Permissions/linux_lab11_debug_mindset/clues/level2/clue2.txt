@@ -1,0 +1,33 @@
+================================================================================
+                    LEVEL 2 - EXERCISE 2
+                    Lost in Wrong Directory
+================================================================================
+
+EXERCISE:
+---------
+You try to read a file but get "No such file or directory". Use the 4 steps.
+
+INSTRUCTIONS:
+-------------
+1. From clues/level2, try:
+   cat instructions.txt
+   (You'll get "No such file or directory" – you're in the wrong place.)
+
+2. Use the 4 steps:
+   OBSERVE: What error?
+   INSPECT: pwd – where are you? Where does instructions.txt actually live?
+   DIAGNOSE: You need to be in the right directory. instructions.txt is in broken_scenarios/scenario5_lost_path.
+   RESOLVE: cd ../../broken_scenarios/scenario5_lost_path, then cat instructions.txt
+
+COMMANDS TO USE:
+----------------
+pwd
+cat instructions.txt
+cd ../../broken_scenarios/scenario5_lost_path
+cat instructions.txt  (verify)
+
+NEXT STEP:
+----------
+Proceed to clue3.txt (same folder: clues/level2).
+
+================================================================================

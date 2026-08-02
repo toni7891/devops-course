@@ -1,0 +1,52 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 1
+                "Redirecting to a Path — Writing Files in Subdirectories"
+================================================================================
+
+BACKGROUND:
+-----------
+You are not limited to redirecting output into files in the current directory.
+You can specify a full relative or absolute path after > and the output will be
+written directly to that location. This is very useful in automation scripts
+that organize their output into structured directory trees.
+
+However, there is one important rule: the parent directory must already exist.
+The shell will create the file, but it will NOT create missing directories for
+you. If the directory does not exist, the redirect will fail with an error.
+
+EXERCISE:
+---------
+Step 1: Create a nested subdirectory structure:
+  mkdir -p reports/daily
+
+Step 2: Redirect the current date and time into a file inside that directory:
+  date > reports/daily/today.txt && cat reports/daily/today.txt
+
+Step 3: Redirect the hostname into a separate file:
+  hostname > reports/daily/host.txt && cat reports/daily/host.txt
+
+Step 4: Redirect system uptime into another file:
+  uptime > reports/daily/uptime.txt
+
+Step 5: List all files created in the reports/daily/ directory:
+  ls -l reports/daily/
+
+Step 6: Now try to redirect into a directory that does NOT exist yet:
+  echo "test" > reports/weekly/test.txt
+
+  This command should FAIL. Read the error message carefully.
+
+QUESTIONS TO ANSWER:
+--------------------
+- Can you redirect output into a file inside a non-existent directory?
+- Does the parent directory need to exist before you redirect into it?
+- What exact error message did you see in step 6?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level2-Ex1: Non-existent dir=___. Error was: ___" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue2.txt
+================================================================================

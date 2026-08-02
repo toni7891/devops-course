@@ -1,0 +1,59 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 3
+                "Variables in Heredocs: Dynamic Content"
+================================================================================
+
+BACKGROUND:
+-----------
+By default, variables and command substitutions inside a heredoc ARE expanded —
+just like inside double-quoted strings. When the shell processes the heredoc, it
+replaces $variable with its value and $(command) with its output. This makes
+heredocs powerful for generating dynamic content: reports, config files, emails,
+and more — all using values known at runtime.
+
+EXERCISE:
+---------
+Step 1: Set some variables:
+
+  name="Alice"
+  role="DevOps Engineer"
+  company="TechCorp"
+
+Step 2: Use them inside a heredoc:
+
+  cat << EOF
+  Employee Profile
+  ----------------
+  Name: $name
+  Role: $role
+  Company: $company
+  Date: $(date +%Y-%m-%d)
+  EOF
+
+Step 3: Redirect the heredoc to a file:
+
+  cat << EOF > profile.txt
+  Name: $name
+  Role: $role
+  Company: $company
+  Generated: $(date)
+  EOF
+
+Step 4: Read the generated file:
+
+  cat profile.txt
+
+
+QUESTIONS TO ANSWER:
+--------------------
+- Are the variables expanded in the output? (Does $name show "Alice" or "$name"?)
+- What does $(date +%Y-%m-%d) show in the output?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level1-Ex3: [your answer here]" >> ../../my_answers.txt
+
+================================================================================
+Move to the next level:
+  cat clues/level2/clue1.txt
+================================================================================

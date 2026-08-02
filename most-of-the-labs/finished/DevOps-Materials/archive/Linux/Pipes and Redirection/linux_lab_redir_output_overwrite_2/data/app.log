@@ -1,0 +1,30 @@
+2024-03-01 08:00:01 INFO  Application started successfully
+2024-03-01 08:00:03 INFO  Database connection established
+2024-03-01 08:01:15 INFO  User 'alice' logged in from 192.168.1.10
+2024-03-01 08:02:30 WARN  High memory usage detected: 78%
+2024-03-01 08:03:45 INFO  User 'bob' logged in from 192.168.1.20
+2024-03-01 08:05:00 ERROR Failed to connect to cache server: Connection refused
+2024-03-01 08:05:01 WARN  Falling back to direct database queries
+2024-03-01 08:06:22 INFO  Request processed: GET /api/users (200 OK)
+2024-03-01 08:07:11 INFO  Request processed: POST /api/data (201 Created)
+2024-03-01 08:08:44 ERROR Disk write failed: No space left on device /var/log
+2024-03-01 08:09:00 WARN  Log rotation triggered
+2024-03-01 08:10:15 INFO  User 'charlie' logged in from 10.0.0.5
+2024-03-01 08:11:33 ERROR Authentication failed for user 'unknown' from 203.0.113.5
+2024-03-01 08:12:00 WARN  Too many failed login attempts from 203.0.113.5
+2024-03-01 08:13:45 INFO  Request processed: GET /api/status (200 OK)
+2024-03-01 08:14:22 INFO  Scheduled backup started
+2024-03-01 08:15:01 ERROR Backup failed: Remote host unreachable
+2024-03-01 08:16:00 INFO  Retrying backup in 5 minutes
+2024-03-01 08:17:30 WARN  CPU usage spike: 92% for 30 seconds
+2024-03-01 08:18:00 INFO  CPU usage normalized: 45%
+2024-03-01 08:19:15 INFO  User 'alice' logged out
+2024-03-01 08:20:00 INFO  Scheduled maintenance window starting
+2024-03-01 08:21:30 WARN  Service degraded: response time 2300ms (threshold: 1000ms)
+2024-03-01 08:22:00 ERROR Database connection pool exhausted: 50/50 connections in use
+2024-03-01 08:22:01 ERROR Unable to process new requests: no available connections
+2024-03-01 08:23:00 INFO  Emergency connection pool expansion: 75 connections
+2024-03-01 08:24:15 INFO  Service recovered: response time 180ms
+2024-03-01 08:25:00 INFO  Maintenance window ended
+2024-03-01 08:26:30 INFO  User 'bob' logged out
+2024-03-01 08:27:00 INFO  Daily statistics generated

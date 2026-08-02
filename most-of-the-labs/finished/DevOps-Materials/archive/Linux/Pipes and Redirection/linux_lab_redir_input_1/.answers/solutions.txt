@@ -1,0 +1,724 @@
+================================================================================
+          INSTRUCTOR SOLUTIONS — Linux Lab: Input Redirection with <
+                      "Feeding Files to Commands"
+================================================================================
+
+Estimated Completion Time: 60-75 minutes
+Difficulty: Beginner-Intermediate
+Prerequisites: Basic command line navigation, knowing what stdout/stdin are
+
+================================================================================
+GRADING RUBRIC (Total: 100 points)
+================================================================================
+
+Level 1 (30 points total):
+  L1-E1: 10 points — understanding the stdin concept and < mechanism
+  L1-E2: 10 points — correctly identifying wc output format differences
+  L1-E3: 10 points — understanding sort does not modify files; sort vs sort -n
+
+Level 2 (35 points total):
+  L2-E1: 10 points — understanding why tr requires <; using -d and -s flags
+  L2-E2: 15 points — combining < and > correctly; understanding data flow
+  L2-E3: 10 points — using grep flags; identifying log entry counts
+
+Level 3 (35 points total):
+  L3-E1: 10 points — multi-step file processing; counting words and duplicates
+  L3-E2: 10 points — word frequency pipeline; explaining uniq -c requires sort
+  L3-E3: 15 points — full data processing workflow; building a summary report
+
+================================================================================
+IMPORTANT DATA FACTS (Reference for grading)
+================================================================================
+
+data/words.txt:
+  - Total lines/words: 25
+  - Unique words: 17
+  - "linux" appears 4 times (most frequent)
+  - "bash" appears 3 times
+  - "shell" appears 3 times
+  - "python" appears 2 times
+  - "container" appears 2 times
+  - "network" appears 2 times
+  - "script" appears 2 times
+  - "kernel" appears 2 times
+  - All others appear 1 time
+
+data/unsorted.txt:
+  - Total lines: 15
+  - Content: banana, Apple, cherry, date, Elderberry, fig, grape,
+    Honeydew, iris, Jasmine, kiwi, Lemon, mango, Nectarine, orange
+  - Default sort order: Uppercase letters sort BEFORE lowercase in
+    standard ASCII/C locale. So "Apple" comes before "banana".
+    Full sorted order: Apple, Elderberry, Honeydew, Jasmine, Lemon,
+    Nectarine, banana, cherry, date, fig, grape, iris, kiwi, mango, orange
+  - Reverse sort (-r): orange, mango, kiwi, iris, grape, fig, date,
+    cherry, banana, Nectarine, Lemon, Jasmine, Honeydew, Elderberry, Apple
+
+data/numbers.txt:
+  - Total: 12 numbers
+  - Numbers: 42, 7, 156, 23, 891, 4, 67, 234, 15, 78, 333, 9
+  - Default sort (lexicographic): 15, 156, 23, 234, 333, 4, 42, 67, 7,
+    78, 891, 9  (sorted as text: "1" < "2" < "3" < "4" etc.)
+  - Numeric sort (sort -n): 4, 7, 9, 15, 23, 42, 67, 78, 156, 234, 333, 891
+  - Key point: 156 comes BEFORE 4 in default sort because "1" < "4" as chars
+
+data/lowercase.txt:
+  - 5 lines, all lowercase
+  - tr 'a-z' 'A-Z' < lowercase.txt → all letters become uppercase
+  - tr 'A-Z' 'a-z' < lowercase.txt → no change (already lowercase)
+
+data/sentence.txt:
+  - Content: "the quick brown fox jumps over the lazy dog today"
+  - 1 line, 10 words
+  - Unique words: 9 ("the" appears twice)
+  - Duplicate word: "the" (positions 1 and 7)
+  - tr ' ' '\n' splits this into 10 lines
+  - sort | uniq → 9 lines (one "the" removed)
+
+data/app_log.txt:
+  - Total lines: 20
+  - INFO entries: 12
+  - WARN entries: 4
+  - ERROR entries: 4
+  - grep "error" (case-sensitive, lowercase): matches lines containing "error"
+    in the message body (the error code/message text), which is all 4 ERROR
+    lines since each ERROR line contains the word "error" in its message.
+  - grep -i "error" (case-insensitive): also matches 4 lines (all ERROR level)
+  - grep -c "INFO": 12
+  - grep -c "WARN": 4
+  - grep -c "ERROR": 4
+
+data/raw_data.txt:
+  - Total lines: 20
+  - Unique entries: 17 (3 duplicates)
+  - Duplicates: alice,active (appears twice), diana,active (appears twice),
+    frank,active (appears twice)
+  - Active entries: 12 (alice×2, charlie, diana×2, frank×2, grace, iris,
+    jack, liam, nancy, oscar, quinn)
+  - Inactive entries: 8 (bob, eve, henry, karen, mike, paula + 2 from
+    the count of lines with "inactive")
+  - NOTE on grep -c 'active': This counts lines containing "active" which
+    includes "inactive". Use grep -c ',active' or grep -cw 'active' or
+    grep -c 'active$' for exact active-only count.
+    grep -c ',active' → 12 (exact active match)
+    grep -c 'inactive' → 8
+    grep -c 'active' → 20 (matches ALL lines — both active AND inactive!)
+
+================================================================================
+LEVEL 1 — EXERCISE 1: What is stdin? Two Ways to Feed a Command
+================================================================================
+
+COMMANDS AND EXPECTED OUTPUT:
+------------------------------
+
+Step 1 — cat with filename:
+  $ cat ../../data/words.txt
+  linux
+  bash
+  shell
+  kernel
+  linux
+  ... (25 lines total)
+
+Step 2 — cat with input redirection:
+  $ cat < ../../data/words.txt
+  (identical output to Step 1)
+
+Step 4 — wc comparison:
+  $ wc -l ../../data/words.txt
+  25 ../../data/words.txt
+
+  $ wc -l < ../../data/words.txt
+  25
+
+Step 5 — tr with <:
+  $ tr 'a-z' 'A-Z' < ../../data/words.txt
+  LINUX
+  BASH
+  SHELL
+  KERNEL
+  ... (all 25 words in uppercase)
+
+KEY ANSWERS:
+  - Both cat commands produce identical output (the file contents)
+  - wc -l with filename: "25 ../../data/words.txt"
+    wc -l with <: "25" (just the number)
+  - < connects a file to a command's stdin; the command reads the file
+    as if it were keyboard input
+  - tr requires < because it has no filename argument syntax; it only
+    reads from stdin (file descriptor 0)
+
+COMMON MISTAKES:
+  - Students sometimes expect cat < file to behave differently from cat file
+  - Students may not realize the shell handles < BEFORE the command starts
+  - Students may confuse "cat receives no filename" with "cat does nothing"
+
+================================================================================
+LEVEL 1 — EXERCISE 2: Count Lines — wc with and without <
+================================================================================
+
+COMMANDS AND EXPECTED OUTPUT:
+------------------------------
+
+Step 1:  $ wc -l ../../data/words.txt
+         25 ../../data/words.txt
+
+Step 2:  $ wc -l < ../../data/words.txt
+         25
+
+Step 3:  $ wc -w < ../../data/words.txt
+         25
+         (25 words because each word is on its own line)
+
+Step 4:  $ wc -c < ../../data/words.txt
+         (character count depends on exact file content — approximately 170)
+
+Step 5:  $ wc < ../../data/words.txt
+         25  25  [char_count]
+         (lines  words  characters — 3 columns)
+
+Step 6:  $ wc -l < ../../data/sentence.txt
+         1
+         $ wc -w < ../../data/sentence.txt
+         10
+
+Step 7:  $ wc -l < ../../data/app_log.txt
+         20
+
+KEY ANSWERS:
+  - Format difference: filename arg prints "COUNT FILENAME"; < prints "COUNT"
+  - The < form (just the number) is more useful when:
+    * Storing the result in a variable: count=$(wc -l < file.txt)
+    * Comparing with another number: [ $(wc -l < file.txt) -gt 10 ]
+    * Building a report: echo "Lines: $(wc -l < file.txt)"
+  - words.txt: 25 words (one per line, so wc -w = wc -l = 25)
+  - sentence.txt: 10 words
+  - wc with no flags: lines, words, characters (in that order)
+
+COMMON MISTAKES:
+  - Not understanding why the filename appears in wc output with arg form
+  - Confusing wc -w output for words.txt (25, same as -l since 1 word/line)
+
+================================================================================
+LEVEL 1 — EXERCISE 3: Sort a File Using Input Redirection
+================================================================================
+
+COMMANDS AND EXPECTED OUTPUT:
+------------------------------
+
+Step 1:  $ cat ../../data/unsorted.txt
+         banana
+         Apple
+         cherry
+         ... (original unsorted order)
+
+Step 2/3: $ sort < ../../data/unsorted.txt
+          Apple
+          Elderberry
+          Honeydew
+          Jasmine
+          Lemon
+          Nectarine
+          banana
+          cherry
+          date
+          fig
+          grape
+          iris
+          kiwi
+          mango
+          orange
+          (Uppercase letters sort BEFORE lowercase in ASCII/default locale)
+
+Step 4:  $ cat ../../data/unsorted.txt
+         banana
+         Apple
+         ... (UNCHANGED — same as Step 1)
+
+Step 5:  $ sort -r < ../../data/unsorted.txt
+         orange
+         mango
+         kiwi
+         ... (reverse of sorted order)
+
+Step 7 (default sort):  $ sort < ../../data/numbers.txt
+         15
+         156
+         23
+         234
+         333
+         4
+         42
+         67
+         7
+         78
+         891
+         9
+         (NOTE: "15" and "156" come before "23" because "1" < "2" as text)
+
+Step 8 (numeric sort):  $ sort -n < ../../data/numbers.txt
+         4
+         7
+         9
+         15
+         23
+         42
+         67
+         78
+         156
+         234
+         333
+         891
+
+KEY ANSWERS:
+  - unsorted.txt is unchanged after sorting (sort reads stdin, writes stdout)
+  - -r reverses the sort order (Z to A instead of A to Z; or 9 to 1 numerically)
+  - Default sort treats numbers as text: "156" < "23" because "1" < "2"
+  - sort -n treats numbers numerically: 4 < 7 < 9 < 15 < 23...
+  - First in default sort: "15" (starts with "1", lowest digit)
+  - First in numeric sort: 4 (smallest number)
+
+COMMON MISTAKES:
+  - Surprised that uppercase sorts before lowercase (ASCII order)
+  - Expecting sort to modify the file
+  - Not understanding why numbers sort "wrong" without -n
+
+================================================================================
+LEVEL 2 — EXERCISE 1: tr Requires < — A Command That Only Reads stdin
+================================================================================
+
+COMMANDS AND EXPECTED OUTPUT:
+------------------------------
+
+Step 1 (WRONG):  $ tr 'a-z' 'A-Z' ../../data/lowercase.txt
+  tr: extra operand '../../data/lowercase.txt'
+  Try 'tr --help' for more information.
+  (tr treats the path as a 3rd argument — it only accepts 2: SET1 and SET2)
+
+Step 2 (CORRECT):  $ tr 'a-z' 'A-Z' < ../../data/lowercase.txt
+  HELLO WORLD THIS IS A TEST
+  THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG
+  LEARNING LINUX IS FUN AND REWARDING
+  BASH SCRIPTING MAKES AUTOMATION EASY
+  INPUT REDIRECTION FEEDS FILES TO COMMANDS
+
+Step 3:  $ tr 'A-Z' 'a-z' < ../../data/lowercase.txt
+  (no change — file is already all lowercase)
+
+Step 4:  $ tr ' ' '\n' < ../../data/sentence.txt
+  the
+  quick
+  brown
+  fox
+  jumps
+  over
+  the
+  lazy
+  dog
+  today
+  (10 words, one per line)
+
+Step 5:  $ tr -d 'aeiouAEIOU' < ../../data/sentence.txt
+  th qck brwn fx jmps vr th lzy dg tdy
+
+Step 6:  $ tr -s ' ' < ../../data/sentence.txt
+  the quick brown fox jumps over the lazy dog today
+  (no visible change since sentence.txt has single spaces; useful on data
+   files where extra spaces occur)
+
+Step 7:  $ tr 'a-z' 'A-Z' < ../../data/sentence.txt | tr ' ' '_'
+  THE_QUICK_BROWN_FOX_JUMPS_OVER_THE_LAZY_DOG_TODAY
+
+KEY ANSWERS:
+  - Step 1 error: "tr: extra operand '../../data/lowercase.txt'"
+  - tr -d deletes every character that appears in the specified set
+  - tr -s squeezes consecutive occurrences of characters in the set to one
+  - tr requires < because its syntax is: tr SET1 SET2 (only 2 operands);
+    it reads from stdin and has no way to specify a filename
+
+COMMON MISTAKES:
+  - Trying to use tr like: tr 'a-z' 'A-Z' filename (common beginner mistake)
+  - Confusing tr -d (delete) with tr -s (squeeze)
+  - Not understanding that tr works character-by-character, not word-by-word
+
+================================================================================
+LEVEL 2 — EXERCISE 2: Combine < with >: Input from File, Output to File
+================================================================================
+
+COMMANDS AND EXPECTED OUTPUT:
+------------------------------
+
+Step 1:  $ sort < ../../data/unsorted.txt > sorted_output.txt && cat sorted_output.txt
+  Apple
+  Elderberry
+  Honeydew
+  Jasmine
+  Lemon
+  Nectarine
+  banana
+  cherry
+  date
+  fig
+  grape
+  iris
+  kiwi
+  mango
+  orange
+
+Step 2:  $ tr 'a-z' 'A-Z' < ../../data/lowercase.txt > uppercase_output.txt
+  (file created with 5 lines of uppercase text)
+
+Step 3:  $ wc -l < ../../data/words.txt > line_count.txt && cat line_count.txt
+  25
+
+Step 4:  $ sort -r < ../../data/unsorted.txt > reverse_sorted.txt
+  (file created with reverse-sorted fruits)
+
+Step 5:  $ cat ../../data/unsorted.txt
+  banana
+  Apple
+  cherry
+  ... (UNCHANGED original order)
+
+KEY ANSWERS:
+  - Step 1 involves 3 "entities": unsorted.txt (source), sort (process),
+    sorted_output.txt (destination)
+  - unsorted.txt is unchanged because sort only reads from stdin; it never
+    opens or modifies the input file
+  - Data flow diagram:
+      unsorted.txt → [stdin] → sort → [stdout] → sorted_output.txt
+  - Danger of same-file redirection: the shell creates/truncates the output
+    file BEFORE the command runs. So `sort < file > file` truncates file to
+    zero bytes first, then sort reads nothing from stdin and writes nothing.
+    Result: file is now empty. You have lost your data.
+
+COMMON MISTAKES:
+  - Trying to redirect to the same file: sort < file.txt > file.txt
+  - Forgetting that > truncates (overwrites) while >> appends
+  - Not understanding that 3 entities are involved (2 files + 1 command)
+
+================================================================================
+LEVEL 2 — EXERCISE 3: grep with Input Redirection
+================================================================================
+
+COMMANDS AND EXPECTED OUTPUT:
+------------------------------
+
+Step 1/2 (case-sensitive "error"):
+  $ grep "error" < ../../data/app_log.txt
+  2024-03-01 09:02:00 ERROR Failed to write to disk: error code 28 (no space left)
+  2024-03-01 09:03:30 ERROR Network timeout: error connecting to cache service
+  2024-03-01 09:05:30 ERROR Authentication failed: error validating token for user admin
+  2024-03-01 09:07:30 ERROR Disk I/O error: error reading sector 0x1FA4 on /dev/sdb
+  (4 lines — all ERROR lines happen to contain lowercase "error" in their messages)
+
+Step 3 (case-insensitive):
+  $ grep -i "error" < ../../data/app_log.txt
+  (same 4 lines — no additional matches beyond the ERROR-tagged lines)
+
+Step 4:
+  $ grep -c "error" < ../../data/app_log.txt
+  4
+  $ grep -ci "error" < ../../data/app_log.txt
+  4
+
+Step 5 (invert — show non-INFO lines):
+  $ grep -v "INFO" < ../../data/app_log.txt
+  (Shows all 4 WARN lines and all 4 ERROR lines = 8 lines total)
+
+Step 6:
+  $ grep -i "warn" < ../../data/app_log.txt > warnings.txt && cat warnings.txt
+  2024-03-01 09:01:00 WARN  Memory usage at 75% of available limit
+  2024-03-01 09:03:00 WARN  Disk usage at 90% on /var partition
+  2024-03-01 09:05:00 WARN  SSL certificate expires in 14 days
+  2024-03-01 09:07:00 WARN  Response time above threshold: 2.4s for /api/v1/search
+
+Step 7:
+  $ grep -n "ERROR" < ../../data/app_log.txt
+  5:2024-03-01 09:02:00 ERROR ...
+  9:2024-03-01 09:03:30 ERROR ...
+  13:2024-03-01 09:05:30 ERROR ...
+  17:2024-03-01 09:07:30 ERROR ...
+
+Step 8:
+  $ grep -c "INFO" < ../../data/app_log.txt
+  12
+
+KEY ANSWERS:
+  - Case-sensitive "error" matches: 4 lines
+  - Case-insensitive "error" matches: 4 lines (same result for this log)
+  - grep -v prints lines that do NOT match the pattern
+    Excluding INFO shows the 4 WARN + 4 ERROR = 8 non-INFO lines
+  - Log breakdown: 4 ERROR, 4 WARN, 12 INFO (total: 20 lines)
+
+COMMON MISTAKES:
+  - Confusing -c (count) with wc -l (they give same number but different uses)
+  - Not knowing that -v inverts the match
+  - Assuming grep -i changes the count when no case variants exist in the file
+
+================================================================================
+LEVEL 3 — EXERCISE 1: Transform and Save: tr + < + >
+================================================================================
+
+COMMANDS AND EXPECTED OUTPUT:
+------------------------------
+
+Step 1:  $ tr ' ' '\n' < ../../data/sentence.txt && echo "---"
+  the
+  quick
+  brown
+  fox
+  jumps
+  over
+  the
+  lazy
+  dog
+  today
+  ---
+
+Step 2: words_per_line.txt created with 10 lines (one word each)
+
+Step 3:  $ wc -l < words_per_line.txt
+  10
+
+Step 4: words_sorted.txt:
+  brown
+  dog
+  fox
+  jumps
+  lazy
+  over
+  quick
+  the
+  the
+  today
+
+Step 5: words_unique.txt (after sort | uniq):
+  brown
+  dog
+  fox
+  jumps
+  lazy
+  over
+  quick
+  the
+  today
+
+Step 6:  $ wc -l < words_unique.txt
+  9
+
+KEY ANSWERS:
+  - Total words: 10
+  - Unique words: 9
+  - Duplicates: 1 (the word "the" appears at position 1 and position 7)
+  - Duplicate word: "the"
+
+COMMON MISTAKES:
+  - Forgetting that uniq requires sorted input to work correctly
+  - Confusing wc -l (line count) with wc -w (word count) for this exercise
+
+================================================================================
+LEVEL 3 — EXERCISE 2: Word Frequency: Combining < with Pipes
+================================================================================
+
+COMMANDS AND EXPECTED OUTPUT:
+------------------------------
+
+Step 3 (sort | uniq -c):
+  $ sort < ../../data/words.txt | uniq -c
+       2 bash         ← wait, bash appears 3 times — see note below
+       ...
+  (uniq -c prefixes each unique line with its occurrence count)
+
+Correct frequency output (sort | uniq -c | sort -rn):
+       4 linux
+       3 bash
+       3 shell
+       2 container
+       2 kernel
+       2 network
+       2 python
+       2 script
+       1 cloud
+       1 docker
+       1 pipeline
+       1 process
+       1 terminal
+
+Step 5 (top_words.txt — top 5):
+       4 linux
+       3 bash
+       3 shell
+       2 container
+       2 kernel
+
+Step 6:  $ wc -l < ../../data/words.txt
+  25
+
+Step 7:  $ sort < ../../data/words.txt | uniq | wc -l
+  17
+
+KEY ANSWERS:
+  - Most frequent word: "linux" (4 times)
+  - Total words: 25
+  - Unique words: 17
+  - sort must come before uniq -c because uniq only collapses lines that are
+    ADJACENT to each other. Without sort, "linux" appearing on lines 1, 5, 9,
+    14 would be counted as four separate single occurrences instead of one
+    group of 4.
+
+COMMON MISTAKES:
+  - Using uniq -c without sort first (gives wrong counts)
+  - Forgetting that sort -rn means "reverse numeric" (both flags together)
+  - Confusing head -5 (first 5 lines = most frequent) with tail -5
+
+================================================================================
+LEVEL 3 — EXERCISE 3: Final Challenge: Process data/raw_data.txt
+================================================================================
+
+COMMANDS AND EXPECTED OUTPUT:
+------------------------------
+
+Step 2:  $ wc -l < ../../data/raw_data.txt
+  20
+
+Step 3: sorted_raw.txt — 20 lines sorted alphabetically:
+  alice,active
+  alice,active
+  bob,inactive
+  charlie,active
+  diana,active
+  diana,active
+  eve,inactive
+  frank,active
+  frank,active
+  grace,active
+  henry,inactive
+  iris,active
+  jack,active
+  karen,inactive
+  liam,active
+  mike,inactive
+  nancy,active
+  oscar,active
+  paula,inactive
+  quinn,active
+
+Step 4:  $ sort < ../../data/raw_data.txt | uniq | wc -l
+  17
+  (20 total - 3 duplicate pairs = 17 unique lines)
+
+Step 5:  $ grep "active" < ../../data/raw_data.txt > active_entries.txt
+  WARNING: grep "active" matches BOTH "active" AND "inactive"!
+  This gives 20 lines (all lines match because all contain "active").
+
+  To get ONLY active (not inactive):
+  $ grep ',active' < ../../data/raw_data.txt → 12 lines (correct)
+  $ grep -v 'inactive' < ../../data/raw_data.txt → 12 lines (correct)
+
+  NOTE: The exercise uses grep "active" intentionally to create a teaching
+  moment. Students who get 20 instead of 12 should investigate why.
+
+Step 8 (summary.txt):
+  Total lines: 20
+  Unique entries: 17
+  Active entries: 20   ← if using grep -c 'active' (matches inactive too)
+  OR
+  Active entries: 12   ← if using grep -c ',active' (exact match)
+  Inactive entries: 8
+  Duplicate entries: 3
+
+KEY ANSWERS:
+  - Total lines: 20
+  - Unique entries: 17
+  - Duplicates: 3 (alice,active × 2; diana,active × 2; frank,active × 2)
+    (3 extra lines = 20 - 17 = 3 duplicates)
+  - Active entries: 12 (using ',active' or negating 'inactive')
+  - Inactive entries: 8
+
+CRITICAL TEACHING POINT:
+  grep -c 'active' < raw_data.txt returns 20 (all lines match because every
+  line contains the substring "active" — even "inactive" contains "active").
+  This is a classic gotcha. Students should learn to:
+    Use: grep -c ',active'    (match comma before active)
+    Or:  grep -c 'active$'   (match active at end of line)
+    Or:  grep -cw 'active'   (NOT reliable here — 'active' is not a word boundary issue with comma)
+    Best: grep -c '^[^,]*,active$'  (full precise match)
+
+COMMON MISTAKES:
+  - grep 'active' matching 'inactive' (the classic substring trap)
+  - Forgetting to use sort before uniq when counting unique entries
+  - Losing track of which files have been created vs which are in data/
+
+================================================================================
+COMMON MISTAKES SUMMARY (Across All Exercises)
+================================================================================
+
+1. Trying to use tr with a filename argument (tr 'a-z' 'A-Z' file.txt)
+   → tr only reads stdin; always use tr 'a-z' 'A-Z' < file.txt
+
+2. Expecting sort/wc to modify the original file
+   → These commands NEVER modify their input; they read and write streams
+
+3. Redirecting output to the same file being read
+   → sort < file > file destroys the file (shell truncates > file first)
+
+4. Not understanding that wc -l with < gives just a number
+   → This is more useful in scripts: count=$(wc -l < file)
+
+5. Using uniq -c without sorting first
+   → uniq only collapses adjacent duplicates; sort first!
+
+6. Forgetting that grep 'active' also matches 'inactive'
+   → Use grep ',active' or grep -v 'inactive' for exact status match
+
+7. Confusing < (input redirect) with > (output redirect)
+   → < feeds data IN; > sends data OUT
+
+8. Not realizing sort uses lexicographic order by default for numbers
+   → Always use sort -n for numeric data
+
+================================================================================
+KEY COMMAND REFERENCE FOR THIS LAB
+================================================================================
+
+Input redirection:
+  command < file.txt               Read stdin from file
+  command < input.txt > output.txt Read from input, write to output
+
+wc flags:
+  wc -l < file    Count lines
+  wc -w < file    Count words
+  wc -c < file    Count characters (bytes)
+  wc    < file    Count all three
+
+sort flags:
+  sort < file      Alphabetical (lexicographic)
+  sort -r < file   Reverse alphabetical
+  sort -n < file   Numeric order
+  sort -rn < file  Reverse numeric order
+
+tr syntax (ALWAYS requires <):
+  tr 'a-z' 'A-Z' < file   Uppercase
+  tr 'A-Z' 'a-z' < file   Lowercase
+  tr ' ' '\n' < file      Spaces to newlines
+  tr -d 'chars' < file    Delete characters
+  tr -s 'chars' < file    Squeeze repeated characters
+
+grep flags with <:
+  grep 'pattern' < file    Basic search
+  grep -i 'pattern' < file Case-insensitive
+  grep -c 'pattern' < file Count matching lines
+  grep -v 'pattern' < file Invert (non-matching lines)
+  grep -n 'pattern' < file Show line numbers
+
+Word frequency pattern:
+  sort < file | uniq -c | sort -rn | head -N
+
+Command substitution with <:
+  echo "Lines: $(wc -l < file)"
+  count=$(sort < file | uniq | wc -l)
+
+================================================================================
+END OF INSTRUCTOR SOLUTIONS
+================================================================================

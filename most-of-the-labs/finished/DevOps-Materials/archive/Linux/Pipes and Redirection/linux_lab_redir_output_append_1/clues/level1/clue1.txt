@@ -1,0 +1,78 @@
+============================================================
+  LEVEL 1 — CLUE 1
+  Append vs Overwrite: The Critical Difference
+============================================================
+
+BACKGROUND
+----------
+Two operators look almost identical but behave very differently:
+
+  >    Redirect output and OVERWRITE (replace) the file
+  >>   Redirect output and APPEND to the file
+
+If the file does not exist, both operators create it.
+The difference only matters when the file already exists.
+
+------------------------------------------------------------
+YOUR TASK
+------------------------------------------------------------
+
+Step 1: Create a file using > (overwrite/create):
+
+    echo "First line" > ~/my_test.txt
+    cat ~/my_test.txt
+
+Step 2: Use > again. Watch what happens to "First line":
+
+    echo "Second line" > ~/my_test.txt
+    cat ~/my_test.txt
+
+  --> "First line" is GONE. Overwritten.
+
+Step 3: Start fresh, then use >> instead:
+
+    echo "First line" > ~/my_test.txt
+    echo "Second line" >> ~/my_test.txt
+    cat ~/my_test.txt
+
+  --> Both lines are present. >> preserved the first line.
+
+Step 4: Add a third line with >>:
+
+    echo "Third line" >> ~/my_test.txt
+    cat ~/my_test.txt
+
+  --> The file now has three lines.
+
+Step 5: Count the lines to confirm:
+
+    wc -l ~/my_test.txt
+
+  Expected output: 3 ~/my_test.txt
+
+------------------------------------------------------------
+VERIFY
+------------------------------------------------------------
+
+After completing the steps, run:
+
+    cat ~/my_test.txt
+
+Expected output:
+    First line
+    Second line
+    Third line
+
+------------------------------------------------------------
+KEY INSIGHT
+------------------------------------------------------------
+
+  > is destructive when a file exists.
+  >> is always safe — it only adds, never removes.
+
+When in doubt about whether to overwrite: use >>.
+When you deliberately want a fresh file: use >.
+
+------------------------------------------------------------
+NEXT: cat clue2.txt
+============================================================

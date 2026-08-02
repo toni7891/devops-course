@@ -1,0 +1,115 @@
+============================================================
+  LEVEL 3 — CLUE 1
+  Append in a Loop: Writing All Iterations
+============================================================
+
+BACKGROUND
+----------
+The true power of >> emerges inside loops. A loop runs a
+block of commands many times. If each iteration appends
+to the same file, the file grows with every pass.
+
+This is the foundation of:
+  - Automated report generation
+  - Batch processing logs
+  - Polling scripts that check status every N seconds
+
+------------------------------------------------------------
+SYNTAX REMINDER: for loop in bash
+------------------------------------------------------------
+
+    for variable in list_of_values; do
+        commands using $variable
+    done
+
+Example:
+
+    for i in 1 2 3; do
+        echo "Iteration $i"
+    done
+
+Output:
+    Iteration 1
+    Iteration 2
+    Iteration 3
+
+------------------------------------------------------------
+YOUR TASK
+------------------------------------------------------------
+
+Step 1: Use a loop to build a numbered list in a file.
+        Use > before the loop to create a fresh file,
+        then >> inside the loop:
+
+    echo "=== Numbered List ===" > ~/loop_output.txt
+    for i in 1 2 3 4 5; do
+        echo "Item $i" >> ~/loop_output.txt
+    done
+    cat ~/loop_output.txt
+
+  Expected output:
+    === Numbered List ===
+    Item 1
+    Item 2
+    Item 3
+    Item 4
+    Item 5
+
+Step 2: Use a loop with a range using seq:
+
+    echo "=== Server Check Log ===" > ~/server_check.txt
+    for server in web01 web02 web03 db01 db02; do
+        echo "$(date '+%H:%M:%S') Checking $server ... OK" >> ~/server_check.txt
+    done
+    cat ~/server_check.txt
+
+Step 3: Use a loop that appends multiple lines per iteration:
+
+    echo "=== Detailed Report ===" > ~/detailed_report.txt
+    for service in nginx mysql redis; do
+        echo "--- Service: $service ---" >> ~/detailed_report.txt
+        echo "  Status: running" >> ~/detailed_report.txt
+        echo "  Checked: $(date '+%Y-%m-%d %H:%M:%S')" >> ~/detailed_report.txt
+    done
+    cat ~/detailed_report.txt
+
+Step 4: Count lines in the detailed report:
+
+    wc -l ~/detailed_report.txt
+
+  Expected: 10 lines (1 header + 3 services x 3 lines each)
+
+------------------------------------------------------------
+COMMON MISTAKE TO AVOID
+------------------------------------------------------------
+
+WRONG (file gets overwritten on every iteration):
+
+    for i in 1 2 3; do
+        echo "Item $i" > ~/output.txt   # BUG: uses >
+    done
+
+    cat ~/output.txt
+    # Only shows: Item 3   <-- items 1 and 2 are gone!
+
+CORRECT (file grows on every iteration):
+
+    > ~/output.txt   # create/clear the file ONCE before the loop
+    for i in 1 2 3; do
+        echo "Item $i" >> ~/output.txt  # use >> inside the loop
+    done
+
+------------------------------------------------------------
+VERIFY
+------------------------------------------------------------
+
+Run: wc -l ~/loop_output.txt ~/server_check.txt ~/detailed_report.txt
+
+Expected:
+   6 ~/loop_output.txt
+   6 ~/server_check.txt
+  10 ~/detailed_report.txt
+
+------------------------------------------------------------
+NEXT: cat clue2.txt
+============================================================

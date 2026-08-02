@@ -1,0 +1,73 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 2
+            "stdout vs stderr — What > Does NOT Capture"
+================================================================================
+
+BACKGROUND:
+-----------
+Remember the three standard channels?
+
+  stdout (1) — normal output  → what > redirects
+  stderr (2) — error messages → NOT redirected by >
+
+This means: when a command produces an error, the error message STILL appears
+on your terminal even if you used > to redirect the output.
+
+This is often surprising to beginners, and critically important to understand.
+
+EXERCISE:
+---------
+Step 1: Try to list a directory that doesn't exist, and redirect the output:
+
+  ls /this/does/not/exist > output.txt
+
+Observe carefully:
+  - Did an error message appear on screen?
+  - What is inside output.txt?
+
+Check the file:
+  cat output.txt
+
+Step 2: Try with a real directory:
+
+  ls /etc > output.txt
+  cat output.txt
+
+Observe: No error on screen, file contains the /etc listing.
+
+Step 3: Now mix a real and fake path:
+
+  ls /etc /fakepath > mixed_output.txt
+
+Observe:
+  - What appeared on screen?
+  - What is in mixed_output.txt?
+
+  cat mixed_output.txt
+
+Step 4: To redirect stderr too, use 2>&1 (a preview of advanced redirection):
+
+  ls /fakepath > output_with_errors.txt 2>&1
+  cat output_with_errors.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- When you redirected ls /fakepath, where did the error appear?
+- Was output.txt empty or did it contain something?
+- What does 2>&1 do? (Make your best guess)
+- In a real system, why would it matter that errors go to stderr separately?
+
+HINT:
+-----
+stderr going to the terminal separately from stdout means:
+  - Errors are ALWAYS visible even if output is redirected to a file
+  - This is a feature — you can always see when something goes wrong!
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L2C2: Error from ls /fakepath appeared on: [screen/file]" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue3.txt
+================================================================================

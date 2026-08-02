@@ -1,0 +1,71 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 7
+                  "Spot the Bug: > Where >> Was Needed"
+================================================================================
+
+BACKGROUND:
+-----------
+One of the most common bugs in shell scripting is accidentally using > where
+>> was intended. The script runs without error, no warning is shown, and the
+file appears to contain output — but it only contains the last line written.
+Every previous write was silently overwritten. This bug is especially
+dangerous in production logging scripts because it can run for days before
+someone notices that the "log file" only ever has one line. In this exercise
+you will run the broken script, observe the symptom, diagnose the cause by
+reading the script, and then produce a corrected version. The fix is simple —
+change every > to >> for append lines — but finding it requires careful
+reading of the redirection operators on each line.
+
+EXERCISE:
+---------
+Run these commands from inside the clues/level3/ directory.
+
+Step 1: cat ../../data/broken_append_script.sh
+          (read the script — notice every echo uses > not >>)
+
+Step 2: bash ../../data/broken_append_script.sh && cat daily_log.txt
+          (run the buggy script — only 1 line will appear in daily_log.txt!)
+
+Step 3: wc -l daily_log.txt
+          (confirm: expect only 1 line — the last echo won)
+
+Step 4: Identify the bug:
+          Look at each echo line. Every one writes with > which overwrites.
+          Only the final echo survives. Lines 1-4 are destroyed.
+
+Step 5: Create the fixed script:
+          cat > fixed_append_script.sh << 'EOF'
+          #!/bin/bash
+          # FIXED: Uses > for first line, >> for all subsequent lines
+
+          echo "EVENT 1: $(date) - Morning system check: all services OK" > daily_log.txt
+          echo "EVENT 2: $(date) - Disk usage: $(df -h / | tail -1 | awk '{print $5}')" >> daily_log.txt
+          echo "EVENT 3: $(date) - Active users: $(who | wc -l)" >> daily_log.txt
+          echo "EVENT 4: $(date) - Memory free: $(free -h | grep Mem | awk '{print $4}')" >> daily_log.txt
+          echo "EVENT 5: $(date) - Evening check: script complete" >> daily_log.txt
+
+          echo ""
+          echo "Done. Check daily_log.txt"
+          EOF
+
+Step 6: bash fixed_append_script.sh && cat daily_log.txt
+          (all 5 EVENT lines should now appear)
+
+Step 7: wc -l daily_log.txt
+          (expect: 5 lines)
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many lines did daily_log.txt have after running the broken script?
+- How many lines does it have after running the fixed script?
+- What was the exact bug — describe it in one sentence?
+- In the fixed version, why does EVENT 1 still use > while events 2-5 use >>?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L3E1: broken=1 line; fixed=5 lines; bug was every echo used > overwriting previous output; EVENT 1 uses > to reset" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue2.txt
+================================================================================

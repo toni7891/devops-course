@@ -1,0 +1,9 @@
+{
+  "name": "loki-demo-app",
+  "version": "1.0.0",
+  "description": "Minimal API that logs requests to app.log for the Loki/Promtail demo.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  }
+}

@@ -1,0 +1,7 @@
+git
+workflow-aggregator
+blueocean
+docker-plugin
+docker-commons
+configuration-as-code
+matrix-auth

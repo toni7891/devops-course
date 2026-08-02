@@ -1,0 +1,105 @@
+================================================================================
+         WELCOME TO: Feeding Files to Commands — First Encounter with <
+================================================================================
+
+WHAT THIS LAB IS ABOUT:
+------------------------
+Every Linux command lives in a world of three standard data streams:
+
+  Stream 0 — stdin   (standard input)
+    Where a command READS data from.
+    By default: your keyboard.
+
+  Stream 1 — stdout  (standard output)
+    Where a command WRITES its normal results.
+    By default: your terminal screen.
+
+  Stream 2 — stderr  (standard error)
+    Where a command WRITES error messages.
+    By default: your terminal screen (separate from stdout).
+
+You already know how to redirect stdout:
+  command > file.txt     (write stdout to a file)
+
+Now you will learn to redirect stdin:
+  command < file.txt     (read stdin FROM a file instead of the keyboard)
+
+
+THE BIG IDEA — INPUT REDIRECTION WITH <:
+-----------------------------------------
+When you type:
+
+  sort < data/unsorted.txt
+
+The shell opens data/unsorted.txt and connects it to sort's stdin.
+sort does not know (and does not care) that it is reading a file —
+it just reads lines from stdin, exactly as if you had typed them.
+
+This is powerful because:
+  - Some commands (like tr) can ONLY read from stdin — they have no
+    filename argument. You MUST use < with them.
+  - Scripts that use < are more consistent and composable.
+  - You can combine < and > in one command for file-to-file processing:
+      tr 'a-z' 'A-Z' < input.txt > output.txt
+
+
+QUICK REFERENCE:
+----------------
+  Redirect input from a file:
+    command < file.txt
+
+  Redirect input AND save output:
+    command < input.txt > output.txt
+
+  Redirect input and pipe to another command:
+    command < file.txt | next_command
+
+  Count lines (output is just a number, no filename):
+    wc -l < file.txt
+
+  Uppercase conversion (tr REQUIRES <):
+    tr 'a-z' 'A-Z' < file.txt
+
+  Sort a file:
+    sort < file.txt
+
+  Search for a pattern:
+    grep "word" < file.txt
+
+
+LAB DATA FILES (in the data/ directory):
+-----------------------------------------
+  words.txt       — 25 tech-related words, some repeated
+  unsorted.txt    — 15 unsorted words with mixed capitalization
+  numbers.txt     — 12 unsorted numbers
+  lowercase.txt   — 5 lines of all-lowercase text
+  sentence.txt    — one sentence (10 words)
+  app_log.txt     — 20-line application log with INFO/WARN/ERROR entries
+  raw_data.txt    — 20 username,status entries (active/inactive)
+
+
+HOW TO NAVIGATE:
+----------------
+Each exercise is in a "clue" file. After finishing an exercise, the
+clue file tells you which file to read next.
+
+Your answers go in:
+  ../../my_answers.txt
+(That path resolves to: Pipes and Redirection/my_answers.txt)
+
+
+QUICK START:
+------------
+Step 1: Look at the data you will be working with:
+  cat data/words.txt
+  cat data/unsorted.txt
+
+Step 2: Begin Level 1, Exercise 1:
+  cat clues/level1/clue1.txt
+
+Step 3: Follow the instructions in each clue file.
+
+Step 4: When finished with a level, move to the next clue as directed.
+
+Good luck!
+================================================================================

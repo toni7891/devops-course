@@ -1,0 +1,16 @@
+# This is a YAML comment and i will remain unchanged when rendered but the Go comment above will leave a blank line in the output
+test: {{ .Values.test | lower | replace " " "-" }}
+labels:
+  {{- /* app label */}}
+  app: {{ .Release.Name }}
+  {{- /* chart label */}}
+  chart: {{ .Chart.Name }}
+  {{ if eq .Values.environment "production" }}
+  environment: production
+  build: stable
+  public-ingress: true
+  {{ else }}
+  environment: dev
+  build: alpha
+  public-ingress: false
+  {{ end }}

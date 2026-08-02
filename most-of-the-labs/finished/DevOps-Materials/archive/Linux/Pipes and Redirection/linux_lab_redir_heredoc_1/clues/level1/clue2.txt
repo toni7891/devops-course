@@ -1,0 +1,66 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 2
+                "Heredoc to a File: << with >"
+================================================================================
+
+BACKGROUND:
+-----------
+So far the heredoc output went to the terminal. But you can combine << with >
+to redirect the multi-line content directly into a file. This lets you create
+files with multiple lines in a single command — no text editor needed. The
+syntax is: cat << EOF > filename.txt — meaning "read from heredoc, write to
+file." This is one of the most practical uses of heredocs in shell scripting.
+
+EXERCISE:
+---------
+Step 1: Create a multi-line message file:
+
+  cat << EOF > greeting.txt
+  Dear Team,
+
+  This message was created using a heredoc.
+  It spans multiple lines without needing a text editor.
+
+  Regards,
+  The Linux Lab
+  EOF
+
+Step 2: Read the file:
+
+  cat greeting.txt
+
+Step 3: Check the line count:
+
+  wc -l greeting.txt
+
+Step 4: Create another file — a simple script skeleton:
+
+  cat << EOF > myscript.sh
+  #!/bin/bash
+  echo "Hello from my script"
+  echo "Today is $(date)"
+  EOF
+
+Step 5: Read the file:
+
+  cat myscript.sh
+
+Step 6: Make it executable and run it:
+
+  chmod +x myscript.sh && bash myscript.sh
+
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many lines are in greeting.txt?
+- What does myscript.sh print when you run it?
+- What does $(date) expand to when the heredoc is created?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level1-Ex2: [your answer here]" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level1/clue3.txt
+================================================================================

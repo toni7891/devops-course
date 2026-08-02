@@ -1,0 +1,102 @@
+================================================================================
+    WELCOME TO THE DEVOPS SCENARIO LAB
+    Managing a Shared Project Server
+================================================================================
+
+    INSTRUCTOR NOTE: Before students start this lab, you MUST run:
+    sudo ./setup_environment.sh
+    This creates the /opt/project directory with realistic log files.
+
+================================================================================
+
+Hello, DevOps Engineer!
+
+Welcome to your first day on the job. You've just joined the DevOps team at
+a growing tech company. A brand new Linux server has been set up for the
+development team, and it's YOUR job to prepare it for work.
+
+THE SITUATION:
+--------------
+The server already has a project deployed at /opt/project with source code,
+configuration files, and log files from the running application. But nobody
+has set up user accounts, groups, or proper permissions yet.
+
+Your team has three members:
+
+    dev1  - Developer (writes code, deploys features)
+    dev2  - Developer (writes code, deploys features)
+    ops1  - DevOps Engineer (manages the server, runs backups)
+
+YOUR MISSION:
+-------------
+1. Create user accounts for the team
+2. Set up a shared group so developers can collaborate
+3. Configure proper permissions on the project directory
+4. Analyze the application logs to understand server health
+5. Generate reports from the log data
+6. Set up admin access for the DevOps engineer
+7. Debug a permissions problem reported by a team member
+
+IMPORTANT - HOW THIS LAB WORKS:
+--------------------------------
+This lab gives you HINTS, not commands. You need to figure out the right
+commands yourself. This is exactly how real DevOps work looks - you often
+need to research and figure things out on your own.
+
+If you're stuck:
+- Re-read the hint carefully
+- Try: man <command> for help on any command
+- Think about what you learned in previous labs
+
+================================================================================
+    YOUR FIRST TASK
+================================================================================
+
+1. Check where you are right now:
+   Run: pwd
+
+2. Look at the lab structure:
+   Run: ls -la
+
+3. Take a look at what's waiting for you at the project directory:
+   Run: ls -la /opt/project
+
+4. Start the first exercise:
+   Run: cat clues/level1/clue1.txt
+
+================================================================================
+    STRUCTURE OF THIS LAB
+================================================================================
+
+The exercises are organized in three levels:
+
+    clues/level1/   Level 1: Building the Team
+                    (Users, groups, and navigation)
+
+    clues/level2/   Level 2: Securing the Server
+                    (Permissions, log analysis, and pipes)
+
+    clues/level3/   Level 3: Operations & Debugging
+                    (Admin access, reports, and troubleshooting)
+
+Each level has 3 exercises. Work through them in order.
+
+================================================================================
+    SAVING YOUR ANSWERS
+================================================================================
+
+As you work through the exercises, save your answers:
+
+    echo "Exercise 1: <your answer>" >> my_answers.txt
+
+This creates (or appends to) a file called my_answers.txt in this directory.
+
+================================================================================
+    READY? LET'S BEGIN!
+================================================================================
+
+Your first destination: clues/level1/clue1.txt
+
+The team is waiting for their accounts. Time to get to work!
+
+Good luck, and remember: every DevOps engineer started exactly where you are.

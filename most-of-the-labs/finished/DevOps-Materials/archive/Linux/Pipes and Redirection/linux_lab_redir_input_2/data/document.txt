@@ -1,0 +1,18 @@
+Linux is one of the most widely used operating systems in the world.
+It powers the majority of web servers, cloud infrastructure, and supercomputers.
+The kernel was originally created by Linus Torvalds in 1991.
+
+The Linux philosophy encourages the use of small, focused tools.
+Each tool does one thing well and passes output to the next via pipes.
+This design makes the system flexible and easy to automate.
+
+Input and output redirection are core features of the Linux shell.
+The shell allows you to redirect the standard input of any command.
+You can feed the contents of a file into a program using the less-than symbol.
+
+The file system in Linux is organized as a single tree rooted at slash.
+Directories like /etc, /var, and /home serve specific purposes.
+Understanding the layout helps you navigate the system efficiently.
+
+Bash is the default shell on most Linux distributions.
+Learning Bash scripting opens the door to powerful system automation.

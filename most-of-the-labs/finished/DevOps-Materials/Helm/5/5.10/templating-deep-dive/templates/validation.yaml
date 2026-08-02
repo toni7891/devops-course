@@ -1,0 +1,7 @@
+{{- if and .Values.securityContext .Values.securityContext.enabled }}
+{{- $tmp1 := required "securityContext.runAsUser is required when enabled=true" .Values.securityContext.runAsUser }}
+{{- $tmp2 := required "securityContext.fsGroup is required when enabled=true" .Values.securityContext.fsGroup }}
+{{- if eq (int .Values.securityContext.runAsUser) 0 -}}
+{{- fail (dict "field" "securityContext.runAsUser" "error" "must be > 0" | toJson) }}}
+{{- end -}}
+{{- end }}

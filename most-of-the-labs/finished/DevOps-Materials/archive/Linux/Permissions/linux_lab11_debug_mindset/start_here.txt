@@ -1,0 +1,32 @@
+================================================================================
+    WELCOME TO THE DEBUG MINDSET LAB!
+================================================================================
+
+⚠️  INSTRUCTOR NOTE: Before students start, run: sudo ./setup_lab.sh
+
+================================================================================
+
+This lab teaches a systematic way to debug Linux problems. On every exercise
+use the 4 steps: OBSERVE (the error) → INSPECT (pwd, ls -l, whoami) →
+DIAGNOSE (root cause) → RESOLVE (fix, then verify).
+
+================================================================================
+    YOUR FIRST TASK
+================================================================================
+
+1. pwd
+2. ls -la
+3. cd clues/level1
+4. cat clue1.txt
+5. Do what the clue says. At the end, follow the NEXT STEP to the next clue.
+
+================================================================================
+    READY? START HERE
+================================================================================
+
+Go to clues/level1 and read clue1.txt. Work through each clue in order.
+Each clue tells you where to go and what to try; use the 4 steps to fix it.
+
+Good luck!
+
+================================================================================

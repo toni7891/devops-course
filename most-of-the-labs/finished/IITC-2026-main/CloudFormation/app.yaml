@@ -1,0 +1,183 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  DataBite App - Single EC2 in public subnet.
+  Hosts React frontend (Nginx) + FastAPI backend (Uvicorn).
+  Uses UserData to install and run everything.
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: databite
+
+  InstanceType:
+    Type: String
+    Default: t3.micro
+    AllowedValues: [t3.micro, t3.small, t3.medium]
+
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: SSH key pair name for EC2 access
+
+  AmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+    Description: Latest Amazon Linux 2023 AMI
+
+Resources:
+  # ==================== Security Group ====================
+  AppSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow HTTP and SSH access
+      VpcId:
+        Fn::ImportValue: !Sub ${EnvironmentName}-vpc-id
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+          Description: HTTP from anywhere
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+          Description: SSH from anywhere
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-app-sg
+
+  # ==================== EC2 Instance ====================
+  AppInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      ImageId: !Ref AmiId
+      SubnetId:
+        Fn::ImportValue: !Sub ${EnvironmentName}-public-subnet-1
+      SecurityGroupIds:
+        - !Ref AppSecurityGroup
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-app-server
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          set -e
+          dnf update -y
+          dnf install -y python3.11 python3.11-pip nginx
+          mkdir -p /opt/databite/backend /opt/databite/frontend
+          pip3.11 install fastapi uvicorn
+
+          # Backend
+          cat > /opt/databite/backend/main.py << 'PYEOF'
+          from fastapi import FastAPI
+          from fastapi.middleware.cors import CORSMiddleware
+          app = FastAPI()
+          app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+          RESTAURANTS = [
+            {"id":1,"name":"La Piazza","cuisine":"Italian","location":"Tel Aviv","menu_items":45,"rating":4.7},
+            {"id":2,"name":"Sakura","cuisine":"Japanese","location":"Herzliya","menu_items":62,"rating":4.5},
+            {"id":3,"name":"The Burger Joint","cuisine":"American","location":"Tel Aviv","menu_items":28,"rating":4.2},
+            {"id":4,"name":"Falafel King","cuisine":"Middle Eastern","location":"Jerusalem","menu_items":18,"rating":4.8},
+            {"id":5,"name":"Pasta Mia","cuisine":"Italian","location":"Haifa","menu_items":37,"rating":4.4},
+            {"id":6,"name":"Dragon Palace","cuisine":"Chinese","location":"Tel Aviv","menu_items":55,"rating":4.3},
+          ]
+          MENU_ITEMS = [
+            {"id":1,"name":"Margherita Pizza","price":52,"category":"Main","restaurant":"La Piazza"},
+            {"id":2,"name":"Carbonara","price":58,"category":"Main","restaurant":"La Piazza"},
+            {"id":3,"name":"Tiramisu","price":38,"category":"Dessert","restaurant":"La Piazza"},
+            {"id":4,"name":"Salmon Sashimi","price":68,"category":"Starter","restaurant":"Sakura"},
+            {"id":5,"name":"Dragon Roll","price":72,"category":"Main","restaurant":"Sakura"},
+            {"id":6,"name":"Miso Soup","price":22,"category":"Starter","restaurant":"Sakura"},
+            {"id":7,"name":"Classic Burger","price":62,"category":"Main","restaurant":"The Burger Joint"},
+            {"id":8,"name":"Sweet Potato Fries","price":28,"category":"Side","restaurant":"The Burger Joint"},
+            {"id":9,"name":"Falafel Plate","price":35,"category":"Main","restaurant":"Falafel King"},
+            {"id":10,"name":"Hummus","price":25,"category":"Starter","restaurant":"Falafel King"},
+            {"id":11,"name":"Kung Pao Chicken","price":56,"category":"Main","restaurant":"Dragon Palace"},
+            {"id":12,"name":"Spring Rolls","price":32,"category":"Starter","restaurant":"Dragon Palace"},
+          ]
+          @app.get("/")
+          def root():
+              return {"status":"ok"}
+          @app.get("/api/stats")
+          def stats():
+              return {"total_restaurants":len(RESTAURANTS),"total_menu_items":len(MENU_ITEMS),"cuisines_tracked":len(set(r["cuisine"] for r in RESTAURANTS)),"cities_covered":len(set(r["location"] for r in RESTAURANTS))}
+          @app.get("/api/restaurants")
+          def restaurants():
+              return RESTAURANTS
+          @app.get("/api/menu-items")
+          def menu_items(restaurant: str = None):
+              if restaurant:
+                  return [i for i in MENU_ITEMS if i["restaurant"].lower() == restaurant.lower()]
+              return MENU_ITEMS
+          PYEOF
+
+          # Systemd service
+          cat > /etc/systemd/system/databite.service << 'SVCEOF'
+          [Unit]
+          Description=DataBite API
+          After=network.target
+          [Service]
+          ExecStart=/usr/local/bin/uvicorn main:app --host 127.0.0.1 --port 8000
+          WorkingDirectory=/opt/databite/backend
+          Restart=always
+          [Install]
+          WantedBy=multi-user.target
+          SVCEOF
+          systemctl daemon-reload && systemctl enable databite && systemctl start databite
+
+          # Frontend
+          cat > /opt/databite/frontend/index.html << 'HTMLEOF'
+          <!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DataBite</title><script src="https://cdn.tailwindcss.com"></script></head>
+          <body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white font-sans">
+          <header class="border-b border-indigo-500/20 bg-slate-900/80 p-5 flex justify-between items-center">
+          <div class="flex items-center gap-3"><div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center font-bold">D</div><span class="text-xl font-bold text-indigo-200">DataBite</span></div>
+          <div id="status" class="px-3 py-1 rounded-full text-xs border bg-yellow-500/10 border-yellow-500/30 text-yellow-400">Checking...</div>
+          </header>
+          <main class="max-w-6xl mx-auto p-8">
+          <h2 class="text-3xl font-bold mb-2">Dashboard</h2><p class="text-slate-400 mb-8">Restaurant menu intelligence platform</p>
+          <div id="stats" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10"></div>
+          <h3 class="text-xl font-semibold mb-4">Restaurants</h3>
+          <div id="restaurants" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10"></div>
+          <h3 class="text-xl font-semibold mb-4">Menu Items</h3>
+          <div id="menu" class="bg-slate-800/50 border border-slate-700/50 rounded-2xl overflow-hidden"></div>
+          </main>
+          <footer class="border-t border-slate-700/30 p-6 text-center text-slate-500 text-sm">DataBite - Hosted on AWS EC2</footer>
+          <script>
+          async function load(){
+            try{let r=await fetch("/api/stats");if(!r.ok)throw 0;let s=await r.json();document.getElementById("status").className="px-3 py-1 rounded-full text-xs border bg-emerald-500/10 border-emerald-500/30 text-emerald-400";document.getElementById("status").textContent="API Connected";document.getElementById("stats").innerHTML='<div class="bg-indigo-500/10 border border-indigo-500/20 rounded-2xl p-5"><div class="text-2xl mb-1">🏪</div><div class="text-3xl font-bold">'+s.total_restaurants+'</div><div class="text-sm text-slate-400">Restaurants</div></div>'+'<div class="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-5"><div class="text-2xl mb-1">🍽️</div><div class="text-3xl font-bold">'+s.total_menu_items+'</div><div class="text-sm text-slate-400">Menu Items</div></div>'+'<div class="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-5"><div class="text-2xl mb-1">🌍</div><div class="text-3xl font-bold">'+s.cuisines_tracked+'</div><div class="text-sm text-slate-400">Cuisines</div></div>'+'<div class="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-5"><div class="text-2xl mb-1">📍</div><div class="text-3xl font-bold">'+s.cities_covered+'</div><div class="text-sm text-slate-400">Cities</div></div>';}catch(e){document.getElementById("status").className="px-3 py-1 rounded-full text-xs border bg-red-500/10 border-red-500/30 text-red-400";document.getElementById("status").textContent="API Disconnected";}
+            try{let rs=await(await fetch("/api/restaurants")).json();document.getElementById("restaurants").innerHTML=rs.map(r=>'<div class="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-5 hover:border-indigo-500/40 transition-all"><div class="flex justify-between mb-3"><span class="font-semibold">'+r.name+'</span><span class="text-yellow-400 text-sm">★ '+r.rating+'</span></div><div class="text-sm text-slate-400">'+r.cuisine+' · '+r.location+' · '+r.menu_items+' items</div></div>').join("");}catch(e){}
+            try{let ms=await(await fetch("/api/menu-items")).json();document.getElementById("menu").innerHTML='<table class="w-full"><thead><tr class="border-b border-slate-700/50"><th class="text-left px-5 py-3 text-xs text-slate-400 uppercase">Item</th><th class="text-left px-5 py-3 text-xs text-slate-400 uppercase">Restaurant</th><th class="text-left px-5 py-3 text-xs text-slate-400 uppercase">Category</th><th class="text-right px-5 py-3 text-xs text-slate-400 uppercase">Price</th></tr></thead><tbody>'+ms.map(i=>'<tr class="border-b border-slate-700/30 hover:bg-slate-700/20"><td class="px-5 py-3 text-sm">'+i.name+'</td><td class="px-5 py-3 text-sm text-slate-300">'+i.restaurant+'</td><td class="px-5 py-3"><span class="px-2 py-0.5 bg-slate-700/50 rounded text-xs text-slate-300">'+i.category+'</span></td><td class="px-5 py-3 text-sm text-emerald-400 text-right">₪'+i.price+'</td></tr>').join("")+'</tbody></table>';}catch(e){}
+          }
+          load();setInterval(load,10000);
+          </script></body></html>
+          HTMLEOF
+
+          # Nginx - remove default server block from main config
+          sed -i '/^    server {/,/^    }/d' /etc/nginx/nginx.conf
+          rm -f /etc/nginx/conf.d/default.conf
+          cat > /etc/nginx/conf.d/databite.conf << 'NGEOF'
+          server { listen 80 default_server; server_name _; root /opt/databite/frontend; index index.html;
+            location /api/ { proxy_pass http://127.0.0.1:8000; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; }
+            location / { try_files $uri /index.html; }
+          }
+          NGEOF
+          nginx -t && systemctl enable nginx && systemctl start nginx
+
+Outputs:
+  InstanceId:
+    Description: EC2 Instance ID
+    Value: !Ref AppInstance
+
+  PublicIP:
+    Description: Public IP of the app server
+    Value: !GetAtt AppInstance.PublicIp
+
+  AppURL:
+    Description: Application URL
+    Value: !Sub http://${AppInstance.PublicIp}
+
+  ApiDocsURL:
+    Description: FastAPI Swagger docs
+    Value: !Sub http://${AppInstance.PublicIp}/api/docs

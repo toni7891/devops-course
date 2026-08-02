@@ -1,0 +1,57 @@
+================================================================================
+                       STEP 9 of 10
+            "Real-World Hunt" - Troubleshooting Scenario
+================================================================================
+
+* SETUP: Run first (from the lab root):  ./scripts/setup_step9.sh
+
+--------------------------------------------------------------------------------
+WHAT YOU'RE DOING
+--------------------------------------------------------------------------------
+Putting it all together: you'll face a realistic scenario where something is
+consuming resources or behaving badly. You'll hunt it down using the tools
+and knowledge from steps 1–8.
+
+Your job: identify the problematic process and decide how to stop it.
+
+This simulates real troubleshooting:
+1. Something is wrong
+2. You hunt for the cause (using ps, top, grep)
+3. You decide which signal to use
+4. You execute the fix
+
+--------------------------------------------------------------------------------
+INSTRUCTIONS
+--------------------------------------------------------------------------------
+1. Run the SETUP script. It starts a scenario with:
+   - A normal process running in the background
+   - A resource-heavy process consuming CPU or memory
+   - A stubborn process that ignores SIGTERM
+
+2. Use the tools you've learned to hunt down the culprit:
+   - List processes: ps aux
+   - Find the heavy one: top
+   - Filter by name: grep
+
+3. Identify which process is the problem. Hint: look for unusual resource use
+   or names that suggest a "dummy" or test process.
+
+4. Try to stop it gracefully:
+   kill <PID>
+
+5. If it doesn't stop, use force:
+   kill -9 <PID>
+
+6. Verify the problem is solved:
+   top     (should show normal CPU use now)
+   ps aux  (the culprit should be gone)
+
+7. Write in my_answers.txt:
+   "Step 9: I found the problem process [NAME] (PID [PID]).
+    I tried kill first: [result].
+    I used kill -9 [if needed]: [result]."
+
+================================================================================
+CLEANUP (run when done with this step):  ./scripts/cleanup_step9.sh
+NEXT STEP:  cat clues/step10.txt
+================================================================================

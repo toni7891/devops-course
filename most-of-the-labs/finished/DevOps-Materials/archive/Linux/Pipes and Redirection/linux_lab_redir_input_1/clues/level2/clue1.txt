@@ -1,0 +1,69 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 1
+                "tr Requires < — A Command That Only Reads stdin"
+================================================================================
+
+BACKGROUND:
+-----------
+`tr` (translate/delete characters) is the classic example of a command that
+ONLY reads from stdin. It does not accept a filename as an argument. If you
+try to pass a filename to tr, it will treat the filename itself as the list
+of characters to translate — which is not what you want — and likely error.
+
+This is why `<` is not optional with tr: it is the ONLY way to feed a file
+to tr. You must write:   tr 'pattern' 'replacement' < file.txt
+
+tr works by reading stdin character by character and applying a translation
+table. Common uses:
+  tr 'a-z' 'A-Z'     — convert lowercase to uppercase
+  tr 'A-Z' 'a-z'     — convert uppercase to lowercase
+  tr ' ' '\n'        — replace spaces with newlines (split into words)
+  tr -d 'aeiou'      — delete all vowels (-d = delete)
+  tr -s ' '          — squeeze repeated spaces into one (-s = squeeze)
+
+EXERCISE:
+---------
+Step 1: Try tr WITHOUT < (this will NOT work as expected):
+  tr 'a-z' 'A-Z' ../../data/lowercase.txt
+  (tr will try to use the path characters as a translation source — error!)
+
+Step 2: Use tr CORRECTLY with input redirection:
+  tr 'a-z' 'A-Z' < ../../data/lowercase.txt
+  (All lowercase letters are converted to uppercase — this works!)
+
+Step 3: Convert uppercase characters to lowercase:
+  tr 'A-Z' 'a-z' < ../../data/lowercase.txt
+  (The already-lowercase text stays the same; any uppercase would change)
+
+Step 4: Replace every space with a newline (splits text into one word per line):
+  tr ' ' '\n' < ../../data/sentence.txt
+  (Each word in the sentence appears on its own line)
+
+Step 5: Delete all vowels from the sentence:
+  tr -d 'aeiouAEIOU' < ../../data/sentence.txt
+  (Only consonants and spaces remain)
+
+Step 6: View the sentence file first, then squeeze repeated spaces:
+  cat ../../data/sentence.txt
+  tr -s ' ' < ../../data/sentence.txt
+  (Repeated spaces collapse into single spaces — useful for cleaning data)
+
+Step 7: Chain two tr operations using a pipe:
+  tr 'a-z' 'A-Z' < ../../data/sentence.txt | tr ' ' '_'
+  (Uppercase the text AND replace spaces with underscores)
+
+QUESTIONS TO ANSWER:
+--------------------
+- What happens (or what error appears) when you run Step 1?
+- What does tr -d 'aeiouAEIOU' do in Step 5?
+- What does tr -s ' ' do in Step 6?
+- Why does tr require < while sort and wc do not?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L2E1: Step 1 errors or produces wrong output because tr treats the path as character sets, not a filename. tr -d deletes specified characters. tr -s squeezes consecutive repeated characters into one. tr has no filename argument syntax, so < is mandatory." >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level2/clue2.txt
+================================================================================

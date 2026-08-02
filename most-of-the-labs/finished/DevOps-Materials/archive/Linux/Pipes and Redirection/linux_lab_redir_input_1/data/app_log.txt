@@ -1,0 +1,20 @@
+2024-03-01 09:00:01 INFO  Application initialized successfully
+2024-03-01 09:00:45 INFO  Configuration loaded from /etc/app/config.yaml
+2024-03-01 09:01:00 WARN  Memory usage at 75% of available limit
+2024-03-01 09:01:30 INFO  Database connection established
+2024-03-01 09:02:00 ERROR Failed to write to disk: error code 28 (no space left)
+2024-03-01 09:02:15 INFO  Retrying write operation after cleanup
+2024-03-01 09:02:45 INFO  Write operation succeeded on retry
+2024-03-01 09:03:00 WARN  Disk usage at 90% on /var partition
+2024-03-01 09:03:30 ERROR Network timeout: error connecting to cache service
+2024-03-01 09:04:00 INFO  Cache service reconnected after 28 seconds
+2024-03-01 09:04:30 INFO  Scheduled maintenance task started
+2024-03-01 09:05:00 WARN  SSL certificate expires in 14 days
+2024-03-01 09:05:30 ERROR Authentication failed: error validating token for user admin
+2024-03-01 09:06:00 INFO  Rate limiter activated for endpoint /api/v2/data
+2024-03-01 09:06:30 INFO  Backup job completed: 4200 records archived
+2024-03-01 09:07:00 WARN  Response time above threshold: 2.4s for /api/v1/search
+2024-03-01 09:07:30 ERROR Disk I/O error: error reading sector 0x1FA4 on /dev/sdb
+2024-03-01 09:08:00 INFO  Failover to secondary disk initiated
+2024-03-01 09:08:30 INFO  Health check passed: all services responding
+2024-03-01 09:09:00 INFO  Application running normally — uptime 69 minutes

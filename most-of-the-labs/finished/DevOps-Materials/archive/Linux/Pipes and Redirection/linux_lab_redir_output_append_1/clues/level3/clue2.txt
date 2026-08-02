@@ -1,0 +1,118 @@
+============================================================
+  LEVEL 3 — CLUE 2
+  Combining > and >>: The Professional Pattern
+============================================================
+
+BACKGROUND
+----------
+Professional shell scripts use > and >> together in a
+deliberate, disciplined way:
+
+  1. Use > ONCE at the start to initialize (create/clear) the file
+  2. Use >> for every subsequent write to that file
+
+This pattern gives you:
+  - A predictable, fresh file each time the script runs   (from >)
+  - Accumulated content within a single run               (from >>)
+
+The pattern is sometimes called "initialize then grow."
+
+------------------------------------------------------------
+THE PATTERN IN ABSTRACT
+------------------------------------------------------------
+
+    # Step 1: Initialize (create fresh or clear existing)
+    echo "=== Report: $(date) ===" > output_file.txt
+
+    # Step 2: Grow (append everything else)
+    echo "Section 1" >> output_file.txt
+    command1 >> output_file.txt
+    echo "Section 2" >> output_file.txt
+    command2 >> output_file.txt
+
+------------------------------------------------------------
+YOUR TASK
+------------------------------------------------------------
+
+Write a mini system report using the > / >> pattern.
+
+Step 1: Initialize the report file:
+
+    echo "============================================" > ~/system_report.txt
+    echo "  System Report" >> ~/system_report.txt
+    echo "  Generated: $(date '+%Y-%m-%d %H:%M:%S')" >> ~/system_report.txt
+    echo "============================================" >> ~/system_report.txt
+
+Step 2: Append the hostname section:
+
+    echo "" >> ~/system_report.txt
+    echo "--- Hostname ---" >> ~/system_report.txt
+    hostname >> ~/system_report.txt
+
+Step 3: Append the current user section:
+
+    echo "" >> ~/system_report.txt
+    echo "--- Current User ---" >> ~/system_report.txt
+    whoami >> ~/system_report.txt
+
+Step 4: Append the uptime section:
+
+    echo "" >> ~/system_report.txt
+    echo "--- Uptime ---" >> ~/system_report.txt
+    uptime >> ~/system_report.txt
+
+Step 5: Append the disk usage section:
+
+    echo "" >> ~/system_report.txt
+    echo "--- Disk Usage (/) ---" >> ~/system_report.txt
+    df -h / >> ~/system_report.txt
+
+Step 6: Append a footer:
+
+    echo "" >> ~/system_report.txt
+    echo "============================================" >> ~/system_report.txt
+    echo "  End of Report" >> ~/system_report.txt
+    echo "============================================" >> ~/system_report.txt
+
+Step 7: View the complete report:
+
+    cat ~/system_report.txt
+
+Step 8: Run the whole sequence a second time to confirm
+        that > at the start gives you a FRESH report
+        (not a doubled-up report):
+
+    # Re-run all steps above
+    cat ~/system_report.txt
+    # --> Should still be ONE report, not two
+
+------------------------------------------------------------
+VERIFY
+------------------------------------------------------------
+
+After running once: cat ~/system_report.txt
+  --> A clean, single report with all sections.
+
+After running a second time: cat ~/system_report.txt
+  --> Still a clean, single report (> reset it).
+
+------------------------------------------------------------
+KEY INSIGHT
+------------------------------------------------------------
+
+If you had used >> for the very first line too, running
+the script twice would double the report. The deliberate
+use of > on the first write is what prevents accumulation
+across multiple script runs.
+
+    First run:  > creates the file   →  1 report
+    Second run: > resets the file    →  still 1 report (fresh)
+
+Compare to using >> from the start:
+
+    First run:  >> appends           →  1 report
+    Second run: >> appends again     →  2 reports (stacked!)
+
+------------------------------------------------------------
+NEXT: cat clue3.txt
+============================================================

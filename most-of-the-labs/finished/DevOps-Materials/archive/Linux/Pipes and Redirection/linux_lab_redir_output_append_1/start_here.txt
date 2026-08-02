@@ -1,0 +1,50 @@
+============================================================
+  LINUX LAB: Output Redirection with >> (Part 1)
+  Theme: "Building Files Over Time"
+============================================================
+
+Welcome!
+
+In this lab you will master the >> (append) operator.
+
+The single most important rule to learn today:
+
+  >   OVERWRITES a file (destroys existing content)
+  >>  APPENDS to a file (preserves existing content)
+
+------------------------------------------------------------
+WHY DOES THIS MATTER?
+------------------------------------------------------------
+
+Imagine you are writing a log file. Every hour your script
+runs and records what happened. If you use > each time,
+you lose every previous entry. If you use >>, your log
+grows — and history is preserved.
+
+This pattern is used everywhere:
+  - System logs (/var/log/syslog)
+  - Application logs
+  - Audit trails
+  - Cron job outputs
+
+------------------------------------------------------------
+HOW THIS LAB WORKS
+------------------------------------------------------------
+
+Navigate through three levels of clues.
+Each clue gives you a task and a hint.
+Read, try, verify.
+
+  Level 1 — Foundations  (start here)
+  Level 2 — Application
+  Level 3 — Mastery
+
+------------------------------------------------------------
+START HERE:
+------------------------------------------------------------
+
+  cd clues/level1
+  cat clue1.txt
+
+Good luck!
+============================================================

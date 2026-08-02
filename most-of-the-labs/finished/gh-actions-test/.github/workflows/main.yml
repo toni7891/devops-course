@@ -1,0 +1,42 @@
+name: first-workflow
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: hello
+        run: echo "Hello from GitHub Actions!"
+
+      - name: username-hello
+        run: echo "hello ${{ github.actor }}"
+
+      - name: count-loop
+        run: |
+          for i in 1 2 3 4 5; do
+            echo $i
+          done
+
+      - name: simulate-build
+        run: |
+          echo "Building..."
+          sleep 2
+          echo "Done!"
+
+  info:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: print-os-info
+        run: uname -a
+
+      - name: print-cpu-info
+        run: nproc
+
+      - name: print-branch
+        env:
+          BRANCH: "${{ github.ref_name }}"
+        run: echo "Branch name is $BRANCH"

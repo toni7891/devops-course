@@ -1,0 +1,90 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 3
+            "Save the Evidence" - Redirection and File Search
+================================================================================
+
+STORY:
+------
+The team lead says:
+
+    "Good analysis! Now save those findings to a report file so we
+     can share it with the team. Also, I need you to find all log
+     files in the project - we might have logs in other places too."
+
+================================================================================
+    PART 13 - Save Search Results to a Report
+================================================================================
+
+Save the ERROR lines from app.log into a new file called:
+
+    server_report.txt
+
+(Create it inside /opt/project)
+
+HINTS:
+- You already know how to find ERROR lines (from the previous exercise)
+- There is a way to send command output to a file instead of the screen
+- Use the redirect operator that CREATES a new file (overwrites if exists)
+
+COMMANDS THAT CAN HELP:
+- >            (redirect output to a file - OVERWRITES if file exists)
+  Example: grep "ERROR" app.log > errors.txt
+- >>           (redirect output to a file - APPENDS to existing content)
+  Example: grep "WARN" app.log >> errors.txt
+
+Now APPEND the WARN lines to the same report file.
+
+HINTS:
+- Use >> to ADD to the existing file without erasing its contents
+- If you use > by mistake, it will erase the ERROR lines you just saved!
+
+Verify your report:
+- cat server_report.txt     (view contents)
+- wc -l server_report.txt   (count lines)
+
+================================================================================
+    PART 14 - Find All Log Files in the Project
+================================================================================
+
+Find all files with the .log extension anywhere inside /opt/project.
+
+HINTS:
+- There is a command specifically designed to FIND files in the filesystem
+- It can search by file name or name pattern
+- You specify where to start searching and what to look for
+- Wildcards like *.log can help match file extensions
+
+COMMANDS THAT CAN HELP:
+- find         (search for files in a directory tree)
+  Syntax: find <where> -name "<pattern>"
+  Example: find /opt/project -name "*.log"
+  This finds all files ending with .log under /opt/project
+
+WHAT TO OBSERVE:
+- How many .log files did you find?
+- Where are they located?
+- Does server_report.txt show up? (Think about why or why not)
+
+WRITE YOUR ANSWER:
+------------------
+Save to my_answers.txt:
+- What command did you use to create server_report.txt?
+- What is the difference between > and >>?
+- How many .log files exist in /opt/project?
+
+================================================================================
+
+Congratulations! You've completed Level 2.
+
+You have:
+  - Set proper ownership and permissions
+  - Tested access as a team member
+  - Analyzed application logs with pipes and grep
+  - Saved results to a report using redirection
+  - Searched for files across the project
+
+Now it's time for operations and troubleshooting.
+
+Proceed to Level 3:
+
+    cat clues/level3/clue1.txt

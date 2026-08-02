@@ -1,0 +1,53 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 2
+                "Sort Piped Output: cat | sort"
+================================================================================
+
+BACKGROUND:
+-----------
+"sort" reads lines from stdin and outputs them in sorted order. By default
+it sorts alphabetically. Flags change the behavior:
+  -r   reverse order (Z to A, or largest to smallest)
+  -n   numeric sort (treats values as numbers, not text)
+  -rn  numeric sort in reverse (largest number first)
+
+sort is very useful after cat or grep when you want to find the first or
+last item in a list, or when you need to prepare data for "uniq" (which
+requires sorted input to work correctly).
+
+"cut" extracts specific columns from delimited input:
+  cut -d':' -f1   uses ':' as delimiter and extracts field 1
+
+EXERCISE:
+---------
+Step 1: View the names file (unsorted)
+  cat ../../data/names.txt
+
+Step 2: Sort the names alphabetically (A to Z)
+  cat ../../data/names.txt | sort
+
+Step 3: Sort in reverse order (Z to A)
+  cat ../../data/names.txt | sort -r
+
+Step 4: Extract and sort usernames from /etc/passwd
+  cut -d':' -f1 /etc/passwd | sort
+
+  (cut -d':' -f1 means: use ':' as the delimiter, take field number 1)
+
+Step 5: Sort the server log file
+  cat ../../data/server.log | sort
+
+QUESTIONS TO ANSWER:
+--------------------
+- What is the first name alphabetically in data/names.txt?
+- What does "sort -r" do differently from "sort"?
+- What does "cut -d':' -f1" extract from /etc/passwd?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L2C2: first name=<name>; sort -r reverses order Z to A; cut -d: -f1 extracts the username (first field before colon)" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level2/clue3.txt
+================================================================================

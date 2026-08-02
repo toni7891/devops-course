@@ -1,0 +1,58 @@
+================================================================================
+                        LEVEL 1 - EXERCISE 1
+                "Process Search: ps aux | grep"
+================================================================================
+
+BACKGROUND:
+-----------
+"ps aux" lists every process currently running on the system. The output
+typically has many lines. On its own, ps aux is overwhelming. Combined with
+grep, it becomes a powerful process search tool.
+
+Each line of ps aux output has columns: USER, PID, %CPU, %MEM, VSZ, RSS,
+TTY, STAT, START, TIME, COMMAND. Column 3 is %CPU and column 4 is %MEM.
+
+A common trick: "grep -v grep" removes the grep process itself from the
+results, so you only see the processes you actually searched for.
+
+EXERCISE:
+---------
+Step 1: View all running processes (will be a long list)
+  ps aux
+
+Step 2: Find all bash processes
+  ps aux | grep "bash"
+
+Step 3: Look for SSH processes (may be empty if SSH is not running)
+  ps aux | grep "ssh"
+
+Step 4: Count the total number of running processes
+  ps aux | wc -l
+
+  (Note: subtract 1 for the header line to get the actual process count)
+
+Step 5: Find bash processes but exclude the grep process itself
+  ps aux | grep "bash" | grep -v "grep"
+
+  This is a very common idiom in shell scripting!
+
+Step 6: Show the top 5 processes by CPU usage (column 3)
+  ps aux | sort -k3 -rn | head -5
+
+  sort -k3   means sort by the 3rd column (%CPU)
+  -rn        means numerically, largest first
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many total processes are running on your system?
+- What does "grep -v" do (the -v flag)?
+- What does "sort -k3" mean? What column does it sort by?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L1C1: total procs=<n>; grep -v excludes lines matching the pattern; sort -k3 sorts by column 3 (CPU%)" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level1/clue2.txt
+================================================================================

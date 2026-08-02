@@ -1,0 +1,66 @@
+============================================================
+     Welcome to Linux Lab - Pipes with | (Part 2)
+        Theme: Pipes in Practice
+============================================================
+
+WELCOME BACK!
+-------------
+You completed Part 1 and understand the basics of pipes.
+Now we apply pipes to tasks you will encounter in real work.
+
+QUICK RECAP FROM PART 1:
+-------------------------
+  command1 | command2     Output of left becomes input of right.
+  grep "X"                Filter — keep only lines containing X.
+  sort                    Reorder lines alphabetically.
+  uniq -c                 Deduplicate and count occurrences.
+  wc -l                   Count lines.
+
+PREREQUISITES:
+--------------
+Before starting, make sure you are comfortable with:
+  - The | operator and left-to-right data flow
+  - grep to filter lines
+  - sort + uniq -c for counting
+  - wc -l for counting lines
+
+If anything above is unclear, revisit Part 1 first.
+
+------------------------------------------------------------
+
+NEW TOOLS IN PART 2:
+--------------------
+  head -N        Show only the first N lines
+  tail -N        Show only the last N lines
+  tail -n +N     Skip first N-1 lines (start output at line N)
+  cut -d',' -f2  Extract column 2 from comma-separated input
+  tr 'a-z' 'A-Z' Translate lowercase to uppercase (character replace)
+  tee file       Write to BOTH screen AND a file at the same time
+  tee -a file    Like tee but appends to the file
+  sort -k3 -rn   Sort by the 3rd column, numerically, largest first
+
+------------------------------------------------------------
+
+WHAT YOU WILL BUILD:
+--------------------
+  - A process monitoring one-liner
+  - A selective log viewer (lines 6-10 of a file)
+  - A CSV salary extractor and sorter
+  - A case-insensitive word deduplicator
+  - A top-5 IP address finder from web logs
+  - A tee pipeline that counts AND saves simultaneously
+  - A complete web log summary report saved to a file
+
+------------------------------------------------------------
+
+QUICK START:
+------------
+  cat clues/level1/clue1.txt
+
+------------------------------------------------------------
+
+SAVING YOUR ANSWERS:
+--------------------
+  echo "your answer" >> ../../my_answers.txt
+
+============================================================

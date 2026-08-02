@@ -1,0 +1,14 @@
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Local bind-mount data (students may point a bind mount at a host dir)
+mongo-init/data/
+data/
+*.log

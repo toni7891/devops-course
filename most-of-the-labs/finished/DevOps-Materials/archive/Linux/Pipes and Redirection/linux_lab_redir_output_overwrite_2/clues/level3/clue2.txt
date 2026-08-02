@@ -1,0 +1,54 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 2
+                "Filter Logs with grep and Save with >"
+================================================================================
+
+BACKGROUND:
+-----------
+In real operations work you rarely want an entire log file — you want a specific
+subset. grep lets you filter lines by pattern, and > lets you save that filtered
+result to a new file. Together they form a powerful pattern:
+
+  grep "PATTERN" source.log > filtered_output.txt
+
+Each filtered file is independent. Writing errors_only.txt does not affect
+warnings_only.txt. This is > used correctly: one command, one destination.
+
+In this exercise you will process a realistic application log and extract
+separate files for each severity level, then produce a summary.
+
+EXERCISE:
+---------
+Step 1: View the full application log to understand its structure:
+  cat ../../data/app.log
+
+Step 2: Filter and save only ERROR lines:
+  grep "ERROR" ../../data/app.log > errors_only.txt && cat errors_only.txt
+
+Step 3: Filter and save only WARN lines:
+  grep "WARN" ../../data/app.log > warnings_only.txt && cat warnings_only.txt
+
+Step 4: Filter and save INFO lines, then count them:
+  grep "INFO" ../../data/app.log > info_only.txt && wc -l info_only.txt
+
+Step 5: Build a one-line summary file using command substitution:
+  echo "ERROR: $(wc -l < errors_only.txt), WARN: $(wc -l < warnings_only.txt), INFO: $(wc -l < info_only.txt)" > log_summary.txt && cat log_summary.txt
+
+Step 6: Filter for entries in the 08:2x time range (08:20 through 08:29):
+  grep "08:2" ../../data/app.log > late_events.txt && cat late_events.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many ERROR lines are in app.log?
+- How many WARN lines are in app.log?
+- How many INFO lines are in app.log?
+- What does log_summary.txt contain after step 5?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level3-Ex2: ERRORs=___, WARNs=___, INFOs=___. Summary: ___" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue3.txt
+================================================================================

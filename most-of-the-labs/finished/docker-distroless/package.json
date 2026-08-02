@@ -1,0 +1,15 @@
+{
+  "name": "dummy-payment",
+  "version": "1.0.0",
+  "description": "Basic dummy payment system (Express)",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

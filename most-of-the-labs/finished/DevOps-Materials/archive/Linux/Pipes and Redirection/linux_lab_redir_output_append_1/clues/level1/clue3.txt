@@ -1,0 +1,98 @@
+============================================================
+  LEVEL 1 — CLUE 3
+  Append Command Output: date Grows a Log
+============================================================
+
+BACKGROUND
+----------
+So far you have appended static text. But >> works with
+ANY command's output — including the date command.
+
+The date command prints the current date and time:
+
+    date
+    # Example output: Mon Jan 15 14:32:07 UTC 2024
+
+This makes >> extremely powerful for timestamped logs:
+every time you run a command and append with >>, the
+growing file records exactly when each event happened.
+
+------------------------------------------------------------
+YOUR TASK
+------------------------------------------------------------
+
+You will create a simple timestamp log by running date
+multiple times and appending each result.
+
+Step 1: Create the log file with the first timestamp:
+
+    date > ~/timestamp_log.txt
+    cat ~/timestamp_log.txt
+
+Step 2: Wait a moment, then append a second timestamp:
+
+    date >> ~/timestamp_log.txt
+    cat ~/timestamp_log.txt
+
+  --> The file now has two timestamps.
+
+Step 3: Append a labeled timestamp:
+
+    echo "=== Checkpoint ===" >> ~/timestamp_log.txt
+    date >> ~/timestamp_log.txt
+    cat ~/timestamp_log.txt
+
+Step 4: Append the output of the uptime command
+        (shows how long the system has been running):
+
+    uptime >> ~/timestamp_log.txt
+    cat ~/timestamp_log.txt
+
+Step 5: Append the output of whoami (current user):
+
+    echo "Logged in as: $(whoami)" >> ~/timestamp_log.txt
+    cat ~/timestamp_log.txt
+
+Step 6: Count the total lines in your growing log:
+
+    wc -l ~/timestamp_log.txt
+
+------------------------------------------------------------
+VERIFY
+------------------------------------------------------------
+
+After all steps, your log should have at least 6 lines.
+Run: wc -l ~/timestamp_log.txt
+
+The exact content will vary (timestamps change each run),
+but the structure should look like:
+
+    Mon Jan 15 14:32:07 UTC 2024
+    Mon Jan 15 14:32:09 UTC 2024
+    === Checkpoint ===
+    Mon Jan 15 14:32:12 UTC 2024
+     14:32:13 up 3 days,  2:15,  1 user,  load average: ...
+    Logged in as: yourname
+
+------------------------------------------------------------
+KEY INSIGHT
+------------------------------------------------------------
+
+  echo "text" >> file     appends a literal string
+  command >> file         appends a command's output
+  echo "$(command)" >> file   appends a command inside a string
+
+All three forms use >> the same way.
+The shell runs whatever is on the LEFT of >> and sends
+the output to the file on the RIGHT.
+
+------------------------------------------------------------
+WELL DONE — LEVEL 1 COMPLETE!
+------------------------------------------------------------
+
+Move on to Level 2:
+
+    cd ../level2
+    cat clue1.txt
+
+============================================================

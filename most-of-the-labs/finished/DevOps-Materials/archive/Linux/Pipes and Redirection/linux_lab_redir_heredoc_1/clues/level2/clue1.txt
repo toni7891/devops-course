@@ -1,0 +1,55 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 1
+                "Write a Script Body with Heredoc"
+================================================================================
+
+BACKGROUND:
+-----------
+A very common real-world use of heredoc is generating script files
+programmatically. Instead of manually writing a file, a setup script or
+installer can use heredoc to produce other scripts on the fly. This is used in
+CI/CD pipelines, provisioning tools, and automation frameworks. Be aware that
+variables inside an unquoted heredoc expand AT CREATION TIME — not when the
+generated script runs.
+
+EXERCISE:
+---------
+Step 1: Generate a backup script using heredoc:
+
+  cat << EOF > backup_script.sh
+  #!/bin/bash
+  # Auto-generated backup script
+  BACKUP_DIR="/tmp/backup_$(date +%Y%m%d)"
+  SOURCE_DIR="$HOME"
+
+  echo "Starting backup of $SOURCE_DIR to $BACKUP_DIR"
+  mkdir -p "$BACKUP_DIR"
+  echo "Backup complete: $BACKUP_DIR"
+  EOF
+
+Step 2: Read the generated script:
+
+  cat backup_script.sh
+
+Step 3: Notice that $HOME expanded NOW (when the heredoc was written), not when
+        the script is run. The value of $HOME is hardcoded into the file.
+
+Step 4: Try running the script anyway:
+
+  bash backup_script.sh
+
+
+QUESTIONS TO ANSWER:
+--------------------
+- What does $HOME expand to in the heredoc? (What path does it contain?)
+- When do the variables expand — at heredoc creation time or when the
+  script runs later?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level2-Ex1: [your answer here]" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level2/clue2.txt
+================================================================================

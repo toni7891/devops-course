@@ -1,0 +1,68 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 5
+                    "Adding Headers Between Sections"
+================================================================================
+
+BACKGROUND:
+-----------
+Real system reports need structure: clear section headers, separators, and
+blank lines that make the output readable at a glance. When building such a
+report with >>, you control every line — including decorative separator lines,
+labels, and whitespace. The pattern is always the same: one > to initialize
+the file (making it empty and ready), then >> for every line that follows.
+This structure is used in automated monitoring scripts that generate daily or
+weekly health reports for system administrators. By the time you run cat on
+the finished file, it looks like a document, not just raw command output.
+Commands like `df -h` and `free -h` may output multiple lines each — all of
+them get appended cleanly when you use >>.
+
+EXERCISE:
+---------
+Run these commands from inside the clues/level2/ directory.
+
+Step 1:  > report.txt
+           (initialize empty file)
+
+Step 2:  echo "========================================" >> report.txt
+
+Step 3:  echo "SYSTEM REPORT - $(date)" >> report.txt
+
+Step 4:  echo "========================================" >> report.txt
+
+Step 5:  echo "" >> report.txt
+
+Step 6:  echo "--- DISK USAGE ---" >> report.txt
+
+Step 7:  df -h >> report.txt
+           (appends all disk usage lines — typically 3-6 lines depending on system)
+
+Step 8:  echo "" >> report.txt
+
+Step 9:  echo "--- MEMORY ---" >> report.txt
+
+Step 10: free -h >> report.txt
+           (appends memory info — typically 3 lines)
+
+Step 11: echo "" >> report.txt
+
+Step 12: echo "--- END OF REPORT ---" >> report.txt
+
+Step 13: cat report.txt && wc -l report.txt
+           (view the complete report and count all lines)
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many named sections does the report contain?
+- Why is > used in Step 1 but >> used for all remaining steps?
+- What would happen to the report if you ran the full sequence a second time,
+  but changed Step 1 from > to >>?
+- Why are blank lines (echo "" >>) important in a report like this?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L2E2: 3 sections (disk, memory, end); > initializes file; >> without > would double the report" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clue3.txt
+================================================================================

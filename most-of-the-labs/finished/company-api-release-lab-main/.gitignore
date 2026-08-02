@@ -1,0 +1,16 @@
+node_modules
+dist
+coverage
+*.log
+npm-debug.log*
+.env
+.env.local
+.env.*.local
+.DS_Store
+Thumbs.db
+.vscode
+.idea
+*.tsbuildinfo
+
+# Instructor's solution — never reaches students.
+SOLUTION/

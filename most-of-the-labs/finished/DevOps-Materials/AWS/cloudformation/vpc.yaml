@@ -1,0 +1,97 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: A simple VPC with one public subnet and internet access.
+
+Parameters:
+
+  EnvironmentName:
+    Type: String
+    Default: my-first-vpc
+    Description: A label added to every resource so you can find them easily.
+
+  VpcCIDR:
+    Type: String
+    Default: 10.0.0.0/16
+    Description: The IP address range for the whole VPC.
+
+  PublicSubnetCIDR:
+    Type: String
+    Default: 10.0.1.0/24
+    Description: The IP address range for the public subnet.
+
+Resources:
+
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${EnvironmentName}-vpc"
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub "${EnvironmentName}-igw"
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref MyVPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: !Ref PublicSubnetCIDR
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs ""
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${EnvironmentName}-public-subnet"
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: !Sub "${EnvironmentName}-public-rt"
+
+  DefaultPublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+Outputs:
+
+  VpcId:
+    Description: The ID of the VPC that was created
+    Value: !Ref MyVPC
+    Export:
+      Name: !Sub "${EnvironmentName}-VpcId"
+
+  PublicSubnetId:
+    Description: The ID of the public subnet
+    Value: !Ref PublicSubnet
+    Export:
+      Name: !Sub "${EnvironmentName}-PublicSubnetId"
+
+  VpcCIDROutput:
+    Description: The IP range of the VPC
+    Value: !Ref VpcCIDR

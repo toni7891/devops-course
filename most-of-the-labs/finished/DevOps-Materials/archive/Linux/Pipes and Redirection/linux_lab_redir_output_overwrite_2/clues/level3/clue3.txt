@@ -1,0 +1,88 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 3
+                "Final Challenge — Complete System Snapshot"
+================================================================================
+
+BACKGROUND:
+-----------
+You have reached the final exercise. Here you will combine everything you have
+learned: subshell grouping, command substitution, and the intentional use of >.
+
+A system snapshot is a file that captures the current state of the system at a
+point in time. Unlike a log (which accumulates history), a snapshot should be
+replaced every time it is generated — old data is irrelevant. This makes >
+exactly the right tool: it overwrites the previous snapshot with a fresh one.
+
+EXERCISE:
+---------
+Step 1: Create a complete system snapshot using subshell grouping:
+  (
+    echo "=== SYSTEM SNAPSHOT ===";
+    echo "Date: $(date)";
+    echo "Host: $(hostname)";
+    echo "User: $(whoami)";
+    echo "Uptime: $(uptime)";
+    echo "Memory:"; free -h;
+    echo "Disk:"; df -h /
+  ) > system_snapshot.txt
+  cat system_snapshot.txt
+
+Step 2: Run the exact same command again. Observe that it OVERWRITES the previous
+        snapshot — this is the CORRECT behavior. A snapshot should always reflect
+        the current moment, not accumulate past runs.
+  (same command as above) > system_snapshot.txt && cat system_snapshot.txt
+
+Step 3: Count the lines in the snapshot:
+  wc -l system_snapshot.txt
+  (Expect roughly 12 or more lines depending on the output of free and df.)
+
+Step 4 (BONUS): Check that errors_only.txt from the previous exercise is still
+        present and untouched — creating system_snapshot.txt should not have
+        affected it at all:
+  cat errors_only.txt
+  wc -l errors_only.txt
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many lines is system_snapshot.txt on your system?
+- Why is overwriting the CORRECT behavior for a snapshot file (as opposed to
+  a log file)?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level3-Ex3: Snapshot lines=___. Overwrite is correct for snapshots because ___" >> ../../my_answers.txt
+
+================================================================================
+         CONGRATULATIONS — YOU HAVE COMPLETED THE LAB!
+================================================================================
+
+  You have mastered output redirection with > in Linux.
+
+  Here is a summary of what you learned:
+
+  KEY TAKEAWAYS:
+  --------------
+  1. > OVERWRITES — it replaces the entire file every time it is used.
+     There is no "add" or "merge" — only replace.
+
+  2. The file's parent DIRECTORY must exist before you can redirect into it.
+     The shell will create the file, but never the directory.
+
+  3. Multiple separate > commands — only the LAST one survives.
+     Each one destroys what the previous one wrote.
+
+  4. To write multiple lines in one command, use:
+       echo -e "line1\nline2\nline3" > file.txt
+       printf "line1\nline2\nline3\n" > file.txt
+       (cmd1; cmd2; cmd3) > file.txt   <-- subshell grouping
+
+  5. Overwriting is sometimes CORRECT — for snapshots, generated configs,
+     and any file where only the latest version matters.
+
+  6. > does NOT touch the input/source file — only the destination (the file
+     named after >) is ever modified.
+
+  Check your answers file:
+    cat ../../my_answers.txt
+
+================================================================================

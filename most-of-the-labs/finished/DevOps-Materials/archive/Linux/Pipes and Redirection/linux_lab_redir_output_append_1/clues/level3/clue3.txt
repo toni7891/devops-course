@@ -1,0 +1,139 @@
+============================================================
+  LEVEL 3 — CLUE 3 (FINAL CHALLENGE)
+  Audit Trail: Putting It All Together
+============================================================
+
+BACKGROUND
+----------
+An audit trail is a log that accumulates across many
+separate runs. Unlike a report (which resets each run),
+an audit trail is NEVER reset with >. It only ever grows.
+
+Examples:
+  - Security audit logs: who ran what commands, and when
+  - Deployment logs: what was deployed, by whom, at what time
+  - Change history: every modification to a system
+
+The defining characteristic: >> is used EVERY time,
+even for the very first write of each run. The file
+must persist and grow across invocations.
+
+------------------------------------------------------------
+YOUR TASK — THE FINAL CHALLENGE
+------------------------------------------------------------
+
+You will build a persistent audit trail by completing
+four separate "sessions" in sequence.
+
+Each session simulates a different operator performing
+actions on the system.
+
+----------------------------------------------------
+SESSION 1: Initial Setup
+----------------------------------------------------
+
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | SESSION-START | user=alice | action=initial_setup" >> ~/audit.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | CONFIG-CHANGE  | user=alice | file=/etc/nginx.conf | change=port_8080" >> ~/audit.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | SERVICE-RESTART| user=alice | service=nginx | result=success" >> ~/audit.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | SESSION-END   | user=alice | duration=5min" >> ~/audit.log
+
+View after session 1:
+    cat ~/audit.log
+    wc -l ~/audit.log    # Expected: 4
+
+----------------------------------------------------
+SESSION 2: Routine Maintenance
+----------------------------------------------------
+
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | SESSION-START | user=bob   | action=routine_maintenance" >> ~/audit.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | DISK-CHECK    | user=bob   | path=/ | usage=67%" >> ~/audit.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | LOG-ROTATE    | user=bob   | file=app.log | size_before=450MB" >> ~/audit.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | LOG-ROTATE    | user=bob   | file=app.log | size_after=2MB" >> ~/audit.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | SESSION-END   | user=bob   | duration=12min" >> ~/audit.log
+
+View after session 2:
+    cat ~/audit.log
+    wc -l ~/audit.log    # Expected: 9
+
+----------------------------------------------------
+SESSION 3: Incident Response
+----------------------------------------------------
+
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | SESSION-START  | user=carol | action=incident_response" >> ~/audit.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | ALERT-RECEIVED | user=carol | alert=high_cpu | value=94%" >> ~/audit.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | PROCESS-KILLED | user=carol | pid=4821 | process=runaway_script" >> ~/audit.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | CPU-NORMAL     | user=carol | value=12%" >> ~/audit.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | SESSION-END    | user=carol | duration=8min" >> ~/audit.log
+
+View after session 3:
+    cat ~/audit.log
+    wc -l ~/audit.log    # Expected: 14
+
+----------------------------------------------------
+SESSION 4: Your Own Session — Fill in the blanks
+----------------------------------------------------
+
+Replace YOUR_NAME, YOUR_ACTION, and YOUR_DETAILS:
+
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | SESSION-START | user=YOUR_NAME | action=YOUR_ACTION" >> ~/audit.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | YOUR_ACTION   | user=YOUR_NAME | detail=YOUR_DETAILS" >> ~/audit.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | SESSION-END   | user=YOUR_NAME | duration=1min" >> ~/audit.log
+
+------------------------------------------------------------
+FINAL VERIFICATION
+------------------------------------------------------------
+
+Step 1: View the complete audit trail:
+
+    cat ~/audit.log
+
+Step 2: Count total entries:
+
+    wc -l ~/audit.log
+
+  Expected: 17 lines (14 + your 3 from session 4)
+
+Step 3: Show only SESSION-START lines (the key events):
+
+    grep "SESSION-START" ~/audit.log
+
+  Expected: 4 lines (one per session)
+
+Step 4: Show only alice's actions:
+
+    grep "user=alice" ~/audit.log
+
+Step 5: Count how many unique users appear:
+
+    grep -o "user=[a-z]*" ~/audit.log | sort -u
+
+------------------------------------------------------------
+THE CRITICAL DIFFERENCE — AUDIT TRAIL vs REPORT
+------------------------------------------------------------
+
+REPORT pattern (resets each run — uses > at start):
+    echo "Report: $(date)" > report.txt     # fresh each time
+    ...append sections with >>...
+
+AUDIT TRAIL pattern (grows forever — never uses >):
+    echo "$(date) | event" >> audit.log     # always >>
+    # The file grows across every run, every day, forever
+
+------------------------------------------------------------
+CONGRATULATIONS — LAB COMPLETE!
+------------------------------------------------------------
+
+You have mastered:
+
+  [x] The difference between > (overwrite) and >> (append)
+  [x] Building lists and files incrementally with >>
+  [x] Appending command output (date, uptime, whoami, df)
+  [x] Working with pre-existing files safely
+  [x] Using >> inside loops correctly
+  [x] The "initialize then grow" pattern (> then >>)
+  [x] Building a persistent audit trail with only >>
+
+These skills are used every day by Linux administrators,
+DevOps engineers, and SREs around the world.
+
+============================================================

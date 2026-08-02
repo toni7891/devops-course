@@ -1,0 +1,90 @@
+============================================================
+  LEVEL 1 — CLUE 2
+  Building a List: Append Names One by One
+============================================================
+
+BACKGROUND
+----------
+A common real-world use of >> is building up a list
+incrementally. Instead of editing a file manually,
+you append items one at a time — from scripts, from
+commands, from user input.
+
+------------------------------------------------------------
+YOUR TASK
+------------------------------------------------------------
+
+You are building a team roster file called ~/team.txt.
+Add five names to it, one at a time, using >>.
+
+Step 1: Add the first member (use > to create the file):
+
+    echo "Alice" > ~/team.txt
+
+Step 2: Append the remaining four members:
+
+    echo "Bob" >> ~/team.txt
+    echo "Carol" >> ~/team.txt
+    echo "Dave" >> ~/team.txt
+    echo "Eve" >> ~/team.txt
+
+Step 3: View the complete roster:
+
+    cat ~/team.txt
+
+Step 4: Count how many team members are listed:
+
+    wc -l ~/team.txt
+
+  Expected output: 5 ~/team.txt
+
+Step 5: Add a header to a NEW file that includes the count:
+
+    echo "=== Team Roster ===" > ~/team_with_header.txt
+    echo "Members: 5" >> ~/team_with_header.txt
+    echo "-------------------" >> ~/team_with_header.txt
+    cat ~/team.txt >> ~/team_with_header.txt
+
+Step 6: View the final result:
+
+    cat ~/team_with_header.txt
+
+------------------------------------------------------------
+VERIFY
+------------------------------------------------------------
+
+Expected output of cat ~/team_with_header.txt:
+
+    === Team Roster ===
+    Members: 5
+    -------------------
+    Alice
+    Bob
+    Carol
+    Dave
+    Eve
+
+------------------------------------------------------------
+KEY INSIGHT
+------------------------------------------------------------
+
+Notice Step 5: we used > to create the header file fresh,
+then >> three times to add more content to it.
+
+Also notice the last >> appended the ENTIRE contents of
+~/team.txt into ~/team_with_header.txt. You can append
+the output of any command — including cat — with >>.
+
+------------------------------------------------------------
+CHALLENGE
+------------------------------------------------------------
+
+Without deleting ~/team_with_header.txt, append a footer:
+
+    echo "-------------------" >> ~/team_with_header.txt
+    echo "End of roster" >> ~/team_with_header.txt
+    cat ~/team_with_header.txt
+
+------------------------------------------------------------
+NEXT: cat clue3.txt
+============================================================

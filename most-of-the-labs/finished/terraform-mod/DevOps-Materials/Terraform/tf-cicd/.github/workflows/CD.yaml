@@ -1,0 +1,62 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: ['Terraform Deploy']
+    branches: [main]
+    types: [completed]
+
+permissions:
+  id-token: write
+  contents: read
+  actions: read
+
+env:
+  S3_BUCKET: webapp-bucket-toni7891
+  AWS_REGION: eu-west-1
+
+jobs:
+  deploy:
+    
+    name: Deploy to S3 + CloudFront
+    runs-on: ubuntu-22.04
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get CI run ID
+        id: ci-run
+        run: |
+          CI_RUN_ID=$(gh run list --workflow=CI.yaml --branch=main --limit=1 --json databaseId --jq '.[0].databaseId')
+          echo "id=$CI_RUN_ID" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact
+          path: dist/
+          run-id: ${{ steps.ci-run.outputs.id }}
+          github-token: ${{ github.token }}
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Sync to S3
+        run: |
+          aws s3 sync dist/ s3://${{ env.S3_BUCKET }}
+
+      - name: Invalidate CloudFront cache
+        run: |
+          CF_ID=$(aws cloudfront list-distributions \
+            --query "DistributionList.Items[?Origins.Items[0].DomainName=='${{ env.S3_BUCKET }}.s3.${{ env.AWS_REGION }}.amazonaws.com'].Id" \
+            --output text)
+          aws cloudfront create-invalidation \
+            --distribution-id $CF_ID \
+            --paths '/*'

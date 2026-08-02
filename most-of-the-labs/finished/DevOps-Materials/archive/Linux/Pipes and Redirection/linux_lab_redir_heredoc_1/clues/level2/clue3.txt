@@ -1,0 +1,61 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 3
+                "Suppress Variable Expansion: Quoted Heredoc"
+================================================================================
+
+BACKGROUND:
+-----------
+By default, a heredoc expands variables and command substitutions — exactly like
+a double-quoted string. But if you QUOTE the delimiter (use 'EOF' with single
+quotes, or "EOF" with double quotes), expansion is completely suppressed. The
+content is treated as a literal string. This is essential when you are writing
+a script that contains variable references meant to expand LATER (when the
+script runs), not NOW (when the heredoc is created).
+
+EXERCISE:
+---------
+Step 1: Without quoting — variables EXPAND:
+
+  version="1.0"
+  cat << EOF
+  Current version is $version
+  PATH is $PATH
+  EOF
+
+Step 2: With single quotes around delimiter — variables do NOT expand:
+
+  cat << 'EOF'
+  Current version is $version
+  PATH is $PATH
+  This $variable will NOT expand
+  EOF
+
+Step 3: Use a quoted heredoc to write a deploy script template.
+        The variables will be literal in the file, ready to expand when
+        the script is run by someone who has set those variables:
+
+  cat << 'EOF' > deploy_template.sh
+  #!/bin/bash
+  echo "Deploying version $VERSION"
+  echo "Target: $DEPLOY_HOST"
+  echo "User: $USER"
+  EOF
+
+Step 4: Read the file and confirm variables are stored as literals:
+
+  cat deploy_template.sh
+
+
+QUESTIONS TO ANSWER:
+--------------------
+- What is the difference in output between Step 1 and Step 2?
+- When is a quoted heredoc ('EOF') useful in real-world scripting?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level2-Ex3: [your answer here]" >> ../../my_answers.txt
+
+================================================================================
+Move to the next level:
+  cat clues/level3/clue1.txt
+================================================================================

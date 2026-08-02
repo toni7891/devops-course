@@ -1,0 +1,56 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 2
+                "Custom Delimiter: Not Just EOF"
+================================================================================
+
+BACKGROUND:
+-----------
+EOF is just a convention — the shell does not treat it as a keyword. You can use
+ANY word as the heredoc delimiter, as long as it appears alone on its own line
+to signal the end of the heredoc. Choosing a descriptive or context-appropriate
+delimiter can make scripts more readable. The only rule is that the delimiter
+must NOT appear inside the heredoc content itself, or it will prematurely end
+the input.
+
+EXERCISE:
+---------
+Step 1: Use DONE as the delimiter:
+
+  cat << DONE
+  This heredoc uses DONE as delimiter
+  instead of the typical EOF
+  DONE
+
+Step 2: Use END as the delimiter:
+
+  cat << END
+  You can choose any word
+  that does not appear inside your content
+  END
+
+Step 3: Use HEREDOC as the delimiter and redirect to a file:
+
+  cat << HEREDOC > custom_delim.txt
+  First line
+  Second line
+  Third line
+  HEREDOC
+
+Step 4: Read the file:
+
+  cat custom_delim.txt
+
+
+QUESTIONS TO ANSWER:
+--------------------
+- Does the delimiter word (DONE, END, HEREDOC) appear in the output?
+- When would you choose a custom delimiter instead of EOF?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level2-Ex2: [your answer here]" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level2/clue3.txt
+================================================================================

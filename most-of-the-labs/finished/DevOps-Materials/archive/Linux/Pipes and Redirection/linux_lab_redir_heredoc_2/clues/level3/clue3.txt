@@ -1,0 +1,75 @@
+================================================================================
+                        LEVEL 3 - EXERCISE 3
+         "Final: Script Generator — Heredoc Inside a Script"
+================================================================================
+
+BACKGROUND:
+-----------
+The most powerful heredoc pattern in DevOps is a script that generates ANOTHER
+script. A "generator" script uses a quoted outer heredoc (to prevent expansion
+now) and an unquoted inner heredoc (to allow expansion when the generated script
+runs later). This is a templating pattern used in provisioning, CI/CD pipelines,
+Kubernetes init containers, and deployment automation.
+
+EXERCISE:
+---------
+Step 1: Create the generator script.
+        Note: OUTER uses 'OUTER' (quoted) to suppress ALL expansion at creation.
+        This means the inner << EOF is stored as a literal string in the file.
+        When the generated script runs, that inner EOF heredoc expands normally.
+
+  cat << 'OUTER' > create_deploy_script.sh
+  #!/bin/bash
+  APP=$1
+  ENV=${2:-staging}
+
+  cat << EOF > "deploy_${APP}_${ENV}.sh"
+  #!/bin/bash
+  echo "Deploying $APP to $ENV"
+  echo "Date: $(date)"
+  echo "Host: $(hostname)"
+  echo "Deploy complete!"
+  EOF
+
+  chmod +x "deploy_${APP}_${ENV}.sh"
+  echo "Created: deploy_${APP}_${ENV}.sh"
+  OUTER
+
+Step 2: Read the generator script. Observe that $APP, $ENV, $(date), and
+        $(hostname) are all stored as LITERALS (no expansion happened yet):
+
+  cat create_deploy_script.sh
+
+Step 3: Run the generator with arguments (APP=myapp, ENV=production):
+
+  bash create_deploy_script.sh myapp production
+
+Step 4: Read the generated deploy script:
+
+  cat deploy_myapp_production.sh
+
+Step 5: Run the generated deploy script:
+
+  bash deploy_myapp_production.sh
+
+WRITE YOUR ANSWER:
+------------------
+  echo "Level3-Ex3: [your answer here]" >> ../../my_answers.txt
+
+================================================================================
+CONGRATULATIONS! You have completed Linux Lab - Heredoc Part 2!
+================================================================================
+
+KEY TAKEAWAYS:
+--------------
+  1. Heredocs provide multi-line input INLINE — no temporary files needed
+  2. << EOF ends when the standalone delimiter appears at column 0
+  3. Use > to save to a file; use >> to APPEND to a file
+  4. ANY command that reads stdin can receive a heredoc (sort, wc, tr, grep...)
+  5. 'EOF' (quoted delimiter) suppresses ALL variable expansion
+  6. <<- strips leading TAB characters (not spaces) for cleaner indentation
+  7. Nested heredocs must use DIFFERENT delimiter names (e.g., OUTER and EOF)
+  8. Heredoc inside a script is a powerful templating pattern for DevOps
+  9. Common bugs: space before delimiter, wrong case, undefined variables
+
+================================================================================

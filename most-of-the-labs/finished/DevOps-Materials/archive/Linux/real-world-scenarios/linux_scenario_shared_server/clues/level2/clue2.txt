@@ -1,0 +1,128 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 2
+            "Reading the Pulse" - Log Analysis with Pipes
+================================================================================
+
+STORY:
+------
+The senior DevOps engineer asks you:
+
+    "We've had some issues with the server lately. Can you look at
+     the application log and tell me what's going on? I need to know
+     how many errors we had and what happened."
+
+The log file is at: /opt/project/logs/app.log
+
+================================================================================
+    PART 10 - Explore the Log File
+================================================================================
+
+First, get familiar with the log file.
+
+TASK 1: View the contents of the log file
+
+HINTS:
+- Use a command that displays file contents
+- The file might be long - you can also view just the first few lines
+  or the last few lines (there are commands for that)
+
+COMMANDS THAT CAN HELP:
+- cat          (display the entire file)
+- head         (show the first N lines of a file)
+  Example: head -10 file.txt   shows first 10 lines
+- tail         (show the last N lines of a file)
+  Example: tail -10 file.txt   shows last 10 lines
+- less         (scroll through a long file page by page)
+
+TASK 2: Count the total number of lines in the log
+
+HINTS:
+- You can combine two commands using a pipe ( | )
+- One command displays the file, the other counts lines
+- There is also a direct way to count lines in a file
+
+COMMANDS THAT CAN HELP:
+- wc           (word count - also counts lines and characters)
+  The -l flag counts lines only
+  Example: wc -l file.txt
+- You can also pipe: cat file.txt | wc -l
+
+================================================================================
+    PART 11 - Find the Problems
+================================================================================
+
+TASK 1: Find all ERROR lines in the log
+
+HINTS:
+- There is a command that searches for text patterns in files
+- Search for "ERROR" in the log file
+- You can use it directly on the file, or pipe the file contents to it
+
+COMMANDS THAT CAN HELP:
+- grep         (search for a text pattern in a file)
+  Example: grep "ERROR" file.txt
+  You can also pipe: cat file.txt | grep "ERROR"
+
+TASK 2: Count how many ERROR lines exist
+
+HINTS:
+- Combine the search command with a line counter using a pipe
+- OR: the search command itself has a flag that counts matches
+
+COMMANDS THAT CAN HELP:
+- grep -c      (count the number of matching lines)
+  Example: grep -c "ERROR" file.txt
+- Or use a pipe: grep "ERROR" file.txt | wc -l
+
+TASK 3: Find all WARNING lines
+
+HINTS:
+- Same approach as finding errors, but search for "WARN"
+- Count them too
+
+================================================================================
+    PART 12 - Deeper Analysis
+================================================================================
+
+TASK 1: Find all lines related to a specific keyword
+
+Search the log for the word "Server"
+
+HINTS:
+- Use the same text search command (grep)
+- You can also search inside a pipeline
+
+COMMANDS THAT CAN HELP:
+- grep "Server" file.txt     (find all lines containing "Server")
+- grep -i "server" file.txt  (case-insensitive search)
+
+TASK 2: Find who logged in to the system
+
+Search for login events in the log.
+
+HINTS:
+- What word would appear in log entries about users logging in?
+  (try searching for "logged in")
+- Search for it and see which users are mentioned
+
+COMMANDS THAT CAN HELP:
+- grep "logged in" file.txt  (find all login entries)
+
+WHAT TO OBSERVE:
+- How many ERRORs did you find?
+- How many WARNs?
+- Which users logged in?
+- Do you see any suspicious activity?
+
+WRITE YOUR ANSWER:
+------------------
+Save to my_answers.txt:
+- How many ERROR lines are in app.log?
+- How many WARN lines are in app.log?
+- What suspicious activity did you find in the log?
+
+================================================================================
+
+When you're done, proceed to the next exercise:
+
+    cat clues/level2/clue3.txt

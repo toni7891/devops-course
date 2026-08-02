@@ -1,0 +1,5 @@
+list: {{ list 1 2 3 | toYaml | nindent 2 }}
+
+my-dict: {{ dict "key1" "value1" "key2" "value2" | toYaml | nindent 2 }}
+
+complex-dict: {{ dict "primitive" "myString" "complex" (dict "key1" "value1") | toYaml | nindent 2 }}

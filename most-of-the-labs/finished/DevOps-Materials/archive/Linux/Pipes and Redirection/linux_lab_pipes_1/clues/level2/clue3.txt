@@ -1,0 +1,57 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 3
+                "Multi-Pipe Chain: sort | uniq"
+================================================================================
+
+BACKGROUND:
+-----------
+You can chain multiple pipes together. Each | adds another transformation
+step. There is no limit to how many pipes you can chain.
+
+A classic three-command pipeline is:
+  cat file | sort | uniq
+
+"uniq" removes consecutive duplicate lines. It REQUIRES the input to be
+sorted first, because it only removes lines that are adjacent to each other.
+That is why sort always comes before uniq.
+
+"uniq -c" adds a count of how many times each line appeared. Combining
+"uniq -c" with "sort -rn" gives you a frequency ranking (most common first).
+
+EXERCISE:
+---------
+Step 1: View the names file — notice some names repeat
+  cat ../../data/names.txt
+
+Step 2: Sort the names
+  cat ../../data/names.txt | sort
+
+Step 3: Remove duplicates (sort first, then uniq)
+  cat ../../data/names.txt | sort | uniq
+
+Step 4: Count how many times each name appears
+  cat ../../data/names.txt | sort | uniq -c
+
+Step 5: Sort by frequency — most common name first
+  cat ../../data/names.txt | sort | uniq -c | sort -rn
+
+  Read this pipeline left to right:
+    cat      -> reads the file
+    sort     -> sorts all names (needed for uniq to work)
+    uniq -c  -> deduplicates and adds count prefix
+    sort -rn -> sorts numerically in reverse (highest count first)
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many unique names are in data/names.txt?
+- Which name appears most often, and how many times?
+- What does "uniq -c" add to the output compared to plain "uniq"?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L2C3: unique names=<count>; most common=<name> (<N> times); uniq -c prefixes each line with its occurrence count" >> ../../my_answers.txt
+
+================================================================================
+Move to the next level:
+  cat clues/level3/clue1.txt
+================================================================================

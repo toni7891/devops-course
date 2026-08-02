@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask App</title>
+    <style>
+        body { font-family: monospace; max-width: 800px; margin: 40px auto; padding: 0 20px; background: #1e1e1e; color: #d4d4d4; }
+        h1   { color: #4ec9b0; }
+        h2   { color: #9cdcfe; }
+        code { background: #2d2d2d; padding: 2px 6px; border-radius: 3px; color: #ce9178; }
+        pre  { background: #2d2d2d; padding: 16px; border-radius: 6px; overflow-x: auto; }
+        .note { border-left: 3px solid #4ec9b0; padding-left: 12px; color: #aaa; }
+    </style>
+</head>
+<body>
+
+<h1>Flask Educational App</h1>
+
+<p class="note">
+    This page is rendered by Flask using <strong>Jinja2</strong> — a templating engine
+    that processes HTML files before sending them to the browser.
+</p>
+
+<h2>How Templates Work</h2>
+<p>
+    Flask looks for templates in the <code>templates/</code> folder next to your app.
+    <code>render_template("index.html")</code> reads this file, processes any Jinja2
+    syntax (like <code>{{ variable }}</code> or <code>{% for %}</code>), and returns
+    the resulting HTML string as the response body.
+</p>
+
+<h2>Available Endpoints</h2>
+<pre>
+GET  /                    → This page (HTML)
+GET  /users               → List all users (JSON)
+GET  /users?role=admin    → Filter users by role (JSON)
+GET  /users/1             → Get user by ID (JSON)
+POST /users               → Create user (JSON body: {"name": "...", "role": "..."})
+POST /echo                → Echo everything Flask parsed from the request
+</pre>
+
+<h2>Try it with curl</h2>
+<pre>
+# Get all users
+curl http://localhost:5000/users
+
+# Get one user
+curl http://localhost:5000/users/1
+
+# Create a user
+curl -X POST http://localhost:5000/users \
+     -H "Content-Type: application/json" \
+     -d '{"name": "Dave", "role": "student"}'
+
+# Echo your request back
+curl -X POST http://localhost:5000/echo \
+     -H "Content-Type: application/json" \
+     -d '{"hello": "world"}' \
+     "http://localhost:5000/echo?debug=true"
+</pre>
+
+</body>
+</html>

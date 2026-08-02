@@ -1,0 +1,11 @@
+wordpressUsername: lirone
+
+# חשוב: ברגע שמשתמשים ב-existingSecret,
+# ה-credentials בקובץ הזה לא ישמשו בפועל
+existingSecret: custom-wp-credentials
+
+# replicaCount: 3 #?migration...
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10

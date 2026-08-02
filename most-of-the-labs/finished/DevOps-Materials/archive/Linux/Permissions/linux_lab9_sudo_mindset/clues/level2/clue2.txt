@@ -1,0 +1,116 @@
+================================================================================
+                            LEVEL 2 - EXERCISE 2
+                    "Understanding sudo Logging: You Are Being Watched!"
+================================================================================
+
+Welcome to Exercise 2!
+
+Now you'll learn a crucial fact: Every sudo command you run is LOGGED. This
+is for security, accountability, and audit purposes. You are responsible
+for what you do with sudo!
+
+BACKGROUND:
+-----------
+Every time you use sudo, the system logs:
+- Who ran the command (your username)
+- What command was executed
+- When it was executed (timestamp)
+- From which terminal/session
+- Whether it succeeded or failed
+
+This audit trail is stored in:
+- `/var/log/auth.log` (Debian/Ubuntu systems)
+- `/var/log/secure` (RHEL/CentOS systems)
+
+On many systems only root can read these logs. On Debian/Ubuntu, the file
+is often readable by the `adm` group too – so if you're in `adm`, you may
+be able to read auth.log without sudo. Either way, the log is sensitive
+and sudo usage is tracked.
+
+EXERCISE:
+---------
+You'll learn about sudo logging and where to find the audit trail.
+
+INSTRUCTIONS:
+-------------
+1. First, run a sudo command so we have something to log:
+   sudo ls /root
+
+2. Now try to read the authentication log:
+   cat /var/log/auth.log
+
+3. Check what happened:
+   - If you got "Permission denied": the log is restricted to root (or sudo).
+   - If you could read it: you may be in the `adm` group (Debian/Ubuntu).
+   Check: ls -l /var/log/auth.log  and  groups
+
+4. View recent entries (use sudo if you got permission denied):
+   sudo cat /var/log/auth.log | tail -20
+   (If you're in adm, you can use: cat /var/log/auth.log | tail -20)
+
+5. Look for entries that contain "sudo" - you should see your recent command!
+   sudo grep sudo /var/log/auth.log | tail -5
+   (Or without sudo if you're in adm and can read the file.)
+
+6. Also check the simulated log in the lab:
+   cat ../../data/logs/sudo_example.log
+
+7. This file shows example sudo log entries. Study the format:
+   - Timestamp
+   - Username
+   - Command executed
+   - Terminal information
+
+COMMANDS TO USE:
+----------------
+- sudo ls /root (create a log entry)
+- cat /var/log/auth.log (may work if you're in adm, else permission denied)
+- ls -l /var/log/auth.log
+- groups (check if you're in adm)
+- sudo cat /var/log/auth.log | tail -20 (or cat ... if you're in adm)
+- sudo grep sudo /var/log/auth.log | tail -5 (or grep ... if you're in adm)
+- cat ../../data/logs/sudo_example.log (view example log)
+
+WHAT TO OBSERVE:
+----------------
+- Who can read /var/log/auth.log on your system? (owner, group – e.g. adm?)
+- What information is logged when you use sudo?
+- Can you find your recent sudo command in the log?
+- What does the log entry format look like?
+- Why is sudo logging important?
+
+UNDERSTANDING:
+-------------
+sudo logging is important because:
+- **Security**: Tracks who has elevated privileges
+- **Accountability**: You are responsible for what you do with sudo
+- **Audit**: System administrators can review sudo usage
+- **Compliance**: Many organizations require audit trails
+- **Troubleshooting**: Helps identify security issues
+
+What gets logged:
+- Username who ran sudo
+- Command that was executed
+- Timestamp of execution
+- Terminal/session information
+- Success or failure status
+
+Real-world implications:
+- Your sudo usage is tracked
+- System administrators can see what you did
+- This is a security feature, not a bug
+- Be responsible with sudo!
+
+WRITE YOUR ANSWER:
+------------------
+After completing the exercise, write in my_answers.txt (in the main lab directory):
+- Could you read /var/log/auth.log without sudo? Why or why not? (e.g. are you in adm?)
+- What information is logged when you use sudo?
+- Where are sudo logs stored? (Give both Debian and RHEL locations)
+- Why is sudo logging important for security?
+- What are the real-world implications of sudo logging?
+
+Then proceed to the next exercise: clue3.txt in this same directory.
+
+Hint: Remember - every sudo command is logged. You are accountable for
+what you do with elevated privileges!

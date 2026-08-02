@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: busybox
+spec:
+  containers:
+    - name: busybox
+      image: busybox:1.36.1
+      # env:
+      #   - name: DB_USER
+      #     valueFrom:
+      #       secretKeyRef:
+      #         name: db-creds
+      #         key: username
+      #   - name: DB_PASSWORD
+      #     valueFrom:
+      #       secretKeyRef:
+      #         name: db-creds
+      #         key: password
+      envFrom:
+        - secretRef:
+            name: db-creds
+      resources:
+        requests:
+          memory: "64Mi"
+          cpu: "250m"
+        limits:
+          memory: "128Mi"
+          cpu: "500m"
+      command:
+        - sh
+        - -c
+        - |
+          echo $username
+          echo $password
+          sleep 1800
+        # echo "User: $DB_USER"
+        # echo "Password: $DB_PASSWORD"

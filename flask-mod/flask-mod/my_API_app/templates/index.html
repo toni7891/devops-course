@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Todo App</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="dynamic-bg" aria-hidden="true"></div>
+  <div class="container">
+    <h1>Todo List</h1>
+
+    <div class="collections-bar">
+      <select id="collection-select" aria-label="Select collection"></select>
+      <div class="collection-controls">
+        <button id="btn-create-collection" class="btn-small" title="Create collection">+</button>
+        <button id="btn-delete-collection" class="btn-small btn-danger" title="Delete collection">×</button>
+      </div>
+    </div>
+
+    <form id="add-form">
+      <input
+        type="text"
+        id="new-title"
+        placeholder="What needs to be done?"
+        autocomplete="off"
+        required
+      />
+      <button type="submit">Add</button>
+    </form>
+
+    <ul id="task-list"></ul>
+
+    <p id="empty-msg" class="empty-msg hidden">No tasks yet. Add one above!</p>
+    <p id="error-msg" class="error-msg hidden"></p>
+  </div>
+
+  <script>
+    const API = "/tasks";
+
+    const taskList  = document.getElementById("task-list");
+    const emptyMsg  = document.getElementById("empty-msg");
+    const errorMsg  = document.getElementById("error-msg");
+    const addForm   = document.getElementById("add-form");
+    const newTitle  = document.getElementById("new-title");
+    const collectionSelect = document.getElementById("collection-select");
+    const btnCreateCollection = document.getElementById("btn-create-collection");
+    const btnDeleteCollection = document.getElementById("btn-delete-collection");
+
+    let currentCollection = null;
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.classList.remove("hidden");
+      setTimeout(() => errorMsg.classList.add("hidden"), 4000);
+    }
+
+    function renderTasks(tasks) {
+      taskList.innerHTML = "";
+      emptyMsg.classList.toggle("hidden", tasks.length > 0);
+
+      tasks.forEach(task => {
+        const li = document.createElement("li");
+        li.className = "task-item" + (task.completed ? " completed" : "");
+        li.dataset.id = task._id;
+
+        // include collection badge when viewing All
+        const badge = (currentCollection === 'All' && task.collection)
+          ? `<span class="collection-badge">[${escapeHtml(task.collection)}]</span>`
+          : '';
+
+        li.innerHTML = `
+          <label class="checkbox-label">
+            <input type="checkbox" class="toggle-cb" ${task.completed ? "checked" : ""} />
+            <span class="title-text">${escapeHtml(task.title)} ${badge}</span>
+          </label>
+          <div class="actions">
+            <button class="btn-edit" title="Edit">&#9998;</button>
+            <button class="btn-delete" title="Delete">&#10005;</button>
+          </div>
+        `;
+
+        // Toggle completed
+        li.querySelector(".toggle-cb").addEventListener("change", () => toggleTask(li.dataset.id, !task.completed));
+
+        // Delete
+        li.querySelector(".btn-delete").addEventListener("click", () => deleteTask(li.dataset.id));
+
+        // Edit
+        li.querySelector(".btn-edit").addEventListener("click", () => startEdit(li, task));
+
+        taskList.appendChild(li);
+      });
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>\"']/g, c => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[c]));
+    }
+
+    async function loadCollections() {
+      try {
+        const res = await fetch('/collections');
+        const items = await res.json();
+        if (!res.ok) throw new Error(items.error || 'Failed to load collections');
+
+        // Always include an 'All' top option
+        collectionSelect.innerHTML = '';
+        const optAll = document.createElement('option');
+        optAll.value = 'All';
+        optAll.textContent = 'All Tasks';
+        collectionSelect.appendChild(optAll);
+
+        // ensure at least one collection exists
+        if (items.length === 0) {
+          await createCollection('General');
+          return loadCollections();
+        }
+
+        items.forEach(name => {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          collectionSelect.appendChild(opt);
+        });
+
+        // set current and load tasks (default to All)
+        currentCollection = 'All';
+        collectionSelect.value = currentCollection;
+        loadTasksForCurrent();
+      } catch (e) {
+        showError(e.message);
+      }
+    }
+
+    async function createCollection(name) {
+      const res = await fetch('/collections', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({collection: name})
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to create collection');
+      return data;
+    }
+
+    async function deleteCurrentCollection(name) {
+      const res = await fetch(`/collections/${encodeURIComponent(name)}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete collection');
+      return data;
+    }
+
+    async function loadTasksForCurrent() {
+      if (!currentCollection) return;
+      try {
+        // use ?collection= query param; 'All' returns all tasks
+        const res = await fetch(`/tasks?collection=${encodeURIComponent(currentCollection)}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to load tasks');
+        renderTasks(data);
+      } catch (e) {
+        showError(e.message);
+      }
+    }
+
+    async function createTask(title) {
+      if (!currentCollection) throw new Error('No collection selected');
+      // when in All view, default new tasks to General collection
+      const collectionToUse = currentCollection === 'All' ? 'General' : currentCollection;
+      const res  = await fetch(`/tasks`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, collection: collectionToUse }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to create task");
+      return data["new task"] || data.data;
+    }
+
+    async function toggleTask(id, completed) {
+      const res  = await fetch(`/tasks/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ completed }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update task");
+      loadTasksForCurrent();
+    }
+
+    async function deleteTask(id) {
+      const res  = await fetch(`/tasks/${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to delete task");
+      loadTasksForCurrent();
+    }
+
+    async function saveEdit(id, newTitleValue, li) {
+      try {
+        const res  = await fetch(`/tasks/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: newTitleValue }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to update task");
+        loadTasksForCurrent();
+      } catch (e) {
+        showError(e.message);
+      }
+    }
+
+    function startEdit(li, task) {
+      const label = li.querySelector(".checkbox-label");
+      const titleSpan = li.querySelector(".title-text");
+      const editBtn = li.querySelector(".btn-edit");
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.className = "edit-input";
+      input.value = task.title;
+
+      label.replaceChild(input, titleSpan);
+      editBtn.textContent = "Save";
+      input.focus();
+
+      const finish = () => {
+        const val = input.value.trim();
+        if (val && val !== task.title) {
+          saveEdit(li.dataset.id, val, li);
+        } else {
+          loadTasksForCurrent(); // revert
+        }
+      };
+
+      editBtn.onclick = finish;
+      input.addEventListener("keydown", e => {
+        if (e.key === "Enter") finish();
+        if (e.key === "Escape") loadTasksForCurrent();
+      });
+    }
+
+    addForm.addEventListener("submit", async e => {
+      e.preventDefault();
+      const title = newTitle.value.trim();
+      if (!title) return;
+      try {
+        await createTask(title);
+        newTitle.value = "";
+        loadTasksForCurrent();
+      } catch (e) {
+        showError(e.message);
+      }
+    });
+
+    collectionSelect.addEventListener('change', () => {
+      currentCollection = collectionSelect.value;
+      loadTasksForCurrent();
+    });
+
+    btnCreateCollection.addEventListener('click', async () => {
+      const name = prompt('Collection name:');
+      if (!name) return;
+      try {
+        await createCollection(name.trim());
+        await loadCollections();
+        // select new
+        collectionSelect.value = name.trim();
+        currentCollection = collectionSelect.value;
+        loadTasksForCurrent();
+      } catch (e) { showError(e.message); }
+    });
+
+    btnDeleteCollection.addEventListener('click', async () => {
+      if (!currentCollection) return showError('No collection selected');
+      if (!confirm(`Delete collection "${currentCollection}" and all its tasks?`)) return;
+      try {
+        await deleteCurrentCollection(currentCollection);
+        await loadCollections();
+      } catch (e) { showError(e.message); }
+    });
+
+    // initial load
+    loadCollections();
+  </script>
+</body>
+</html>

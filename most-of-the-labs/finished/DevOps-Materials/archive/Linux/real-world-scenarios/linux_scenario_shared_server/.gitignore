@@ -1,0 +1,11 @@
+# Ignore student answers
+my_answers.txt
+
+# Ignore student-created reports
+server_report.txt
+full_report.txt
+
+# Ignore any temporary files
+*.tmp
+*.bak
+*~

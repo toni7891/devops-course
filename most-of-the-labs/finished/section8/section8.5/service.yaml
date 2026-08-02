@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: color-service   # IMPORTANT: Must match StatefulSet serviceName
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: color-api
+  clusterIP: None       # This makes the service headless (special Kubernetes keyword)

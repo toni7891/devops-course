@@ -1,0 +1,53 @@
+================================================================================
+                        LEVEL 2 - EXERCISE 1
+                "Filter with grep: Find Specific Lines"
+================================================================================
+
+BACKGROUND:
+-----------
+grep searches its input for lines matching a pattern and prints only those
+lines. When combined with cat (or any command that produces output), grep
+becomes a powerful filter in your pipeline.
+
+The pattern "cat file | grep X" is so common it has become second nature
+to Linux users. You can also chain grep into longer pipelines:
+
+  cat file | grep "X" | wc -l   <- count matching lines
+  cat file | grep "X" | sort    <- sort matching lines
+
+grep is case-sensitive by default. Use -i for case-insensitive matching.
+
+EXERCISE:
+---------
+Step 1: View the full log file first
+  cat ../../data/server.log
+
+Step 2: Filter to show only ERROR lines
+  cat ../../data/server.log | grep "ERROR"
+
+Step 3: Filter to show only WARN lines
+  cat ../../data/server.log | grep "WARN"
+
+Step 4: Count how many ERROR lines there are
+  cat ../../data/server.log | grep "ERROR" | wc -l
+
+Step 5: Search the running process list for bash processes
+  ps aux | grep "bash"
+
+Step 6: Find the passwd entry in the /etc directory listing
+  ls -la /etc | grep "passwd"
+
+QUESTIONS TO ANSWER:
+--------------------
+- How many ERROR lines are in data/server.log?
+- How many WARN lines are in data/server.log?
+- What does "ps aux | grep bash" show you?
+
+WRITE YOUR ANSWER:
+------------------
+  echo "L2C1: ERROR lines=<count>; WARN lines=<count>; ps|grep bash shows bash processes running on the system" >> ../../my_answers.txt
+
+================================================================================
+Move to the next exercise:
+  cat clues/level2/clue2.txt
+================================================================================

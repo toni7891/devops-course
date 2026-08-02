@@ -1,0 +1,38 @@
+================================================================================
+                    LEVEL 1 - EXERCISE 2
+                    Script Won't Execute
+================================================================================
+
+EXERCISE:
+---------
+A script won't run. Use the 4 steps to find and fix the problem.
+
+INSTRUCTIONS:
+-------------
+1. Go to the scenario:
+   cd ../../broken_scenarios/scenario2_script_broken
+
+2. Try to run the script:
+   ./deploy.sh
+   (You'll get an error.)
+
+3. Use the 4 steps:
+   OBSERVE: What error do you get?
+   INSPECT: ls -l deploy.sh, file deploy.sh, whoami
+   DIAGNOSE: What permission is needed to run a script?
+   RESOLVE: Add execute permission, then verify: ./deploy.sh
+
+COMMANDS TO USE:
+----------------
+cd ../../broken_scenarios/scenario2_script_broken
+./deploy.sh
+ls -l deploy.sh
+file deploy.sh
+chmod +x deploy.sh
+./deploy.sh         (verify)
+
+NEXT STEP:
+----------
+Proceed to clue3.txt (same folder: clues/level1).
+
+================================================================================
