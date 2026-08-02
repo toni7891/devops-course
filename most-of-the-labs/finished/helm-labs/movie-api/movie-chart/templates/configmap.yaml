@@ -1,6 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: movie-api-config
+  name: {{ include "movie-chart.fullname" . }}-config
+  labels:
+    {{- include "movie-chart.labels" . | nindent 4 }}
 data:
-  PORT: "3000"
+  PORT: {{ .Values.config.port | quote }}
+  LOG_LEVEL: {{ .Values.config.logLevel | quote }}

@@ -1,0 +1,47 @@
+# Default values for movie-chart.
+
+replicaCount: 2
+
+image:
+  repository: toni7891/movie-api
+  tag: "1.1"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+config:
+  port: "3000"
+  logLevel: "info"
+
+# Extra environment variables appended to the container, e.g.:
+# extraEnv:
+#   - name: FEATURE_FLAG_X
+#     value: "true"
+extraEnv: []
+
+resources: {}
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: false
+  name: ""
+
+# --- MongoDB -----------------------------------------------------------
+# Set mongodb.enabled=false to point the app at an external database
+# instead (configure externalMongoUri in that case).
+mongodb:
+  enabled: true
+  fullnameOverride: "mongo"
+  architecture: standalone
+  auth:
+    enabled: false
+  persistence:
+    size: 1Gi
+
+# Used only when mongodb.enabled is false.
+externalMongoUri: ""

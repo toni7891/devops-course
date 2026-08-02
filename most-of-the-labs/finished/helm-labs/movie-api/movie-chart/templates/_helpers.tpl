@@ -60,31 +60,3 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
-
-
-{{- define "movie-chart.imageSet" -}}
-containers:
-  - name: movie-api
-    image: toni7891/movie-api:1.0
-    ports:
-      - containerPort: 3000
-{{- end -}}
-
-{{- define "movie-chart.pullingEnv" -}}
-envFrom:
-- configMapRef:
-    name: movie-api-config
-- secretRef:
-    name: movie-api-secret
-{{- end -}}
-
-{{- define "movie-chart.testingTemp" -}}
-livenessProbe:
-    httpGet:
-        path: /health
-        port: 3000
-readinessProbe:
-    httpGet:
-        path: /health
-        port: 3000
-{{- end -}}

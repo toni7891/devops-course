@@ -1,6 +1,9 @@
+import logging
 import os
 
 from motor.motor_asyncio import AsyncIOMotorClient
+
+logger = logging.getLogger("movie-api")
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/movies")
 
@@ -17,7 +20,7 @@ async def connect() -> None:
     db = client.get_default_database()
     # Force a round-trip so startup fails fast if Mongo is unreachable.
     await client.admin.command("ping")
-    print(f"[db] connected to {MONGO_URI}", flush=True)
+    logger.info("connected to %s", MONGO_URI)
 
 
 async def disconnect() -> None:

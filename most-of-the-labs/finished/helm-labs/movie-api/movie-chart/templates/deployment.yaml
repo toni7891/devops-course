@@ -1,18 +1,50 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: movie-api
+  name: {{ include "movie-chart.fullname" . }}
+  labels:
+    {{- include "movie-chart.labels" . | nindent 4 }}
 spec:
-  replicas: 2
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: movie-api
+      {{- include "movie-chart.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: movie-api
+        {{- include "movie-chart.selectorLabels" . | nindent 8 }}
     spec:
-{{- include "movie-chart.imageSet" . | nindent 6 }}
-{{- include "movie-chart.pullingEnv" . | nindent 6 }}
-{{- include "movie-chart.testingTemp" . | nindent 10}}
-
+      {{- if .Values.mongodb.enabled }}
+      initContainers:
+        - name: wait-for-mongo
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - until nc -z {{ .Values.mongodb.fullnameOverride }} 27017; do echo waiting for mongo; sleep 2; done
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "movie-chart.fullname" . }}-config
+            - secretRef:
+                name: {{ include "movie-chart.fullname" . }}-secret
+          {{- with .Values.extraEnv }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.service.targetPort }}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.service.targetPort }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
